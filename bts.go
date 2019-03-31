@@ -1,7 +1,5 @@
 package dataStructure
 
-import "fmt"
-
 // 二分搜索树
 type Bst struct {
 	node *Node
@@ -44,10 +42,7 @@ func (b *Bst) Add2(n int) {
 		return
 	}
 	prev := b.node
-	for prev.Left != nil || prev.Right != nil {
-		if prev.Num == n {
-			return
-		}
+	for prev.Num != n && ((n < prev.Num && prev.Left != nil) || (n > prev.Num && prev.Right != nil)) {
 		if n < prev.Num {
 			prev = prev.Left
 		} else {
@@ -248,15 +243,15 @@ func (b *Bst) PostOrder2(f func(*Node)) {
 
 // *层序遍历又名广度优先遍历
 // 层序遍历
-func (b *Bst) LevelOrder() {
+func (b *Bst) LevelOrder(f func(node *Node)) {
 	if b.node == nil {
 		return
 	}
 	list := []*Node{b.node}
 	for len(list) > 0 {
 		e := list[0]
-		list = list[:len(list)-1]
-		fmt.Println(e.Num)
+		list = list[1:]
+		f(e)
 		if e.Left != nil {
 			list = append(list, e.Left)
 		}

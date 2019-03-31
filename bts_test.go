@@ -39,7 +39,7 @@ func TestBst_Add(t *testing.T) {
 	list := []int{5, 8, 3, 6, 4, 2, 7, 1}
 	node := Bst{}
 	for _, v := range list {
-		node.Add(v)
+		node.Add2(v)
 	}
 	// 前序遍历
 	res1 := []int{5, 3, 2, 1, 4, 8, 6, 7}
@@ -47,6 +47,8 @@ func TestBst_Add(t *testing.T) {
 	res2 := []int{1, 2, 3, 4, 5, 6, 7, 8}
 	// 后序遍历
 	res3 := []int{1, 2, 4, 3, 7, 6, 8, 5}
+	// 层序遍历
+	res4 := []int{5, 3, 8, 2, 4, 6, 1, 7}
 
 	if !Same(node, func(b Bst) []int {
 		var list []int
@@ -63,6 +65,7 @@ func TestBst_Add(t *testing.T) {
 		b.PreOrder2(func(node *Node) {
 			list = append(list, node.Num)
 		})
+		//Pt(list)
 		return list
 	}, res1) {
 		t.Error("前序遍历错误2")
@@ -94,6 +97,7 @@ func TestBst_Add(t *testing.T) {
 		b.PostOrder(func(node *Node) {
 			list = append(list, node.Num)
 		})
+		//Pt(list)
 		return list
 	}, res3) {
 		t.Error("后序遍历错误")
@@ -109,4 +113,16 @@ func TestBst_Add(t *testing.T) {
 	}, res3) {
 		t.Error("后序遍历错误2")
 	}
+
+	if !Same(node, func(bst Bst) []int {
+		var list []int
+		bst.LevelOrder(func(node *Node) {
+			list = append(list, node.Num)
+		})
+		//Pt(list)
+		return list
+	}, res4) {
+		t.Error("层序遍历错误")
+	}
+
 }
