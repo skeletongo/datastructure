@@ -260,3 +260,143 @@ func (b *Bst) LevelOrder(f func(node *Node)) {
 		}
 	}
 }
+
+// 删除最大元素
+func (b *Bst) RemoveMax() int {
+	if b.node == nil {
+		panic("no data")
+	}
+	var prev *Node
+	cur := b.node
+	for cur.Right != nil {
+		prev = cur
+		cur = cur.Right
+	}
+	if prev == nil {
+		if cur.Left == nil {
+			b.node = nil
+		} else {
+			b.node = cur.Left
+		}
+	} else {
+		if cur.Left == nil {
+			prev.Right = nil
+		} else {
+			prev.Right = cur.Left
+		}
+	}
+	b.size--
+	return cur.Num
+}
+
+// 删除最小元素
+func (b *Bst) RemoveMin() int {
+	if b.node == nil {
+		panic("no data")
+	}
+	var prev *Node
+	cur := b.node
+	for cur.Left != nil {
+		prev = cur
+		cur = cur.Left
+	}
+	if prev == nil {
+		if cur.Right == nil {
+			b.node = nil
+		} else {
+			b.node = cur.Right
+		}
+	} else {
+		if cur.Right == nil {
+			prev.Left = nil
+		} else {
+			prev.Left = cur.Right
+		}
+	}
+	b.size--
+	return cur.Num
+}
+
+func (b *Bst) addNode(node1, node2 *Node) *Node {
+	if node1 == nil && node2 == nil {
+		return nil
+	}
+	if node1 == nil && node2 != nil {
+		return node2
+	}
+	if node1 != nil && node2 == nil {
+		return node1
+	}
+
+	if node1.Num == node2.Num {
+		return node1
+	}
+	if node2.Num < node1.Num {
+		node1.Left = b.addNode(node1.Left, node2)
+	} else {
+		node1.Right = b.addNode(node1.Right, node2)
+	}
+	return node1
+}
+
+// 删除任一元素
+func (b *Bst) Remove(n int) bool {
+	if b.node == nil {
+		return false
+	}
+	return b.remove(nil, b.node, n)
+}
+
+func (b *Bst) remove(prev, node *Node, n int) bool {
+	if node == nil {
+		return false
+	}
+
+	if node.Num == n {
+		// 移除操作
+		if prev == nil {
+			if node.Right != nil {
+				b.node = node.Right
+				if node.Left != nil {
+					b.node = b.addNode(b.node, node.Left)
+				}
+			} else if node.Left != nil {
+				b.node = node.Left
+			} else {
+				b.node = nil
+			}
+		} else {
+			if prev.Left == node {
+				if node.Right != nil {
+					prev.Left = node.Right
+					if node.Left != nil {
+						prev.Left = b.addNode(prev.Left, node.Left)
+					}
+				} else if node.Left != nil {
+					prev.Left = node.Left
+				} else {
+					prev.Left = nil
+				}
+			} else {
+				if node.Right != nil {
+					prev.Right = node.Right
+					if node.Left != nil {
+						prev.Right = b.addNode(prev.Right, node.Left)
+					}
+				} else if node.Left != nil {
+					prev.Right = node.Left
+				} else {
+					prev.Right = nil
+				}
+			}
+		}
+		b.size--
+		return true
+	}
+
+	if n < node.Num {
+		return b.remove(node, node.Left, n)
+	} else {
+		return b.remove(node, node.Right, n)
+	}
+}
