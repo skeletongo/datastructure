@@ -479,15 +479,18 @@ func (b *Bst) remove2(node *Node, n int) *Node {
 	if node.Num == n {
 		b.size--
 		if node.Right == nil {
-			tmp := node.Left
+			tmp := node.Left // 包括左节点为空的情况
 			node.Left = nil
 			return tmp
 		}
 		if node.Left == nil {
-			tmp := node.Right
+			tmp := node.Right // 包括右节点为空的情况
 			node.Right = nil
 			return tmp
 		}
+		// 待删除节点左右子数均不为空的情况
+		// 找到比待删除节点大的最小节点，即待删除节点右子树的最小节点
+		// 用这个节点顶替待删除节点的位置
 		bst := &Bst{node: node.Right}
 		minNode := bst.findMin()
 		minNode.Right = bst.removeMin(bst.node)
