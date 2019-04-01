@@ -138,20 +138,34 @@ func TestBst(t *testing.T) {
 	}
 }
 
-func TestBst_DeleteMin(t *testing.T) {
+func TestBst_RemoveMin(t *testing.T) {
 	node = CreateBst()
 	for _, v := range res2 {
 		if node.RemoveMin() != v {
 			t.Error("删除最小数错误")
 		}
 	}
+
+	node = CreateBst()
+	for _, v := range res2 {
+		if node.RemoveMin2() != v {
+			t.Error("删除最小数错误2")
+		}
+	}
 }
 
-func TestBst_DeleteMax(t *testing.T) {
+func TestBst_RemoveMax(t *testing.T) {
 	node = CreateBst()
 	for i := len(res2) - 1; i >= 0; i-- {
 		if node.RemoveMax() != res2[i] {
 			t.Error("删除最大数错误")
+		}
+	}
+
+	node = CreateBst()
+	for i := len(res2) - 1; i >= 0; i-- {
+		if node.RemoveMax2() != res2[i] {
+			t.Error("删除最大数错误2")
 		}
 	}
 }
@@ -181,6 +195,21 @@ func TestBst_Remove(t *testing.T) {
 			return list
 		}, res[k]) {
 			t.Error("删除任一元素错误")
+		}
+		//fmt.Println()
+	}
+	node = CreateBst()
+	for k, v := range data {
+		node.Remove2(v)
+		if !Same(node, func(bst Bst) []int {
+			var list []int
+			bst.InOrder(func(i *Node) {
+				list = append(list, i.Num)
+			})
+			//Pt(list)
+			return list
+		}, res[k]) {
+			t.Error("删除任一元素错误2")
 		}
 		//fmt.Println()
 	}

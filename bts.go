@@ -261,8 +261,51 @@ func (b *Bst) LevelOrder(f func(node *Node)) {
 	}
 }
 
-// 删除最大元素
+func (b *Bst) findMax() *Node {
+	if b.node == nil {
+		panic("no data")
+	}
+	cur := b.node
+	for cur.Right != nil {
+		cur = cur.Right
+	}
+	return cur
+}
+
+func (b *Bst) findMin() *Node {
+	if b.node == nil {
+		panic("no data")
+	}
+	cur := b.node
+	for cur.Left != nil {
+		cur = cur.Left
+	}
+	return cur
+}
+
+// 删除最大元素(递归)
 func (b *Bst) RemoveMax() int {
+	e := b.findMax()
+	b.node = b.removeMax(b.node)
+	return e.Num
+}
+
+func (b *Bst) removeMax(node *Node) *Node {
+	if node == nil {
+		return nil
+	}
+	if node.Right == nil {
+		n := node.Left
+		node.Left = nil
+		b.size--
+		return n
+	}
+	node.Right = b.removeMax(node.Right)
+	return node
+}
+
+// 删除最大元素(非递归)
+func (b *Bst) RemoveMax2() int {
 	if b.node == nil {
 		panic("no data")
 	}
@@ -289,8 +332,29 @@ func (b *Bst) RemoveMax() int {
 	return cur.Num
 }
 
-// 删除最小元素
+// 删除最小值(递归)
 func (b *Bst) RemoveMin() int {
+	e := b.findMin()
+	b.node = b.removeMin(b.node)
+	return e.Num
+}
+
+func (b *Bst) removeMin(node *Node) *Node {
+	if node == nil {
+		return nil
+	}
+	if node.Left == nil {
+		n := node.Right
+		node.Right = nil
+		b.size--
+		return n
+	}
+	node.Left = b.removeMin(node.Left)
+	return node
+}
+
+// 删除最小元素(非递归)
+func (b *Bst) RemoveMin2() int {
 	if b.node == nil {
 		panic("no data")
 	}
@@ -399,4 +463,44 @@ func (b *Bst) remove(prev, node *Node, n int) bool {
 	} else {
 		return b.remove(node, node.Right, n)
 	}
+}
+
+// 删除任一元素
+func (b *Bst) Remove2(n int) bool {
+	s := b.size
+	b.node = b.remove2(b.node, n)
+	return b.size < s
+}
+
+func (b *Bst) remove2(node *Node, n int) *Node {
+	if node == nil {
+		return nil
+	}
+	if node.Num == n {
+		b.size--
+		if node.Right == nil {
+			tmp := node.Left
+			node.Left = nil
+			return tmp
+		}
+		if node.Left == nil {
+			tmp := node.Right
+			node.Right = nil
+			return tmp
+		}
+		bst := &Bst{node: node.Right}
+		minNode := bst.findMin()
+		minNode.Right = bst.removeMin(bst.node)
+		b.size++ // bst.removeMin(bst.node) 中减了一个，但是实际上没有减去，所以要加回来
+		minNode.Left = node.Left
+		node.Left = nil
+		node.Right = nil
+		return minNode
+	}
+	if n < node.Num {
+		node.Left = b.remove2(node.Left, n)
+	} else {
+		node.Right = b.remove2(node.Right, n)
+	}
+	return node
 }
