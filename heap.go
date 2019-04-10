@@ -32,6 +32,13 @@ func (m *MaxHeap) rightChild(k int) int {
 	return k*2 + 2
 }
 
+func (m *MaxHeap) findMax() int {
+	if len(m.array) == 0 {
+		panic("no data")
+	}
+	return m.array[0]
+}
+
 func (m *MaxHeap) Add(e int) {
 	// 新添加元素，添加到最后位置
 	m.array = append(m.array, e)
@@ -48,11 +55,8 @@ func (m *MaxHeap) siftUp(k int) {
 }
 
 func (m *MaxHeap) ExtractMax() int {
-	if len(m.array) == 0 {
-		panic("no data")
-	}
 	// 取出第一个元素，然后用最后一个元素代替第一个元素的值
-	e := m.array[0]
+	e := m.findMax()
 	m.array[0] = m.array[len(m.array)-1]
 	m.array = m.array[:len(m.array)-1]
 	// 维护堆结构
@@ -75,5 +79,25 @@ func (m *MaxHeap) siftDown(k int) {
 		// 当前父节点的值小于子节点，需要进行节点交换
 		m.array[k], m.array[j] = m.array[j], m.array[k]
 		k = j
+	}
+}
+
+// 取出最大元素，同时添加一个元素
+func (m *MaxHeap) Replace(e int) int {
+	me := m.findMax()
+	m.array[0] = e
+	m.siftDown(0)
+	return me
+}
+
+// 将任意数组整理成堆的形状
+func (m *MaxHeap) Heapify(arr []int) {
+	m.array = make([]int, len(arr))
+	for i := 0; i < len(arr); i++ {
+		m.array[i] = arr[i]
+	}
+	// 从最后一个元素的父节点向前开始做下沉操作；即最后一个有子节点的节点
+	for k := m.parent(len(arr) - 1); k >= 0; k-- {
+		m.siftDown(k)
 	}
 }
