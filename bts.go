@@ -1,5 +1,9 @@
 package dataStructure
 
+/*
+ 二分搜索树的查询操作的时间复杂度O(h) 最差时间复杂度O(n)链表 最佳时间复杂O(logN)满二叉树
+*/
+
 // 二分搜索树
 type Bst struct {
 	node *Node
