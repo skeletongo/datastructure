@@ -1,10 +1,11 @@
 package dataStructure
 
 /*
- 堆 添加和取出元素的时间复杂度 O(logN)
- 使用满二叉树实现，所以添加和取出元素的效率都比较高
+ 二叉堆 添加和取出元素的时间复杂度 O(logN)
+ 使用完全二叉树实现，利用数组存储
 */
 
+// 最大堆
 type MaxHeap struct {
 	array []int
 }
