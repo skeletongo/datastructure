@@ -30,14 +30,13 @@ func (b *Bst) Add(n int) {
 }
 
 func (b *Bst) add(node *Node, n int) *Node {
-	b.size++
 	if node == nil {
+		b.size++
 		return NewNode(n)
 	}
 	if node.Num == n {
 		return node
-	}
-	if n < node.Num {
+	} else if n < node.Num {
 		node.Left = b.add(node.Left, n)
 	} else {
 		node.Right = b.add(node.Right, n)
