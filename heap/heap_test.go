@@ -1,4 +1,4 @@
-package dataStructure
+package heap
 
 import (
 	"math/rand"
@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
-func TestMaxHeap(t *testing.T) {
-	maxHeap := MaxHeap{}
+func TestHeap(t *testing.T) {
+	maxHeap := NewHeap(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
 	n := 1000
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < n; i++ {
@@ -16,7 +18,7 @@ func TestMaxHeap(t *testing.T) {
 
 	var arr []int
 	for i := 0; i < n; i++ {
-		arr = append(arr, maxHeap.ExtractMax())
+		arr = append(arr, maxHeap.ExtractMax().(int))
 	}
 
 	for i := 1; i < n; i++ {
@@ -26,11 +28,13 @@ func TestMaxHeap(t *testing.T) {
 	}
 }
 
-func TestMaxHeap_Heapify(t *testing.T) {
-	maxHeap := MaxHeap{}
+func TestHeap_Heapify(t *testing.T) {
+	maxHeap := NewHeap(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
 	n := 1000
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	var arr []int
+	var arr []interface{}
 	for i := 0; i < n; i++ {
 		arr = append(arr, r.Intn(10000))
 	}
@@ -42,7 +46,7 @@ func TestMaxHeap_Heapify(t *testing.T) {
 	}
 
 	for i := 1; i < n; i++ {
-		if arr[i-1] < arr[i] {
+		if arr[i-1].(int) < arr[i].(int) {
 			t.Error("堆错误")
 		}
 	}

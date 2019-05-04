@@ -117,6 +117,13 @@ func (a *Array) Set(index int, e interface{}) {
 	a.data[index] = e
 }
 
+// 交换两个元素的位置
+func (a *Array) Swap(index1, index2 int) {
+	if index1 >= 0 && index2 >= 0 && index1 < a.GetSize() && index2 < a.GetSize() && index1 != index2 {
+		a.data[index1], a.data[index2] = a.data[index2], a.data[index1]
+	}
+}
+
 // 是否包含莫个元素
 func (a *Array) Contains(e interface{}) bool {
 	for i := 0; i < a.size; i++ {
