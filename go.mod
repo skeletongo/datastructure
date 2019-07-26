@@ -1,3 +1,3 @@
-module liuzheng/data
+module dataStructure
 
 go 1.12

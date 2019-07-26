@@ -1,6 +1,6 @@
 package bst
 
-import "liuzheng/data/array"
+import "dataStructure/array"
 
 /*
  二分搜索树的查询,添加,删除操作的时间复杂度为O(h) 最差时间复杂度O(n)链表 最佳时间复杂O(logN)满二叉树

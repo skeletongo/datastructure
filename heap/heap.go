@@ -1,6 +1,6 @@
 package heap
 
-import "liuzheng/data/array"
+import "dataStructure/array"
 
 /*
  二叉堆 添加和取出元素的时间复杂度 O(logN)

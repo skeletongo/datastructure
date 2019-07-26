@@ -7,12 +7,12 @@ package dataStructure
 // 字典树/前缀树
 type Trie struct {
 	size int
-	root *TrieNode
+	root *node
 }
 
 func NewTrie() *Trie {
 	return &Trie{
-		root: NewTrieNode(),
+		root: newNode(),
 	}
 }
 
@@ -21,97 +21,109 @@ func (t *Trie) GetSize() int {
 }
 
 func (t *Trie) Add(word string) {
+	if word == "" {
+		return
+	}
 	cur := t.root
 	for i := 0; i < len(word); i++ {
 		c := string(word[i])
-		if cur.Next[c] == nil {
-			cur.Next[c] = NewTrieNode()
+		if cur.next[c] == nil {
+			cur.next[c] = newNode()
 		}
-		cur = cur.Next[c]
+		cur = cur.next[c]
 	}
-	if !cur.IsWord {
-		cur.IsWord = true
+	if !cur.isWord {
+		cur.isWord = true
 		t.size++
 	}
 }
 
 func (t *Trie) Add2(word string) {
+	if word == "" {
+		return
+	}
 	t.add(t.root, word)
 }
 
-func (t *Trie) add(node *TrieNode, word string) {
+func (t *Trie) add(node *node, word string) {
 	if len(word) == 0 {
-		if !node.IsWord {
-			node.IsWord = true
+		if !node.isWord {
+			node.isWord = true
 			t.size++
 		}
 		return
 	}
 	c := string(word[0])
-	if node.Next[c] == nil {
-		trieNode := NewTrieNode()
-		node.Next[c] = trieNode
+	if node.next[c] == nil {
+		trieNode := newNode()
+		node.next[c] = trieNode
 		t.add(trieNode, word[1:])
 		return
 	}
-	t.add(node.Next[c], word[1:])
+	t.add(node.next[c], word[1:])
 }
 
 func (t *Trie) Contains(word string) bool {
 	cur := t.root
 	for i := 0; i < len(word); i++ {
 		c := string(word[i])
-		if cur.Next[c] == nil {
+		if cur.next[c] == nil {
 			return false
 		}
-		cur = cur.Next[c]
+		cur = cur.next[c]
 	}
-	return cur.IsWord
+	return cur.isWord
 }
 
 func (t *Trie) Contains2(word string) bool {
 	return t.contains(t.root, word)
 }
 
-func (t *Trie) contains(node *TrieNode, word string) bool {
+func (t *Trie) contains(node *node, word string) bool {
 	if len(word) == 0 {
-		return node.IsWord
+		return node.isWord
 	}
 	c := string(word[0])
-	if node.Next[c] == nil {
+	if node.next[c] == nil {
 		return false
 	}
-	return t.contains(node.Next[c], word[1:])
+	return t.contains(node.next[c], word[1:])
 }
 
 func (t *Trie) IsPrefix(prefix string) bool {
+	if prefix == "" {
+		return false
+	}
 	cur := t.root
 	for i := 0; i < len(prefix); i++ {
 		c := string(prefix[i])
-		if cur.Next[c] == nil {
+		if cur.next[c] == nil {
 			return false
 		}
-		cur = cur.Next[c]
+		cur = cur.next[c]
 	}
 	return true
 }
 
 func (t *Trie) Remove(word string) {
+	if word == "" {
+		return
+	}
 	t.remove(t.root, word, 0)
 }
 
-func (t *Trie) remove(node *TrieNode, word string, index int) {
+func (t *Trie) remove(node *node, word string, index int) {
 	if index == len(word) {
-		node.IsWord = false
+		node.isWord = false
 		return
 	}
 	c := string(word[index])
-	if node.Next[c] == nil {
+	if node.next[c] == nil {
 		return
 	}
-	t.remove(node.Next[c], word, index+1)
+	t.remove(node.next[c], word, index+1)
 	// 除了当前元素还有其他元素使用，不能删除
-	if len(node.Next[c].Next) == 0 && !node.Next[c].IsWord {
-		delete(node.Next, c)
+	if len(node.next[c].next) == 0 && !node.next[c].isWord {
+		delete(node.next, c)
 	}
 }
