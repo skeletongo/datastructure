@@ -46,7 +46,7 @@ func (a *Array) IsEmpty() bool {
 }
 
 // Insert 在任意位置插入元素
-func (a *Array) Insert(index int, e interface{}) {
+func (a *Array) Insert(index int, v interface{}) {
 	if index < 0 || index > a.len {
 		panic("index out of bounds")
 	}
@@ -58,7 +58,7 @@ func (a *Array) Insert(index int, e interface{}) {
 	for i := a.len - 1; i >= index; i-- {
 		a.data[i+1] = a.data[i]
 	}
-	a.data[index] = e
+	a.data[index] = v
 	a.len++
 }
 
@@ -72,13 +72,13 @@ func (a *Array) resize(n int) {
 }
 
 // AddFirst 在第一个位置插入元素
-func (a *Array) AddFirst(e interface{}) {
-	a.Insert(0, e)
+func (a *Array) AddFirst(v interface{}) {
+	a.Insert(0, v)
 }
 
 // AddLast 在最后一个位置添加元素
-func (a *Array) AddLast(e interface{}) {
-	a.Insert(a.len, e)
+func (a *Array) AddLast(v interface{}) {
+	a.Insert(a.len, v)
 }
 
 // Remove 移除指定位置的元素
@@ -113,33 +113,33 @@ func (a *Array) RemoveLast() interface{} {
 }
 
 // Set 设置或修改某个位置的元素
-func (a *Array) Set(index int, e interface{}) {
+func (a *Array) Set(index int, v interface{}) {
 	if index < 0 || index >= a.len {
 		panic("index out of bounds")
 	}
-	a.data[index] = e
+	a.data[index] = v
 }
 
 // Swap 交换两个元素的位置
-func (a *Array) Swap(index1, index2 int) {
-	if index1 < 0 || index1 >= a.Len() {
+func (a *Array) Swap(i, j int) {
+	if i < 0 || i >= a.Len() {
 		return
 	}
-	if index2 < 0 || index2 >= a.Len() {
+	if j < 0 || j >= a.Len() {
 		return
 	}
-	if index1 == index2 {
+	if i == j {
 		return
 	}
-	a.data[index1], a.data[index2] = a.data[index2], a.data[index1]
+	a.data[i], a.data[j] = a.data[j], a.data[i]
 }
 
 // Contains 是否包含某个元素
 // 这里使用了reflect.DeepEqual()方法
 // 如果需要可以自己定义元素相等的判断条件,请使用ContainsFunc方法
-func (a *Array) Contains(e interface{}) bool {
+func (a *Array) Contains(v interface{}) bool {
 	for i := 0; i < a.len; i++ {
-		if reflect.DeepEqual(a.data[i], e) {
+		if reflect.DeepEqual(a.data[i], v) {
 			return true
 		}
 	}
