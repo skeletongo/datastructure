@@ -1,3 +1,5 @@
+// 动态数组，其实go语言本身的slice就是动态数组,这里只是演示动态数组这种数据结构
+// 时间复杂度：
 package array
 
 import (
@@ -6,127 +8,137 @@ import (
 	"reflect"
 )
 
-// 动态数组默认初始容量
-const DefaultCapacity = 10
-
-// 动态数组
-// golang中的切片就是动态数组,这里当成静态数组使用了
+// Array 动态数组
 type Array struct {
-	size int // 长度
+	// 长度
+	len int
+
+	// 因为go语言的数组元素个数也是数组类型的一部分
+	// 所以这里不能用数组声明，否则不能扩容
+	// 这里为了演示用slice代替
+	// 在实际开发中直接用slice就可以了，slice本身就是动态数组
 	data []interface{}
 }
 
-// 构造方法
-func NewArray(c ...int) *Array {
-	capacity := DefaultCapacity
-	if len(c) > 0 && c[0] > 0 {
-		capacity = c[0]
+// New 创建动态数组
+// capacity 初始容量
+func New(capacity ...int) *Array {
+	_cap := 1
+	if len(capacity) > 0 && capacity[0] > 0 {
+		_cap = capacity[0]
 	}
-	arr := Array{size: 0}
-	arr.data = make([]interface{}, capacity)
-	return &arr
+	return &Array{data: make([]interface{}, _cap)}
 }
 
-// 获取大小
-func (a *Array) GetSize() int {
-	return a.size
+// Len 获取长度
+func (a *Array) Len() int {
+	return a.len
 }
 
-// 获取容量
-func (a *Array) GetCapacity() int {
-	return len(a.data)
+// Cap 获取容量
+func (a *Array) Cap() int {
+	return cap(a.data)
 }
 
-// 是否为空
+// IsEmpty 是否为空
 func (a *Array) IsEmpty() bool {
-	return a.size == 0
+	return a.len == 0
 }
 
-// 在第一个位置插入元素
-func (a *Array) AddFirst(e interface{}) {
-	a.Insert(0, e)
+// Insert 在任意位置插入元素
+func (a *Array) Insert(index int, e interface{}) {
+	if index < 0 || index > a.len {
+		panic("index out of bounds")
+	}
+	// 扩容
+	if a.len == cap(a.data) {
+		a.resize(2 * a.len)
+	}
+	// 插入元素,从插入位置开始所有元素后移一个位置
+	for i := a.len - 1; i >= index; i-- {
+		a.data[i+1] = a.data[i]
+	}
+	a.data[index] = e
+	a.len++
 }
 
-// 在最后一个位置添加元素
-func (a *Array) AddLast(e interface{}) {
-	a.Insert(a.size, e)
-}
-
-// 容量调整
+// resize 容量调整
 func (a *Array) resize(n int) {
 	data := make([]interface{}, n)
-	for i := 0; i < a.size; i++ {
+	for i := 0; i < a.len; i++ {
 		data[i] = a.data[i]
 	}
 	a.data = data
 }
 
-// 在任意位置插入元素
-func (a *Array) Insert(index int, e interface{}) {
-	if index < 0 || index > a.size { // size 是最后一个可添加元素的位置，是可以取到的；如果大于size就会隔一个空位添加元素，这是不允许的；
-		panic("out of bounds")
-	}
-	// 扩容
-	if a.size == len(a.data) {
-		a.resize(2 * a.size)
-	}
-	// 插入元素
-	for i := a.size - 1; i >= index; i-- {
-		a.data[i+1] = a.data[i]
-	}
-	a.data[index] = e
-	a.size++
+// AddFirst 在第一个位置插入元素
+func (a *Array) AddFirst(e interface{}) {
+	a.Insert(0, e)
 }
 
-// 移除第一个元素
+// AddLast 在最后一个位置添加元素
+func (a *Array) AddLast(e interface{}) {
+	a.Insert(a.len, e)
+}
+
+// Remove 移除指定位置的元素
+func (a *Array) Remove(index int) interface{} {
+	if index < 0 || index >= a.len {
+		panic("index out of bounds")
+	}
+	e := a.data[index]
+	// 移除
+	for i := index + 1; i < a.len; i++ {
+		a.data[i-1] = a.data[i]
+	}
+	a.len--
+	a.data[a.len] = nil
+	// 缩容，长度等于四分之一容量时，将容量缩小一半，但容量不能为零
+	// 假如当长度是原来容量的一半时缩小一半容量，会有时间复杂度的震荡
+	// 例如在刚刚扩容后移除一个元素会引起缩容，在刚刚移除一个元素后又添加一个元素又会引起扩容
+	if l := cap(a.data); a.len == l/4 && l/2 != 0 {
+		a.resize(l / 2)
+	}
+	return e
+}
+
+// RemoveFirst RemoveFirst 移除第一个元素
 func (a *Array) RemoveFirst() interface{} {
 	return a.Remove(0)
 }
 
-// 移除最后一个元素
+// RemoveLast 移除最后一个元素
 func (a *Array) RemoveLast() interface{} {
-	return a.Remove(a.size - 1)
+	return a.Remove(a.len - 1)
 }
 
-// 移除指定位置的元素
-func (a *Array) Remove(index int) interface{} {
-	if index < 0 || index >= a.size {
-		panic("out of bounds")
-	}
-	res := a.data[index]
-	// 移除
-	for i := index + 1; i < a.size; i++ {
-		a.data[i-1] = a.data[i]
-	}
-	// 这里先减1 再置空最后一个元素，可以省掉一次减1运算
-	a.size--
-	a.data[a.size] = nil
-	// 缩容，长度等于四分之一容量时，将容量缩小一半
-	// 当且仅当 l = 1 时，l/2 等于 0 ，但容量不能为0
-	if l := len(a.data); a.size == l/4 && l/2 != 0 {
-		a.resize(l / 2)
-	}
-	return res
-}
-
-// 设置或修改莫个位置的元素
+// Set 设置或修改某个位置的元素
 func (a *Array) Set(index int, e interface{}) {
-	if index < 0 || index >= a.size {
-		panic("out of bounds")
+	if index < 0 || index >= a.len {
+		panic("index out of bounds")
 	}
 	a.data[index] = e
 }
 
-// 交换两个元素的位置
+// Swap 交换两个元素的位置
 func (a *Array) Swap(index1, index2 int) {
-	if index1 >= 0 && index2 >= 0 && index1 < a.GetSize() && index2 < a.GetSize() && index1 != index2 {
-		a.data[index1], a.data[index2] = a.data[index2], a.data[index1]
+	if index1 < 0 || index1 >= a.Len() {
+		return
 	}
+	if index2 < 0 || index2 >= a.Len() {
+		return
+	}
+	if index1 == index2 {
+		return
+	}
+	a.data[index1], a.data[index2] = a.data[index2], a.data[index1]
 }
 
-// 是否包含莫个元素
+// Contains 是否包含某个元素
+// 这里使用了reflect.DeepEqual()方法
+// 如果需要可以自己定义元素相等的判断条件,请使用ContainsFunc方法
 func (a *Array) Contains(e interface{}) bool {
-	for i := 0; i < a.size; i++ {
+	for i := 0; i < a.len; i++ {
 		if reflect.DeepEqual(a.data[i], e) {
 			return true
 		}
@@ -134,23 +146,34 @@ func (a *Array) Contains(e interface{}) bool {
 	return false
 }
 
+// Contains 是否包含某个元素
+func (a *Array) ContainsFunc(e interface{}, f func(a, b interface{}) bool) bool {
+	for i := 0; i < a.len; i++ {
+		if f(a.data[i], e) {
+			return true
+		}
+	}
+	return false
+}
+
+// Get 获取指定位置的元素
 func (a *Array) Get(index int) interface{} {
-	if index < 0 || index >= a.size {
-		panic("out of bounds")
+	if index < 0 || index >= a.len {
+		panic("index out of bounds")
 	}
 	return a.data[index]
 }
 
 func (a *Array) String() string {
 	buf := bytes.Buffer{}
-	buf.WriteString("Array: [")
-	for i := 0; i < a.size; i++ {
-		buf.WriteString(fmt.Sprintf("%v", a.data[i]))
-		if i < a.size-1 {
-			buf.WriteString(",")
-		}
+	buf.WriteString(fmt.Sprintf("len:%d cap:%d", a.len, cap(a.data)))
+	buf.WriteString(" array: [")
+	if a.len > 0 {
+		buf.WriteString(fmt.Sprintf("%v",a.data[0]))
+	}
+	for i := 1; i < a.len; i++ {
+		buf.WriteString(fmt.Sprintf(", %v", a.data[i]))
 	}
 	buf.WriteString("]")
-	buf.WriteString(fmt.Sprintf(" len:%d cap:%d", a.size, len(a.data)))
 	return buf.String()
 }
