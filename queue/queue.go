@@ -1,9 +1,8 @@
 package queue
 
-// IQueue 队列
-type IQueue interface {
+// Queue 队列
+type Queue interface {
 	Len() int
-	Cap() int
 	Enqueue(interface{})
 	Dequeue() interface{}
 }

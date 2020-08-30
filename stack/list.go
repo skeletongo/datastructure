@@ -18,18 +18,18 @@ func (l *ListStack) Peek() interface{} {
 	if l.Len() == 0 {
 		return nil
 	}
-	return l.List.Back().Value
+	return l.Back().Value
 }
 
 func (l *ListStack) Push(v interface{}) {
-	l.List.PushBack(v)
+	l.PushBack(v)
 }
 
 func (l *ListStack) Pop() interface{} {
 	if l.Len() == 0 {
 		return nil
 	}
-	return l.List.Remove(l.Back())
+	return l.Remove(l.Back())
 }
 
 func (l *ListStack) String() string {

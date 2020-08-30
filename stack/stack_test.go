@@ -35,39 +35,47 @@ func Example() {
 }
 
 func BenchmarkArrayStack_Push(b *testing.B) {
+	b.StopTimer()
 	s := stack.NewArrayStack()
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		s.Push(nil)
 	}
-	// BenchmarkArrayStack_Push-8      16476409                61.9 ns/op
+	// BenchmarkArrayStack_Push-8      33237411                45.1 ns/op
 }
 
 func BenchmarkListStack_Push(b *testing.B) {
+	b.StopTimer()
 	s := stack.NewListStack()
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		s.Push(nil)
 	}
-	// BenchmarkListStack_Push-8        9864056               115 ns/op
+	// BenchmarkListStack_Push-8        9940868               115 ns/op
 }
 
-func BenchmarkNewArrayStack(b *testing.B) {
+func BenchmarkArrayStack(b *testing.B) {
 	b.StopTimer()
 	s := stack.NewArrayStack()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		s.Push(nil)
+	}
+	for i := 0; i < b.N; i++ {
 		s.Pop()
 	}
-	// BenchmarkNewArrayStack-8        355964994                3.34 ns/op
+	// BenchmarkArrayStack-8           17188676                60.9 ns/op
 }
 
-func BenchmarkNewListStack(b *testing.B) {
+func BenchmarkListStack(b *testing.B) {
 	b.StopTimer()
 	s := stack.NewListStack()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		s.Push(nil)
+	}
+	for i := 0; i < b.N; i++ {
 		s.Pop()
 	}
-	// BenchmarkNewListStack-8         20053474                51.0 ns/op
+	// BenchmarkListStack-8     9782182               199 ns/op
 }

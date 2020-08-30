@@ -1,14 +1,12 @@
 package queue
 
 import (
-	"dataStructure/queue/array"
-	"dataStructure/queue/ring"
 	"errors"
 	"math/rand"
 	"testing"
 )
 
-func testQueue(q IQueue) error {
+func testQueue(q Queue) error {
 	var data []int
 	var res []int
 
@@ -24,8 +22,8 @@ func testQueue(q IQueue) error {
 			}
 		}
 	}
-	for e := q.Dequeue(); e != nil; e = q.Dequeue() {
-		res = append(res, e.(int))
+	for v := q.Dequeue(); v != nil; v = q.Dequeue() {
+		res = append(res, v.(int))
 	}
 
 	if len(data) != len(res) {
@@ -40,63 +38,58 @@ func testQueue(q IQueue) error {
 }
 
 func TestArrayQueue(t *testing.T) {
-	if err := testQueue(array.New()); err != nil {
+	if err := testQueue(NewArrayQueue()); err != nil {
 		t.Error(err)
 	}
 }
 
-func TestRingQueue(t *testing.T) {
-	if err := testQueue(ring.New()); err != nil {
+func TestListQueue(t *testing.T) {
+	if err := testQueue(NewListQueue()); err != nil {
 		t.Error(err)
 	}
 }
 
-func BenchmarkArrayQueueEnqueue(b *testing.B) {
-	q := array.New()
-	for i := 0; i < b.N; i++ {
-		q.Enqueue(nil)
+func TestLoopRingQueue(t *testing.T) {
+	if err := testQueue(NewRingQueue()); err != nil {
+		t.Error(err)
 	}
-	// BenchmarkArrayQueueEnqueue-20           20000000               104 ns/op
 }
 
-func BenchmarkRingQueueEnqueue(b *testing.B) {
-	q := ring.New()
-	for i := 0; i < b.N; i++ {
-		q.Enqueue(nil)
-	}
-	// BenchmarkRingQueueEnqueue-20            20000000                88.2 ns/op
-}
-
-const EnqueueNum = 1000000
-
-func BenchmarkArrayQueueDequeue(b *testing.B) {
+func BenchmarkArrayQueue(b *testing.B) {
 	b.StopTimer()
-	q := array.New()
-	for i := 0; i < EnqueueNum; i++ {
-		q.Enqueue(nil)
-	}
+	q := NewArrayQueue()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		if i > EnqueueNum {
-			break
-		}
-		q.Dequeue()
-	}
-	// BenchmarkArrayQueueDequeue-20               1000           1415131 ns/op
-}
-
-func BenchmarkRingQueueDequeue(b *testing.B) {
-	b.StopTimer()
-	q := ring.New()
-	for i := 0; i < EnqueueNum; i++ {
 		q.Enqueue(nil)
 	}
-	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		if i > EnqueueNum {
-			break
-		}
 		q.Dequeue()
 	}
-	// BenchmarkRingQueueDequeue-20            2000000000               0.02 ns/op
+	// BenchmarkLoopArrayQueue-8       19110135                74.1 ns/op
+}
+
+func BenchmarkListQueue(b *testing.B) {
+	b.StopTimer()
+	q := NewListQueue()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		q.Enqueue(nil)
+	}
+	for i := 0; i < b.N; i++ {
+		q.Dequeue()
+	}
+	// BenchmarkLineListQueue-8         6716150               154 ns/op
+}
+
+func BenchmarkRingQueue(b *testing.B) {
+	b.StopTimer()
+	q := NewRingQueue()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		q.Enqueue(nil)
+	}
+	for i := 0; i < b.N; i++ {
+		q.Dequeue()
+	}
+	// BenchmarkLoopRingQueue-8        10108131               108 ns/op
 }
