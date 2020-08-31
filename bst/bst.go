@@ -43,11 +43,6 @@ func (b *BST) IsEmpty() bool {
 	return b.size == 0
 }
 
-// Add 添加新节点
-func (b *BST) Add(v interface{}) {
-	b.root = b.add(b.root, v)
-}
-
 func (b *BST) add(node *Node, v interface{}) *Node {
 	if node == nil {
 		b.size++
@@ -63,8 +58,13 @@ func (b *BST) add(node *Node, v interface{}) *Node {
 	return node
 }
 
-// Add 添加新节点非递归
-func (b *BST) Add2(v interface{}) {
+// Add 添加新节点
+func (b *BST) Add(v interface{}) {
+	b.root = b.add(b.root, v)
+}
+
+// AddNR 添加新节点非递归
+func (b *BST) AddNR(v interface{}) {
 	if b.size == 0 {
 		b.root = &Node{Value: v}
 		return
@@ -93,11 +93,6 @@ func (b *BST) Add2(v interface{}) {
 	}
 }
 
-// Contains 查询是否包含指定元素
-func (b *BST) Contains(v interface{}) bool {
-	return b.contains(b.root, v)
-}
-
 func (b *BST) contains(node *Node, v interface{}) bool {
 	if node == nil {
 		return false
@@ -112,8 +107,13 @@ func (b *BST) contains(node *Node, v interface{}) bool {
 	return true
 }
 
-// Contains2 查询是否包含指定元素非递归
-func (b *BST) Contains2(v interface{}) bool {
+// Contains 查询是否包含指定元素
+func (b *BST) Contains(v interface{}) bool {
+	return b.contains(b.root, v)
+}
+
+// ContainsNR 查询是否包含指定元素非递归
+func (b *BST) ContainsNR(v interface{}) bool {
 	node := b.root
 	for node != nil {
 		switch b.Compare(node.Value, v) {
@@ -128,11 +128,6 @@ func (b *BST) Contains2(v interface{}) bool {
 	return false
 }
 
-// PreOrder 前序遍历
-func (b *BST) PreOrder(f func(v interface{})) {
-	b.preOrder(b.root, f)
-}
-
 func (b *BST) preOrder(node *Node, f func(v interface{})) {
 	if node == nil {
 		return
@@ -143,9 +138,9 @@ func (b *BST) preOrder(node *Node, f func(v interface{})) {
 	b.preOrder(node.right, f)
 }
 
-// InOrder 中序遍历
-func (b *BST) InOrder(f func(v interface{})) {
-	b.inOrder(b.root, f)
+// PreOrder 前序遍历
+func (b *BST) PreOrder(f func(v interface{})) {
+	b.preOrder(b.root, f)
 }
 
 func (b *BST) inOrder(node *Node, f func(v interface{})) {
@@ -158,9 +153,9 @@ func (b *BST) inOrder(node *Node, f func(v interface{})) {
 	b.inOrder(node.right, f)
 }
 
-// PostOrder 后序遍历
-func (b *BST) PostOrder(f func(v interface{})) {
-	b.postOrder(b.root, f)
+// InOrder 中序遍历
+func (b *BST) InOrder(f func(v interface{})) {
+	b.inOrder(b.root, f)
 }
 
 func (b *BST) postOrder(node *Node, f func(v interface{})) {
@@ -173,8 +168,13 @@ func (b *BST) postOrder(node *Node, f func(v interface{})) {
 	f(node.Value)
 }
 
-// PreOrderTraverse 前序遍历非递归
-func (b *BST) PreOrderTraverse(f func(v interface{})) {
+// PostOrder 后序遍历
+func (b *BST) PostOrder(f func(v interface{})) {
+	b.postOrder(b.root, f)
+}
+
+// PreOrderNR 前序遍历非递归
+func (b *BST) PreOrderNR(f func(v interface{})) {
 	if b.size == 0 {
 		return
 	}
@@ -197,8 +197,8 @@ func (b *BST) PreOrderTraverse(f func(v interface{})) {
 	}
 }
 
-// InOrderTraverse 中序遍历非递归
-func (b *BST) InOrderTraverse(f func(v interface{})) {
+// InOrderNR 中序遍历非递归
+func (b *BST) InOrderNR(f func(v interface{})) {
 	if b.root == nil {
 		return
 	}
@@ -227,8 +227,23 @@ func (b *BST) InOrderTraverse(f func(v interface{})) {
 	}
 }
 
-// PostOrderTraverse 后序遍历非递归
-func (b *BST) PostOrderTraverse(f func(v interface{})) {
+// PostOrderNR 后序遍历非递归
+func (b *BST) PostOrderNR(f func(v interface{})) {
+
+}
+
+// PreOrderNRC 前序遍历非递归经典版
+func (b *BST) PreOrderNRC(f func(v interface{})) {
+
+}
+
+// InOrderNRC 中序遍历非递归经典版
+func (b *BST) InOrderNRC(f func(v interface{})) {
+
+}
+
+// PostOrderNRC 后序遍历非递归经典版
+func (b *BST) PostOrderNRC(f func(v interface{})) {
 
 }
 
@@ -253,43 +268,69 @@ func (b *BST) LevelOrder(f func(v interface{})) {
 	}
 }
 
-// RemoveMax 删除最大元素
-func (b *BST) RemoveMax() interface{} {
-	switch b.size {
-	case 0:
-		return nil
-	case 1:
-		b.size--
-		r := b.root
-		b.root = nil
-		return r.Value
-	case 2:
-		b.size--
-		if b.root.left == nil {
-			r := b.root.right
-			b.root.right = nil
-			return r.Value
-		}
-		r := b.root
-		b.root = b.root.left
-		r.left = nil
-		return r.Value
-	default:
-		b.size--
-		p := b.root
-		n := b.root.right
-		for n.right != nil {
-			p = n
-			n = n.right
-		}
-		p.right = n.left
-		n.left = nil
-		return n.Value
+// findMin 寻找当前节点中的最小值节点
+func findMin(node *Node) *Node {
+	if node.left == nil {
+		return node
 	}
+	return findMin(node.left)
 }
 
-// RemoveMin 删除最小元素
+// removeMin 删除当前节点中的最小值节点并返回当前节点删除最小值节点后的根节点
+func (b *BST) removeMin(node *Node) *Node {
+	if node.left == nil {
+		b.size--
+		ret := node.right
+		node.right = nil
+		return ret
+	}
+	node.left = b.removeMin(node.left)
+	return node
+}
+
+// RemoveMin 删除最小值节点并返回删除的最小值
 func (b *BST) RemoveMin() interface{} {
+	if b.size == 0 {
+		panic("no data")
+	}
+	node := findMin(b.root)
+	b.root = b.removeMin(b.root)
+	return node.Value
+}
+
+// findMax 寻找当前节点中的最大值节点
+func findMax(node *Node) *Node {
+	if node.right == nil {
+		return node
+	}
+	return findMax(node.right)
+}
+
+// removeMax 删除当前节点中的最大值节点并返回当前节点删除最大值节点后的根节点
+func (b *BST) removeMax(node *Node) *Node {
+	if node.right == nil {
+		b.size--
+		ret := node.left
+		node.left = nil
+		return ret
+	}
+	node.right = b.removeMax(node.right)
+	return node
+}
+
+// RemoveMax 删除最大值节点并返回删除的最大值
+func (b *BST) RemoveMax() interface{} {
+	if b.size == 0 {
+		panic("no data")
+	}
+
+	node := findMax(b.root)
+	b.root = b.removeMax(b.root)
+	return node.Value
+}
+
+// RemoveMinNR 删除最小值节点并返回删除的最小值
+func (b *BST) RemoveMinNR() interface{} {
 	switch b.size {
 	case 0:
 		return nil
@@ -323,48 +364,78 @@ func (b *BST) RemoveMin() interface{} {
 	}
 }
 
-// 删除任意元素
-func (b *BST) Remove(e interface{}) bool {
-	sz := b.size
-	b.root = b.remove(b.root, e)
-	return sz > b.size
+// RemoveMaxNR 删除最大值节点并返回删除的最大值
+func (b *BST) RemoveMaxNR() interface{} {
+	switch b.size {
+	case 0:
+		return nil
+	case 1:
+		b.size--
+		r := b.root
+		b.root = nil
+		return r.Value
+	case 2:
+		b.size--
+		if b.root.left == nil {
+			r := b.root.right
+			b.root.right = nil
+			return r.Value
+		}
+		r := b.root
+		b.root = b.root.left
+		r.left = nil
+		return r.Value
+	default:
+		b.size--
+		p := b.root
+		n := b.root.right
+		for n.right != nil {
+			p = n
+			n = n.right
+		}
+		p.right = n.left
+		n.left = nil
+		return n.Value
+	}
 }
 
-func (b *BST) remove(node *Node, e interface{}) *Node {
+// remove 从当前节点中删除一个特定的值节点并返回删除节点后的当前节点的根节点
+func (b *BST) remove(node *Node, v interface{}) *Node {
 	if node == nil {
 		return nil
 	}
 
-	if n := b.f(e, node.e); n < 0 {
-		node.left = b.remove(node.left, e)
-	} else if n > 0 {
-		node.right = b.remove(node.right, e)
-	} else {
-		// 删除当前节点的情况
-		b.size--
-		if node.left == nil { // 返回右节点
-			retNode := node.right
+	switch b.Compare(v, node.Value) {
+	case -1:
+		node.left = b.remove(node.left, v)
+		return node
+	case 1:
+		node.right = b.remove(node.right, v)
+		return node
+	default:
+		if node.left == nil {
+			b.size--
+			ret := node.right
 			node.right = nil
-			return retNode
+			return ret
 		}
-		if node.right == nil { // 返回左节点
-			retNode := node.left
+		if node.right == nil {
+			b.size--
+			ret := node.left
 			node.left = nil
-			return retNode
+			return ret
 		}
-		// 待删除节点左右子数均不为空的情况
-		// 找到比待删除节点大的最小节点，即待删除节点右子树的最小节点
-		// 用这个节点顶替待删除节点的位置
-		retNode := b.findMin(node.right)
-		retNode.right = b.removeMin(node.right)
-		b.size++
 
-		retNode.left = node.left
-
+		n := findMin(node.right)
+		n.right = b.removeMin(node.right)
+		n.left = node.left
 		node.left = nil
 		node.right = nil
-
-		return retNode
+		return n
 	}
-	return node
+}
+
+// Remove 删除值节点
+func (b *BST) Remove(v interface{}) {
+	b.root = b.remove(b.root, v)
 }
