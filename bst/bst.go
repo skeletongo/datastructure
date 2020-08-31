@@ -1,251 +1,326 @@
+//二分搜索树的查询,添加,删除操作的时间复杂度为O(h) 最差时间复杂度O(n)链表 最佳时间复杂O(logN)满二叉树
+//
+//满二叉树：除了最大层节点，其他节点都有两个子节点
+//完全二叉树：按每层从左到右的位置添加新节点
+//平衡二叉树：所有叶子节点所在的层数的差值的绝对值不能大于1
+// 时间复杂度：
 package bst
 
-import "dataStructure/array"
+import (
+	"dataStructure/queue"
+	"dataStructure/stack"
+)
 
-/*
- 二分搜索树的查询,添加,删除操作的时间复杂度为O(h) 最差时间复杂度O(n)链表 最佳时间复杂O(logN)满二叉树
-
- 满二叉树：除了最大层节点，其他节点都有两个子节点
- 完全二叉树：按每层从左到右的位置添加新节点
- 平衡二叉树：所有叶子节点所在的层数的差值的绝对值不能大于1
-*/
-
-// 二分搜索树
-type BST struct {
-	root *node
-	size int
-	f    func(a, b interface{}) int
+type Node struct {
+	left, right *Node
+	Value       interface{}
 }
 
-// 获取节点总数
+// BST 二分搜索树
+type BST struct {
+	root    *Node
+	size    int
+	Compare func(a, b interface{}) int
+}
+
+// 创建二分搜索树
+// 参数 f 为自定义元素大小比较函数
+// 大小比较函数 返回值：
+// -1	表示	a<b
+// 0	表示	a=b
+// 1	表示	a>b
+func NewBST(f func(a, b interface{}) int) *BST {
+	return &BST{Compare: f}
+}
+
+// GetSize 获取节点总数
 func (b *BST) GetSize() int {
 	return b.size
 }
 
-// 是否为空树
+// IsEmpty 是否为空树
 func (b *BST) IsEmpty() bool {
 	return b.size == 0
 }
 
-// 添加新节点
-func (b *BST) Add(e interface{}) {
-	b.root = b.add(b.root, e)
+// Add 添加新节点
+func (b *BST) Add(v interface{}) {
+	b.root = b.add(b.root, v)
 }
 
-func (b *BST) add(node *node, e interface{}) *node {
+func (b *BST) add(node *Node, v interface{}) *Node {
 	if node == nil {
 		b.size++
-		return newNode(e)
+		return &Node{Value: v}
 	}
 
-	if n := b.f(e, node.e); n == 0 {
-		return node
-	} else if n < 0 {
-		node.left = b.add(node.left, e)
-	} else {
-		node.right = b.add(node.right, e)
+	switch b.Compare(v, node.Value) {
+	case -1:
+		node.left = b.add(node.left, v)
+	case 1:
+		node.right = b.add(node.right, v)
 	}
 	return node
 }
 
-// 查询是否包含某节点
-func (b *BST) Contains(e interface{}) bool {
-	return b.contains(b.root, e)
+// Add 添加新节点非递归
+func (b *BST) Add2(v interface{}) {
+	if b.size == 0 {
+		b.root = &Node{Value: v}
+		return
+	}
+
+	node := b.root
+	for {
+		switch b.Compare(node.Value, v) {
+		case 0:
+			return
+		case -1:
+			if node.right == nil {
+				b.size++
+				node.right = &Node{Value: v}
+				return
+			}
+			node = node.right
+		case 1:
+			if node.left == nil {
+				b.size++
+				node.left = &Node{Value: v}
+				return
+			}
+			node = node.left
+		}
+	}
 }
 
-func (b *BST) contains(node *node, e interface{}) bool {
+// Contains 查询是否包含指定元素
+func (b *BST) Contains(v interface{}) bool {
+	return b.contains(b.root, v)
+}
+
+func (b *BST) contains(node *Node, v interface{}) bool {
 	if node == nil {
 		return false
 	}
 
-	if n := b.f(e, node.e); n == 0 {
-		return true
-	} else if n < 0 {
-		return b.contains(node.left, e)
-	} else {
-		return b.contains(node.right, e)
+	switch b.Compare(v, node.Value) {
+	case -1:
+		return b.contains(node.left, v)
+	case 1:
+		return b.contains(node.right, v)
 	}
+	return true
 }
 
-// 前序遍历
-func (b *BST) PreOrder(f func(e interface{})) {
+// Contains2 查询是否包含指定元素非递归
+func (b *BST) Contains2(v interface{}) bool {
+	node := b.root
+	for node != nil {
+		switch b.Compare(node.Value, v) {
+		case 0:
+			return true
+		case -1:
+			node = node.right
+		case 1:
+			node = node.left
+		}
+	}
+	return false
+}
+
+// PreOrder 前序遍历
+func (b *BST) PreOrder(f func(v interface{})) {
 	b.preOrder(b.root, f)
 }
 
-func (b *BST) preOrder(node *node, f func(e interface{})) {
+func (b *BST) preOrder(node *Node, f func(v interface{})) {
 	if node == nil {
 		return
 	}
 
-	f(node.e)
+	f(node.Value)
 	b.preOrder(node.left, f)
 	b.preOrder(node.right, f)
 }
 
-// 中序遍历
-func (b *BST) InOrder(f func(e interface{})) {
+// InOrder 中序遍历
+func (b *BST) InOrder(f func(v interface{})) {
 	b.inOrder(b.root, f)
 }
 
-func (b *BST) inOrder(node *node, f func(e interface{})) {
+func (b *BST) inOrder(node *Node, f func(v interface{})) {
 	if node == nil {
 		return
 	}
 
 	b.inOrder(node.left, f)
-	f(node.e)
+	f(node.Value)
 	b.inOrder(node.right, f)
 }
 
-// 后序遍历
-func (b *BST) PostOrder(f func(e interface{})) {
+// PostOrder 后序遍历
+func (b *BST) PostOrder(f func(v interface{})) {
 	b.postOrder(b.root, f)
 }
 
-func (b *BST) postOrder(node *node, f func(e interface{})) {
+func (b *BST) postOrder(node *Node, f func(v interface{})) {
 	if node == nil {
 		return
 	}
 
 	b.postOrder(node.left, f)
 	b.postOrder(node.right, f)
-	f(node.e)
+	f(node.Value)
 }
 
-// 深度优先遍历(中序遍历非递归形式)
-func (b *BST) DFS(f func(e interface{})) {
-	if b.root == nil {
+// PreOrderTraverse 前序遍历非递归
+func (b *BST) PreOrderTraverse(f func(v interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.Value)
 		return
 	}
 
-	stack := array.Stack{}
-	stack.Init()
-	stack.Push(b.root)
-
-	push := true // 压入标志
-
-	for !stack.IsEmpty() {
-		ele := stack.Peek()
-		node := ele.(*node)
-
-		if push { // 压入
-			if node.left != nil { // 有左节点就将左节点压入栈
-				stack.Push(node.left)
-			} else { // 没有左节点就弹出这个节点，将此节点的右节点压入栈
-				push = false
-				stack.Pop()
-				f(node.e)
-
-				if node.right != nil {
-					stack.Push(node.right)
-					push = true
-				}
-			}
-		} else { // 弹出
-			stack.Pop()
-			f(node.e)
-
-			if node.right != nil {
-				stack.Push(node.right)
-				push = true
-			}
+	s := stack.NewArrayStack()
+	s.Push(b.root)
+	for s.Len() != 0 {
+		node := s.Pop().(*Node)
+		f(node.Value)
+		if node.right != nil {
+			s.Push(node.right)
+		}
+		if node.left != nil {
+			s.Push(node.left)
 		}
 	}
 }
 
-// 广度优先遍历(层序遍历)
-func (b *BST) BFS(f func(e interface{})) {
+// InOrderTraverse 中序遍历非递归
+func (b *BST) InOrderTraverse(f func(v interface{})) {
+	if b.root == nil {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.Value)
+		return
+	}
+
+	var node *Node
+	var flag = true
+	s := stack.NewArrayStack()
+	s.Push(b.root)
+	for s.Len() != 0 {
+		if flag {
+			flag = false
+			for node = s.Peek().(*Node); node.left != nil; node = node.left {
+				s.Push(node.left)
+			}
+		}
+		node = s.Pop().(*Node)
+		f(node.Value)
+		if node.right != nil {
+			s.Push(node.right)
+			flag = true
+		}
+	}
+}
+
+// PostOrderTraverse 后序遍历非递归
+func (b *BST) PostOrderTraverse(f func(v interface{})) {
+
+}
+
+// LevelOrder 层序遍历
+func (b *BST) LevelOrder(f func(v interface{})) {
 	if b.root == nil {
 		return
 	}
 
-	queue := array.LoopQueue{}
-	queue.Init()
-	queue.Enqueue(b.root)
-
-	for !queue.IsEmpty() {
-		ele := queue.Dequeue()
-		node := ele.(*node)
-		f(node.e)
-		// 子节点入队
+	q := queue.NewArrayQueue()
+	q.Enqueue(b.root)
+	var node *Node
+	for q.Len() > 0 {
+		node = q.Dequeue().(*Node)
+		f(node.Value)
 		if node.left != nil {
-			queue.Enqueue(node.left)
+			q.Enqueue(node.left)
 		}
 		if node.right != nil {
-			queue.Enqueue(node.right)
+			q.Enqueue(node.right)
 		}
 	}
 }
 
-// 删除最大元素
+// RemoveMax 删除最大元素
 func (b *BST) RemoveMax() interface{} {
-	res := b.findMax(b.root)
-	b.root = b.removeMax(b.root)
-	return res.e
-}
-
-func (b *BST) removeMax(node *node) *node {
-	if node == nil {
+	switch b.size {
+	case 0:
 		return nil
-	}
-
-	if node.right == nil {
-		// 右子树为空，删除当前节点，返回当前节点的左子树
-		retNode := node.left
-		node.left = nil
+	case 1:
 		b.size--
-		return retNode
+		r := b.root
+		b.root = nil
+		return r.Value
+	case 2:
+		b.size--
+		if b.root.left == nil {
+			r := b.root.right
+			b.root.right = nil
+			return r.Value
+		}
+		r := b.root
+		b.root = b.root.left
+		r.left = nil
+		return r.Value
+	default:
+		b.size--
+		p := b.root
+		n := b.root.right
+		for n.right != nil {
+			p = n
+			n = n.right
+		}
+		p.right = n.left
+		n.left = nil
+		return n.Value
 	}
-
-	node.right = b.removeMax(node.right)
-	return node
 }
 
-func (b *BST) findMax(node *node) *node {
-	if node == nil {
-		panic("no data")
-	}
-	cur := node
-	for cur.right != nil {
-		cur = cur.right
-	}
-	return cur
-}
-
-// 删除最小元素
+// RemoveMin 删除最小元素
 func (b *BST) RemoveMin() interface{} {
-	res := b.findMin(b.root)
-	b.root = b.removeMin(b.root)
-	return res.e
-}
-
-func (b *BST) removeMin(node *node) *node {
-	if node == nil {
+	switch b.size {
+	case 0:
 		return nil
-	}
-
-	if node.left == nil {
-		// 左子树为空，删除当前节点，返回当前节点的右子树
-		retNode := node.right
-		node.right = nil
+	case 1:
 		b.size--
-		return retNode
+		r := b.root
+		b.root = nil
+		return r.Value
+	case 2:
+		b.size--
+		if b.root.left == nil {
+			r := b.root
+			b.root = b.root.right
+			r.right = nil
+			return r.Value
+		}
+		n := b.root.left
+		b.root.left = nil
+		return n.Value
+	default:
+		b.size--
+		p := b.root
+		n := b.root.left
+		for n.left != nil {
+			p = n
+			n = n.left
+		}
+		p.left = n.right
+		n.right = nil
+		return n.Value
 	}
-
-	node.left = b.removeMin(node.left)
-	return node
-}
-
-func (b *BST) findMin(node *node) *node {
-	if node == nil {
-		panic("no data")
-	}
-
-	cur := node
-	for cur.left != nil {
-		cur = cur.left
-	}
-	return cur
 }
 
 // 删除任意元素
@@ -255,7 +330,7 @@ func (b *BST) Remove(e interface{}) bool {
 	return sz > b.size
 }
 
-func (b *BST) remove(node *node, e interface{}) *node {
+func (b *BST) remove(node *Node, e interface{}) *Node {
 	if node == nil {
 		return nil
 	}
@@ -292,15 +367,4 @@ func (b *BST) remove(node *node, e interface{}) *node {
 		return retNode
 	}
 	return node
-}
-
-// 创建二分搜索树
-// 参数 f 为自定义元素大小比较函数
-// 大小比较函数 返回值：
-// -1	表示	a<b
-// 0	表示	a=b
-// 1	表示	a>b
-//func f(a,b interface{}) int { }
-func NewBST(f func(a, b interface{}) int) *BST {
-	return &BST{f: f}
 }
