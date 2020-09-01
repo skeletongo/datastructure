@@ -49,10 +49,10 @@ func (b *BST) add(node *Node, v interface{}) *Node {
 		return &Node{Value: v}
 	}
 
-	switch b.Compare(v, node.Value) {
-	case -1:
+	r := b.Compare(v, node.Value)
+	if r < 0 {
 		node.left = b.add(node.left, v)
-	case 1:
+	} else if r > 0 {
 		node.right = b.add(node.right, v)
 	}
 	return node
@@ -66,29 +66,31 @@ func (b *BST) Add(v interface{}) {
 // AddNR 添加新节点非递归
 func (b *BST) AddNR(v interface{}) {
 	if b.size == 0 {
+		b.size++
 		b.root = &Node{Value: v}
 		return
 	}
 
 	node := b.root
 	for {
-		switch b.Compare(node.Value, v) {
-		case 0:
-			return
-		case -1:
-			if node.right == nil {
-				b.size++
-				node.right = &Node{Value: v}
-				return
-			}
-			node = node.right
-		case 1:
+		r := b.Compare(v, node.Value)
+		switch {
+		case r < 0:
 			if node.left == nil {
 				b.size++
 				node.left = &Node{Value: v}
 				return
 			}
 			node = node.left
+		case r > 0:
+			if node.right == nil {
+				b.size++
+				node.right = &Node{Value: v}
+				return
+			}
+			node = node.right
+		default:
+			return
 		}
 	}
 }
@@ -98,10 +100,11 @@ func (b *BST) contains(node *Node, v interface{}) bool {
 		return false
 	}
 
-	switch b.Compare(v, node.Value) {
-	case -1:
+	r := b.Compare(v, node.Value)
+	if r < 0 {
 		return b.contains(node.left, v)
-	case 1:
+	}
+	if r > 0 {
 		return b.contains(node.right, v)
 	}
 	return true
@@ -116,13 +119,14 @@ func (b *BST) Contains(v interface{}) bool {
 func (b *BST) ContainsNR(v interface{}) bool {
 	node := b.root
 	for node != nil {
-		switch b.Compare(node.Value, v) {
-		case 0:
+		r := b.Compare(v, node.Value)
+		if r == 0 {
 			return true
-		case -1:
-			node = node.right
-		case 1:
+		}
+		if r < 0 {
 			node = node.left
+		} else {
+			node = node.right
 		}
 	}
 	return false
@@ -333,7 +337,7 @@ func (b *BST) RemoveMax() interface{} {
 func (b *BST) RemoveMinNR() interface{} {
 	switch b.size {
 	case 0:
-		return nil
+		panic("no data")
 	case 1:
 		b.size--
 		r := b.root
@@ -353,14 +357,14 @@ func (b *BST) RemoveMinNR() interface{} {
 	default:
 		b.size--
 		p := b.root
-		n := b.root.left
-		for n.left != nil {
-			p = n
-			n = n.left
+		s := p.left
+		for s.left != nil {
+			p = s
+			s = s.left
 		}
-		p.left = n.right
-		n.right = nil
-		return n.Value
+		p.left = s.right
+		s.right = nil
+		return s.Value
 	}
 }
 
@@ -368,7 +372,7 @@ func (b *BST) RemoveMinNR() interface{} {
 func (b *BST) RemoveMaxNR() interface{} {
 	switch b.size {
 	case 0:
-		return nil
+		panic("no data")
 	case 1:
 		b.size--
 		r := b.root
@@ -405,34 +409,35 @@ func (b *BST) remove(node *Node, v interface{}) *Node {
 		return nil
 	}
 
-	switch b.Compare(v, node.Value) {
-	case -1:
+	r := b.Compare(v, node.Value)
+	if r < 0 {
 		node.left = b.remove(node.left, v)
 		return node
-	case 1:
+	}
+	if r > 0 {
 		node.right = b.remove(node.right, v)
 		return node
-	default:
-		if node.left == nil {
-			b.size--
-			ret := node.right
-			node.right = nil
-			return ret
-		}
-		if node.right == nil {
-			b.size--
-			ret := node.left
-			node.left = nil
-			return ret
-		}
-
-		n := findMin(node.right)
-		n.right = b.removeMin(node.right)
-		n.left = node.left
-		node.left = nil
-		node.right = nil
-		return n
 	}
+
+	if node.left == nil {
+		b.size--
+		ret := node.right
+		node.right = nil
+		return ret
+	}
+	if node.right == nil {
+		b.size--
+		ret := node.left
+		node.left = nil
+		return ret
+	}
+
+	n := findMin(node.right)
+	n.right = b.removeMin(node.right)
+	n.left = node.left
+	node.left = nil
+	node.right = nil
+	return n
 }
 
 // Remove 删除值节点

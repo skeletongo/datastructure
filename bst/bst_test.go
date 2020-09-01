@@ -30,8 +30,6 @@ func TestBST(t *testing.T) {
 	// 层序遍历
 	var res4 = []int{5, 3, 8, 2, 4, 6, 1, 7}
 
-	var res5 = []int{2, 4, 5, 7}
-
 	bst := NewBST(func(a, b interface{}) int {
 		m := a.(int)
 		n := b.(int)
@@ -43,76 +41,186 @@ func TestBST(t *testing.T) {
 	}
 
 	n := 0
-	bst.PreOrder(func(e interface{}) {
-		if res1[n] != e {
-			t.Error("前序遍历错误")
+	bst.PreOrder(func(v interface{}) {
+		//fmt.Println(v)
+		if res1[n] != v {
+			t.Error("PreOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.InOrder(func(e interface{}) {
-		if res2[n] != e {
-			t.Error("中序遍历错误")
+	bst.InOrder(func(v interface{}) {
+		if res2[n] != v {
+			t.Error("InOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.PostOrder(func(e interface{}) {
-		if res3[n] != e {
-			t.Error("后序遍历错误")
+	bst.PostOrder(func(v interface{}) {
+		if res3[n] != v {
+			t.Error("PostOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.DFS(func(e interface{}) {
-		if res2[n] != e {
-			t.Error("深度优先遍历错误", e)
+	for _,v := range list {
+		if !bst.Contains(v) {
+			t.Error("Contains error")
+		}
+		if bst.Contains(0) {
+			t.Error("Contains error")
+		}
+	}
+
+	bst = NewBST(func(a, b interface{}) int {
+		m := a.(int)
+		n := b.(int)
+		return m - n
+	})
+
+	for _, v := range list {
+		bst.AddNR(v)
+	}
+
+	n = 0
+	bst.PreOrderNR(func(v interface{}) {
+		//fmt.Println(v)
+		if res1[n] != v {
+			t.Error("PreOrderNR error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.BFS(func(e interface{}) {
-		if res4[n] != e {
-			t.Error("层序遍历错误")
+	bst.InOrderNR(func(v interface{}) {
+		if res2[n] != v {
+			t.Error("InOrderNR error")
 		}
 		n++
 	})
 
-	if n := bst.RemoveMin(); n != 1 {
-		t.Error("删除最小值错误", n)
-	}
-
-	if n := bst.RemoveMax(); n != 8 {
-		t.Error("删除最大值错误", n)
-	}
-
-	if n := bst.GetSize(); n != 6 {
-		t.Error("节点个数统计错误", n)
-	}
-
-	if !bst.Remove(3) {
-		t.Error("删除任意元素错误", 3)
-	}
-
-	if bst.Contains(3) || !bst.Contains(4) {
-		t.Error("查询包含指定元素错误")
-	}
-
-	if !bst.Remove(6) {
-		t.Error("删除任意元素错误", 6)
-	}
-	if bst.Remove(8) {
-		t.Error("删除任意元素错误", 8)
-	}
 	n = 0
-	bst.InOrder(func(e interface{}) {
-		if res5[n] != e {
-			t.Error("删除任意元素错误", -1)
+	bst.PostOrderNR(func(v interface{}) {
+		if res3[n] != v {
+			t.Error("PostOrderNR error")
 		}
 		n++
 	})
+
+	n = 0
+	bst.PreOrderNRC(func(v interface{}) {
+		//fmt.Println(v)
+		if res1[n] != v {
+			t.Error("PreOrderNRC error")
+		}
+		n++
+	})
+
+	n = 0
+	bst.InOrderNRC(func(v interface{}) {
+		if res2[n] != v {
+			t.Error("InOrderNRC error")
+		}
+		n++
+	})
+
+	n = 0
+	bst.PostOrderNRC(func(v interface{}) {
+		if res3[n] != v {
+			t.Error("PostOrderNRC error")
+		}
+		n++
+	})
+
+	n = 0
+	for _,v := range list {
+		if !bst.ContainsNR(v) {
+			t.Error("ContainsNR error")
+		}
+		if bst.ContainsNR(0) {
+			t.Error("ContainsNR error")
+		}
+	}
+
+	// LevelOrder
+	n = 0
+	bst.LevelOrder(func(v interface{}) {
+		if res4[n] != v {
+			t.Error("LevelOrder error")
+		}
+		n++
+	})
+
+	// RemoveMin RemoveMax
+
+	if v := bst.RemoveMin(); v != 1 {
+		t.Error("RemoveMin", v)
+	}
+
+	if v := bst.RemoveMax(); v != 8 {
+		t.Error("RemoveMax", v)
+	}
+
+	if n = bst.GetSize(); n != 6 {
+		t.Error("GetSize error", n)
+	}
+
+	bst.Add(1)
+	bst.Add(8)
+
+	if v := bst.RemoveMinNR(); v != 1 {
+		t.Error("RemoveMinNR", v)
+	}
+
+	if v := bst.RemoveMaxNR(); v != 8 {
+		t.Error("RemoveMaxNR", v)
+	}
+
+	if n = bst.GetSize(); n != 6 {
+		t.Error("GetSize error", n)
+	}
+
+	bst.Add(1)
+	bst.Add(8)
+
+	// Remove
+
+	bst.Remove(1)
+	if n = bst.GetSize(); n != 7 {
+		t.Error("Remove error", n)
+	}
+	if bst.Contains(1) || !bst.Contains(2) {
+		t.Error("Remove error")
+	}
+	bst.Add(1)
+
+	bst.Remove(2)
+	if n = bst.GetSize(); n != 7 {
+		t.Error("Remove error", n)
+	}
+	if bst.Contains(2) || !bst.Contains(1) {
+		t.Error("Remove error")
+	}
+	bst.Add(2)
+
+	bst.Remove(6)
+	if n = bst.GetSize(); n != 7 {
+		t.Error("Remove error", n)
+	}
+	if bst.Contains(6) || !bst.Contains(7) {
+		t.Error("Remove error")
+	}
+	bst.Add(6)
+
+	bst.Remove(3)
+	if n = bst.GetSize(); n != 7 {
+		t.Error("Remove error", n)
+	}
+	if bst.Contains(3) || !bst.Contains(4) ||!bst.Contains(4) {
+		t.Error("Remove error")
+	}
+	bst.Add(3)
 }
