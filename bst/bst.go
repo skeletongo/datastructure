@@ -203,7 +203,7 @@ func (b *BST) PreOrderNR(f func(v interface{})) {
 
 // InOrderNR 中序遍历非递归
 func (b *BST) InOrderNR(f func(v interface{})) {
-	if b.root == nil {
+	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
@@ -231,24 +231,113 @@ func (b *BST) InOrderNR(f func(v interface{})) {
 	}
 }
 
-// PostOrderNR 后序遍历非递归
+// PostOrderNR 后序遍历非递归(双栈方式)
 func (b *BST) PostOrderNR(f func(v interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.Value)
+		return
+	}
 
+	var n *Node
+	s1 := stack.NewArrayStack()
+	s2 := stack.NewArrayStack()
+	s1.Push(b.root)
+	for s1.Len() > 0 {
+		n = s1.Pop().(*Node)
+		s2.Push(n)
+		if n.left != nil {
+			s1.Push(n.left)
+		}
+		if n.right != nil {
+			s1.Push(n.right)
+		}
+	}
+	for s2.Len() > 0 {
+		n = s2.Pop().(*Node)
+		f(n.Value)
+	}
 }
 
 // PreOrderNRC 前序遍历非递归经典版
 func (b *BST) PreOrderNRC(f func(v interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.Value)
+		return
+	}
 
+	s := stack.NewArrayStack()
+	n := b.root
+	for s.Len() > 0 || n != nil {
+		if n != nil {
+			f(n.Value)
+			s.Push(n)
+			n = n.left
+		} else {
+			n = s.Pop().(*Node).right
+		}
+	}
 }
 
 // InOrderNRC 中序遍历非递归经典版
 func (b *BST) InOrderNRC(f func(v interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.Value)
+		return
+	}
 
+	s := stack.NewArrayStack()
+	n := b.root
+	for s.Len() > 0 || n != nil {
+		if n != nil {
+			s.Push(n)
+			n = n.left
+		} else {
+			n = s.Pop().(*Node)
+			f(n.Value)
+			n = n.right
+		}
+	}
 }
 
 // PostOrderNRC 后序遍历非递归经典版
 func (b *BST) PostOrderNRC(f func(v interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.Value)
+		return
+	}
 
+	var ok bool
+	s := stack.NewArrayStack()
+	m := map[*Node]struct{}{}
+	n := b.root
+	for s.Len() > 0 || n != nil {
+		if n != nil {
+			s.Push(n)
+			n = n.left
+		} else {
+			n = s.Peek().(*Node)
+			if _, ok = m[n]; ok {
+				s.Pop()
+				f(n.Value)
+				n = nil
+			} else {
+				m[n] = struct{}{}
+				n = n.right
+			}
+		}
+	}
 }
 
 // LevelOrder 层序遍历
