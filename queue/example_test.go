@@ -128,4 +128,3 @@ func ExampleRingQueue() {
 	// len: 4 queue: front [1, 2, 3, 4]
 	// len: 5 queue: front [1, 2, 3, 4, 6]
 }
-

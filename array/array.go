@@ -169,7 +169,7 @@ func (a *Array) String() string {
 	buf.WriteString(fmt.Sprintf("len:%d cap:%d", a.len, cap(a.data)))
 	buf.WriteString(" array: [")
 	if a.len > 0 {
-		buf.WriteString(fmt.Sprintf("%v",a.data[0]))
+		buf.WriteString(fmt.Sprintf("%v", a.data[0]))
 	}
 	for i := 1; i < a.len; i++ {
 		buf.WriteString(fmt.Sprintf(", %v", a.data[i]))

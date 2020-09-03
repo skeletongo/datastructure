@@ -11,7 +11,7 @@ type ListStack struct {
 }
 
 func NewListStack() *ListStack {
-	return &ListStack{ list.New()}
+	return &ListStack{list.New()}
 }
 
 func (l *ListStack) Peek() interface{} {

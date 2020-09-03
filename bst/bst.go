@@ -7,8 +7,10 @@
 package bst
 
 import (
+	"bytes"
 	"dataStructure/queue"
 	"dataStructure/stack"
+	"fmt"
 )
 
 type Node struct {
@@ -533,3 +535,57 @@ func (b *BST) remove(node *Node, v interface{}) *Node {
 func (b *BST) Remove(v interface{}) {
 	b.root = b.remove(b.root, v)
 }
+
+// 前序打印
+/////////////////
+//5            //
+//|--3         //
+//|  |--2      //
+//|  |  `--1   //
+//|  `--4      //
+//`--8         //
+//   `--6      //
+//      `--7   //
+/////////////////
+func PrePrint(bst *BST) string {
+	buf := &bytes.Buffer{}
+	prePrint(buf, "", bst.root, 0, false)
+	return buf.String()
+}
+
+func prePrint(buf *bytes.Buffer, prefix string, node *Node, n int, end bool) {
+	if node == nil {
+		return
+	}
+	if n > 0 {
+		if end {
+			prefix += "`--"
+		} else {
+			prefix += "|--"
+		}
+	}
+	buf.WriteString(fmt.Sprintf("%s%v\n", prefix, node.Value))
+	if n > 0 {
+		if end {
+			prefix = prefix[:len(prefix)-3] + "   "
+		} else {
+			prefix = prefix[:len(prefix)-3] + "|  "
+		}
+	}
+	prePrint(buf, prefix, node.left, n+1, node.right == nil)
+	prePrint(buf, prefix, node.right, n+1, true)
+}
+
+// 层序打印
+/////////////////
+//       5     //
+//     /   \   //
+//    3     8  //
+//   / \   /   //
+//  2   4 6    //
+// /       \   //
+// 1        7  //
+/////////////////
+//func LevelPrint() string {
+//
+//}

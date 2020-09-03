@@ -17,7 +17,7 @@ type IElement interface {
 }
 
 // FindParentFunc 查询父节点的方法
-type FindParentFunc func(*UF,int) int
+type FindParentFunc func(*UF, int) int
 
 // UF 并查集
 type UF struct {
@@ -112,11 +112,11 @@ var FindParentFuncLess = FindParentFunc(func(u *UF, i int) int {
 	}
 	u.data[b] = i
 	/*
-	这种方式稍微慢一点
-	for i != u.data[i] {
-		u.data[i] = u.data[u.data[i]]
-		i = u.data[i]
-	}
+		这种方式稍微慢一点
+		for i != u.data[i] {
+			u.data[i] = u.data[u.data[i]]
+			i = u.data[i]
+		}
 	*/
 	return i
 })

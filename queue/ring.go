@@ -55,11 +55,9 @@ func (r *RingQueue) String() string {
 	}
 	for i := 1; i < r.len; i++ {
 		r.Ring = r.Move(1)
-		buf.WriteString(fmt.Sprintf(", %v",r.Value))
+		buf.WriteString(fmt.Sprintf(", %v", r.Value))
 	}
 	r.Ring = r.Move(1)
 	buf.WriteString("]")
 	return buf.String()
 }
-
-

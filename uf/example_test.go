@@ -15,13 +15,14 @@ func (d *data) UniqueId() int {
 }
 
 var collections []data
+
 const num = 10
 
 func init() {
 	index := -1
 	for i := 0; i < num; i++ {
 		index++
-		collections = append(collections,data{
+		collections = append(collections, data{
 			id: index,
 		})
 	}
@@ -29,11 +30,11 @@ func init() {
 
 func ExampleNew() {
 	u := uf.New(num)
-	fmt.Println(u.IsConnected(&collections[0],&collections[num-1]))
-	u.UnionElements(&collections[0],&collections[num-1])
-	fmt.Println(u.IsConnected(&collections[0],&collections[num-1]))
-	u.UnionElements(&collections[0],&collections[1])
-	fmt.Println(u.IsConnected(&collections[0],&collections[num-1]))
+	fmt.Println(u.IsConnected(&collections[0], &collections[num-1]))
+	u.UnionElements(&collections[0], &collections[num-1])
+	fmt.Println(u.IsConnected(&collections[0], &collections[num-1]))
+	u.UnionElements(&collections[0], &collections[1])
+	fmt.Println(u.IsConnected(&collections[0], &collections[num-1]))
 	// Output:
 	// false
 	// true

@@ -14,7 +14,6 @@ func NewListQueue() *ListQueue {
 	return &ListQueue{list.New()}
 }
 
-
 func (l *ListQueue) Enqueue(v interface{}) {
 	l.PushBack(v)
 }
@@ -40,4 +39,3 @@ func (l *ListQueue) String() string {
 	buf.WriteString("]")
 	return buf.String()
 }
-
