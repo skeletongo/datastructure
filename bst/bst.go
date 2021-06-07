@@ -1,9 +1,7 @@
-//二分搜索树的查询,添加,删除操作的时间复杂度为O(h) 最差时间复杂度O(n)链表 最佳时间复杂O(logN)满二叉树
-//
-//满二叉树：除了最大层节点，其他节点都有两个子节点
-//完全二叉树：按每层从左到右的位置添加新节点
-//平衡二叉树：所有叶子节点所在的层数的差值的绝对值不能大于1
-// 时间复杂度：
+// 二分搜索树的查询,添加,删除操作的时间复杂度为O(h) 最差时间复杂度O(n)链表 最佳时间复杂O(logN)满二叉树
+// 满二叉树：除了最大层节点，其他节点都有两个子节点
+// 完全二叉树：按每层从左到右的位置添加新节点
+// 平衡二叉树：所有叶子节点所在的层数的差值的绝对值不能大于1
 package bst
 
 import (
@@ -20,8 +18,11 @@ type Node struct {
 
 // BST 二分搜索树
 type BST struct {
-	root    *Node
-	size    int
+	// 根节点
+	root *Node
+	// 节点数量
+	size int
+	// 元素比较方法
 	Compare func(a, b interface{}) int
 }
 
@@ -31,7 +32,7 @@ type BST struct {
 // -1	表示	a<b
 // 0	表示	a=b
 // 1	表示	a>b
-func NewBST(f func(a, b interface{}) int) *BST {
+func New(f func(a, b interface{}) int) *BST {
 	return &BST{Compare: f}
 }
 
@@ -541,24 +542,24 @@ func (b *BST) Remove(v interface{}) {
 //5            //
 //|--3         //
 //|  |--2      //
-//|  |  `--1   //
+//|  |  |--1   //
 //|  `--4      //
 //`--8         //
-//   `--6      //
+//   |--6      //
 //      `--7   //
 /////////////////
 func PrePrint(bst *BST) string {
 	buf := &bytes.Buffer{}
-	prePrint(buf, "", bst.root, 0, false)
+	prePrint(buf, "", bst.root, 0, false, false)
 	return buf.String()
 }
 
-func prePrint(buf *bytes.Buffer, prefix string, node *Node, n int, end bool) {
+func prePrint(buf *bytes.Buffer, prefix string, node *Node, n int, end, isLeft bool) {
 	if node == nil {
 		return
 	}
 	if n > 0 {
-		if end {
+		if end && !isLeft {
 			prefix += "`--"
 		} else {
 			prefix += "|--"
@@ -572,8 +573,8 @@ func prePrint(buf *bytes.Buffer, prefix string, node *Node, n int, end bool) {
 			prefix = prefix[:len(prefix)-3] + "|  "
 		}
 	}
-	prePrint(buf, prefix, node.left, n+1, node.right == nil)
-	prePrint(buf, prefix, node.right, n+1, true)
+	prePrint(buf, prefix, node.left, n+1, node.right == nil, true)
+	prePrint(buf, prefix, node.right, n+1, true, false)
 }
 
 // 层序打印

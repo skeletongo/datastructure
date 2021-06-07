@@ -1,120 +1,121 @@
 package heap
 
-import "dataStructure/array"
-
 /*
  二叉堆 添加和取出元素的时间复杂度 O(logN)
  使用完全二叉树实现，利用数组存储
 */
 
-// 最大堆
+// Heap 最大堆
 type Heap struct {
-	array *array.Array
+	array []interface{}
 	f     func(a, b interface{}) int
 }
 
-func (h *Heap) GetSize() int {
-	return h.array.GetSize()
-}
-
-func (h *Heap) IsEmpty() bool {
-	return h.array.GetSize() == 0
-}
-
-// 添加元素
-func (h *Heap) Add(e interface{}) {
-	h.array.AddLast(e)
-	h.siftUp(h.GetSize() - 1)
-}
-
-// 取出元素
-func (h *Heap) ExtractMax() interface{} {
-	e := h.findMax()
-	h.array.Set(0, h.array.Get(h.GetSize()-1))
-	h.array.RemoveLast()
-	h.siftDown(0)
-	return e
-}
-
-// 取出并添加一个元素
-func (h *Heap) Replace(e interface{}) interface{} {
-	res := h.findMax()
-	h.array.Set(0, e)
-	h.siftDown(0)
-	return res
-}
-
-// 使用堆存储数据
-// 方式：从最后一个有子节点的节点开始做元素下沉操作
-func (h *Heap) Heapify(arr []interface{}) {
-	for _, v := range arr {
-		h.array.AddLast(v)
-	}
-	k := h.parent(h.GetSize() - 1)
-	for ; k >= 0; k-- {
-		h.siftDown(k)
-	}
-}
-
-// 返回最大值
-func (h *Heap) findMax() interface{} {
-	if h.GetSize() == 0 {
-		panic("no data")
-	}
-	return h.array.Get(0)
-}
-
-// 查询父节点索引
-func (h *Heap) parent(k int) int {
-	if k == 0 {
-		panic("no parent")
-	}
-	return (k - 1) / 2
-}
-
-// 查询左节点索引
-func (h *Heap) leftChild(k int) int {
-	return 2*k + 1
-}
-
-// 查询右节点索引
-func (h *Heap) rightChild(k int) int {
-	return 2*k + 2
-}
-
-// 元素上浮
-func (h *Heap) siftUp(k int) {
-	for ; k > 0 && h.f(h.array.Get(h.parent(k)), h.array.Get(k)) < 0; k = h.parent(k) {
-		// 父节点小于子节点，需要交换位置
-		h.array.Swap(h.parent(k), k)
-	}
-}
-
-// 元素下沉
-func (h *Heap) siftDown(k int) {
-	for h.leftChild(k) < h.GetSize() { // 至少有左节点
-		j := h.leftChild(k)
-		// 找出子节点中的最大值对应的索引
-		if j+1 < h.GetSize() && h.f(h.array.Get(j), h.array.Get(j+1)) < 0 {
-			j++
-		}
-		// 判度是否需要交换位置
-		if h.f(h.array.Get(j), h.array.Get(k)) <= 0 {
-			break
-		}
-		// 交换
-		h.array.Swap(k, j)
-		k = j
-	}
-}
-
-// 创建堆
+// New 创建堆
 // 参数 f 为自定义元素大小比较函数
 // 大小比较函数 返回值：
 // -1	表示	a<b
 // 0	表示	a=b
 // 1	表示	a>b
-//func f(a,b interface{}) int { }
-func NewHeap(f func(a, b interface{}) int) *Heap {
-	return &Heap{array: array.NewArray(), f: f}
+func New(f func(a, b interface{}) int) *Heap {
+	return &Heap{f: f}
+}
+
+// GetSize 元素数量
+func (h *Heap) GetSize() int {
+	return len(h.array)
+}
+
+// IsEmpty 是否为空
+func (h *Heap) IsEmpty() bool {
+	return h.GetSize() == 0
+}
+
+// parent 查询父节点索引
+func (h *Heap) parent(i int) int {
+	if i == 0 {
+		panic("parent: no parent")
+	}
+	return (i - 1) / 2
+}
+
+// leftChild 查询左节点索引
+func (h *Heap) leftChild(i int) int {
+	return 2*i + 1
+}
+
+// rightChild 查询右节点索引
+func (h *Heap) rightChild(i int) int {
+	return 2*i + 2
+}
+
+// findMax 查询最大元素
+func (h *Heap) findMax() interface{} {
+	if h.GetSize() == 0 {
+		panic("findMax: no data")
+	}
+	return h.array[0]
+}
+
+// siftUp 元素上浮
+func (h *Heap) siftUp(i int) {
+	for i > 0 && h.f(h.array[i], h.array[h.parent(i)]) > 0 {
+		j := h.parent(i)
+		h.array[i], h.array[j] = h.array[j], h.array[i]
+		i = j
+	}
+}
+
+// Add 添加元素
+// 时间复杂度 O(logN)
+func (h *Heap) Add(e interface{}) {
+	h.array = append(h.array, e)
+	h.siftUp(h.GetSize() - 1)
+}
+
+// siftDown 元素下沉
+func (h *Heap) siftDown(i int) {
+	j := h.leftChild(i)
+	for ; j < h.GetSize(); j = h.leftChild(i) {
+		if ri := h.rightChild(i); ri < h.GetSize() && h.f(h.array[j], h.array[ri]) < 0 {
+			j = ri
+		}
+		if h.f(h.array[i], h.array[j]) >= 0 {
+			break
+		}
+		h.array[i], h.array[j] = h.array[j], h.array[i]
+		i = j
+	}
+}
+
+// ExtractMax 取出元素
+// 时间复杂度 O(logN)
+func (h *Heap) ExtractMax() interface{} {
+	t := h.findMax()
+	h.array[0] = h.array[h.GetSize()-1]
+	h.array = h.array[:h.GetSize()-1]
+	h.siftDown(0)
+	return t
+}
+
+// Replace 取出并添加一个元素
+// 时间复杂度 O(logN)
+func (h *Heap) Replace(e interface{}) interface{} {
+	t := h.findMax()
+	h.array[0] = e
+	h.siftDown(0)
+	return t
+}
+
+// Heapify 使用切片创建最大堆
+// 时间复杂度 O(N)
+// 方式：从最后一个有子节点的节点开始做元素下沉操作
+func (h *Heap) Heapify(arr []interface{}) {
+	for _, v := range arr {
+		h.array = append(h.array, v)
+	}
+	i := h.parent(h.GetSize() - 1)
+	for ; i >= 0; i-- {
+		h.siftDown(i)
+	}
 }

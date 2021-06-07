@@ -19,7 +19,7 @@ import (
 /////////////////
 var list = []int{5, 8, 3, 6, 4, 2, 7, 1}
 
-var testBST = NewBST(func(a, b interface{}) int {
+var testBST = New(func(a, b interface{}) int {
 	m := a.(int)
 	n := b.(int)
 	return m - n
@@ -51,7 +51,7 @@ func TestBST(t *testing.T) {
 	// 层序遍历
 	var res4 = []int{5, 3, 8, 2, 4, 6, 1, 7}
 
-	bst := NewBST(func(a, b interface{}) int {
+	bst := New(func(a, b interface{}) int {
 		m := a.(int)
 		n := b.(int)
 		return m - n
@@ -96,7 +96,7 @@ func TestBST(t *testing.T) {
 		}
 	}
 
-	bst = NewBST(func(a, b interface{}) int {
+	bst = New(func(a, b interface{}) int {
 		m := a.(int)
 		n := b.(int)
 		return m - n
@@ -249,7 +249,7 @@ func TestBST(t *testing.T) {
 func BenchmarkBST_Add(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		bst := NewBST(func(a, b interface{}) int {
+		bst := New(func(a, b interface{}) int {
 			m := a.(int)
 			n := b.(int)
 			return m - n
@@ -265,7 +265,7 @@ func BenchmarkBST_Add(b *testing.B) {
 func BenchmarkBST_AddNR(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		bst := NewBST(func(a, b interface{}) int {
+		bst := New(func(a, b interface{}) int {
 			m := a.(int)
 			n := b.(int)
 			return m - n
@@ -342,7 +342,7 @@ func BenchmarkBST_PostOrderNRC(b *testing.B) {
 }
 
 func TestPrePrint(t *testing.T) {
-	bst := NewBST(func(a, b interface{}) int {
+	bst := New(func(a, b interface{}) int {
 		m := a.(int)
 		n := b.(int)
 		return m - n
@@ -350,7 +350,7 @@ func TestPrePrint(t *testing.T) {
 
 	l := rand.Perm(10)
 	fmt.Println(l)
-	for i:=0;i<len(l);i++{
+	for i := 0; i < len(l); i++ {
 		bst.Add(l[i])
 	}
 

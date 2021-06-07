@@ -7,7 +7,7 @@ import (
 )
 
 func TestHeap(t *testing.T) {
-	maxHeap := NewHeap(func(a, b interface{}) int {
+	maxHeap := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
 	n := 1000
@@ -29,7 +29,7 @@ func TestHeap(t *testing.T) {
 }
 
 func TestHeap_Heapify(t *testing.T) {
-	maxHeap := NewHeap(func(a, b interface{}) int {
+	maxHeap := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
 	n := 1000

@@ -1,11 +1,9 @@
 // 动态数组，其实go语言本身的slice就是动态数组,这里只是演示动态数组这种数据结构
-// 时间复杂度：
 package array
 
 import (
 	"bytes"
 	"fmt"
-	"reflect"
 )
 
 // Array 动态数组
@@ -102,7 +100,7 @@ func (a *Array) Remove(index int) interface{} {
 	return e
 }
 
-// RemoveFirst RemoveFirst 移除第一个元素
+// RemoveFirst 移除第一个元素
 func (a *Array) RemoveFirst() interface{} {
 	return a.Remove(0)
 }
@@ -134,20 +132,8 @@ func (a *Array) Swap(i, j int) {
 	a.data[i], a.data[j] = a.data[j], a.data[i]
 }
 
-// Contains 是否包含某个元素
-// 这里使用了reflect.DeepEqual()方法
-// 如果需要可以自己定义元素相等的判断条件,请使用ContainsFunc方法
-func (a *Array) Contains(v interface{}) bool {
-	for i := 0; i < a.len; i++ {
-		if reflect.DeepEqual(a.data[i], v) {
-			return true
-		}
-	}
-	return false
-}
-
-// Contains 是否包含某个元素
-func (a *Array) ContainsFunc(e interface{}, f func(a, b interface{}) bool) bool {
+// ContainsByFunc 是否包含某个元素
+func (a *Array) Contains(e interface{}, f func(a, b interface{}) bool) bool {
 	for i := 0; i < a.len; i++ {
 		if f(a.data[i], e) {
 			return true

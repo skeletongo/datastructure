@@ -1,3 +1,4 @@
+// 基于链表实现的队列，增加和取出元素的时间复杂度为O(1)
 package queue
 
 import (
