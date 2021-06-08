@@ -1,6 +1,7 @@
 package segment
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func testSegmentTree(t *testing.T, newSegmentFunc func(arr []interface{}, f func
 		}
 	}
 
-	t.Log(s)
+	fmt.Println(s)
 
 	s.Set(0, -1)
 	s.Set(2, 5)

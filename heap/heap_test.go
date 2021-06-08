@@ -1,19 +1,23 @@
 package heap
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 func TestHeap(t *testing.T) {
-	maxHeap := New(func(a, b interface{}) int {
+	maxHeap := NewArrayHeap(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
 	n := 1000
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < n; i++ {
-		maxHeap.Add(r.Intn(10000))
+		maxHeap.Add(rand.Intn(10000))
 	}
 
 	var arr []int
@@ -29,14 +33,13 @@ func TestHeap(t *testing.T) {
 }
 
 func TestHeap_Heapify(t *testing.T) {
-	maxHeap := New(func(a, b interface{}) int {
+	maxHeap := NewArrayHeap(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
 	n := 1000
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var arr []interface{}
 	for i := 0; i < n; i++ {
-		arr = append(arr, r.Intn(10000))
+		arr = append(arr, rand.Intn(10000))
 	}
 
 	maxHeap.Heapify(arr)
@@ -50,4 +53,15 @@ func TestHeap_Heapify(t *testing.T) {
 			t.Error("堆错误")
 		}
 	}
+}
+
+func TestArrayHeap_String(t *testing.T) {
+	maxHeap := NewArrayHeap(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+	n := 20
+	for i := 0; i < n; i++ {
+		maxHeap.Add(rand.Intn(50))
+	}
+	fmt.Println(maxHeap)
 }

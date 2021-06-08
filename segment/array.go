@@ -1,8 +1,7 @@
 package segment
 
 import (
-	"fmt"
-	"strings"
+	"dataStructure/common"
 )
 
 /*
@@ -131,16 +130,5 @@ func (t *ArraySegment) set(treeIndex, l, r, index int, data interface{}) {
 }
 
 func (t *ArraySegment) String() string {
-	buf := strings.Builder{}
-	buf.WriteString("[")
-	for k, v := range t.tree {
-		buf.WriteString(fmt.Sprint(v))
-		if k != len(t.tree)-1 {
-			buf.WriteString(", ")
-		}
-	}
-	buf.WriteString("]")
-	return buf.String()
+	return common.PerPrintBSTSlice(t.tree)
 }
-
-// todo PrePrint()
