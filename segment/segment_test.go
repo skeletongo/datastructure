@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestSegmentTree(t *testing.T) {
+func testSegmentTree(t *testing.T, newSegmentFunc func(arr []interface{}, f func(a, b interface{}) interface{}) Segment) {
 	nums := []interface{}{-2, 0, 3, -5, 2, -1}
 	test := [][]interface{}{
 		{0, 2, 1},
@@ -12,7 +12,7 @@ func TestSegmentTree(t *testing.T) {
 		{3, 5, -4},
 	}
 
-	s := New(nums, func(a, b interface{}) interface{} {
+	s := newSegmentFunc(nums, func(a, b interface{}) interface{} {
 		return a.(int) + b.(int)
 	})
 	for _, v := range test {
@@ -20,6 +20,8 @@ func TestSegmentTree(t *testing.T) {
 			t.Error("线段树查询错误")
 		}
 	}
+
+	t.Log(s)
 
 	s.Set(0, -1)
 	s.Set(2, 5)
@@ -35,4 +37,16 @@ func TestSegmentTree(t *testing.T) {
 			t.Error("线段树修改错误")
 		}
 	}
+}
+
+func TestArraySegment(t *testing.T) {
+	testSegmentTree(t, func(arr []interface{}, f func(a interface{}, b interface{}) interface{}) Segment {
+		return NewArraySegment(arr, f)
+	})
+}
+
+func TestNewBSTSegment(t *testing.T) {
+	testSegmentTree(t, func(arr []interface{}, f func(a interface{}, b interface{}) interface{}) Segment {
+		return NewBSTSegment(arr, f)
+	})
 }

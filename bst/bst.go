@@ -5,15 +5,26 @@
 package bst
 
 import (
-	"bytes"
+	"dataStructure/common"
 	"dataStructure/queue"
 	"dataStructure/stack"
-	"fmt"
 )
 
 type Node struct {
 	left, right *Node
 	Value       interface{}
+}
+
+func (n *Node) GetLeftNode() common.INode {
+	return n.left
+}
+
+func (n *Node) GetRightNode() common.INode {
+	return n.right
+}
+
+func (n *Node) GetValue() interface{} {
+	return n.Value
 }
 
 // BST 二分搜索树
@@ -537,56 +548,6 @@ func (b *BST) Remove(v interface{}) {
 	b.root = b.remove(b.root, v)
 }
 
-// 前序打印
-/////////////////
-//5            //
-//|--3         //
-//|  |--2      //
-//|  |  |--1   //
-//|  `--4      //
-//`--8         //
-//   |--6      //
-//      `--7   //
-/////////////////
-func PrePrint(bst *BST) string {
-	buf := &bytes.Buffer{}
-	prePrint(buf, "", bst.root, 0, false, false)
-	return buf.String()
+func (b *BST) String() string {
+	return common.PrePrint(b.root)
 }
-
-func prePrint(buf *bytes.Buffer, prefix string, node *Node, n int, end, isLeft bool) {
-	if node == nil {
-		return
-	}
-	if n > 0 {
-		if end && !isLeft {
-			prefix += "`--"
-		} else {
-			prefix += "|--"
-		}
-	}
-	buf.WriteString(fmt.Sprintf("%s%v\n", prefix, node.Value))
-	if n > 0 {
-		if end {
-			prefix = prefix[:len(prefix)-3] + "   "
-		} else {
-			prefix = prefix[:len(prefix)-3] + "|  "
-		}
-	}
-	prePrint(buf, prefix, node.left, n+1, node.right == nil, true)
-	prePrint(buf, prefix, node.right, n+1, true, false)
-}
-
-// 层序打印
-/////////////////
-//       5     //
-//     /   \   //
-//    3     8  //
-//   / \   /   //
-//  2   4 6    //
-// /       \   //
-// 1        7  //
-/////////////////
-//func LevelPrint() string {
-//
-//}

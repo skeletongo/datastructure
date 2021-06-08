@@ -354,5 +354,5 @@ func TestPrePrint(t *testing.T) {
 		bst.Add(l[i])
 	}
 
-	fmt.Println(PrePrint(bst))
+	fmt.Println(bst.String())
 }
