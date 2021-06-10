@@ -152,7 +152,7 @@ func (a *Array) Get(index int) interface{} {
 
 func (a *Array) String() string {
 	buf := bytes.Buffer{}
-	buf.WriteString(fmt.Sprintf("len:%d cap:%d", a.len, cap(a.data)))
+	buf.WriteString(fmt.Sprintf("len: %d cap: %d", a.len, cap(a.data)))
 	buf.WriteString(" array: [")
 	if a.len > 0 {
 		buf.WriteString(fmt.Sprintf("%v", a.data[0]))
