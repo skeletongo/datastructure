@@ -6,7 +6,7 @@ import (
 )
 
 type data struct {
-	id int
+	id int // 每个数据的唯一索引，用索引最大值创建并查集
 	// ...
 }
 
@@ -30,11 +30,13 @@ func init() {
 
 func ExampleNew() {
 	u := uf.New(num)
-	fmt.Println(u.IsConnected(&collections[0], &collections[num-1]))
-	u.UnionElements(&collections[0], &collections[num-1])
-	fmt.Println(u.IsConnected(&collections[0], &collections[num-1]))
-	u.UnionElements(&collections[0], &collections[1])
-	fmt.Println(u.IsConnected(&collections[0], &collections[num-1]))
+	fmt.Println(u.IsConnected(collections[0].UniqueId(), collections[num-1].UniqueId()))
+
+	u.Union(collections[0].UniqueId(), collections[num-1].UniqueId())
+	fmt.Println(u.IsConnected(collections[0].UniqueId(), collections[num-1].UniqueId()))
+
+	u.Union(collections[0].UniqueId(), collections[1].UniqueId())
+	fmt.Println(u.IsConnected(collections[0].UniqueId(), collections[num-1].UniqueId()))
 	// Output:
 	// false
 	// true

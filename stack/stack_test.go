@@ -34,48 +34,77 @@ func Example() {
 	// <nil>
 }
 
-func BenchmarkArrayStack_Push(b *testing.B) {
-	b.StopTimer()
-	s := stack.NewArrayStack()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		s.Push(nil)
+func BenchmarkStack_Push(b *testing.B) {
+	n := 1000
+
+	newFunc := func() stack.Stack {
+		return stack.NewArrayStack()
 	}
-	// BenchmarkArrayStack_Push-8      33237411                45.1 ns/op
+
+	f := func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			s := newFunc()
+			b.StartTimer()
+			for j := 0; j < n; j++ {
+				s.Push(nil)
+			}
+		}
+	}
+
+	b.Run("ArrayStackPush", f)
+
+	newFunc = func() stack.Stack {
+		return stack.NewListStack()
+	}
+	b.Run("ListStackPush", f)
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/stack
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkStack_Push
+	//BenchmarkStack_Push/ArrayStackPush
+	//BenchmarkStack_Push/ArrayStackPush-8         	  109525	     11081 ns/op
+	//BenchmarkStack_Push/ListStackPush
+	//BenchmarkStack_Push/ListStackPush-8          	   29740	     37685 ns/op
 }
 
-func BenchmarkListStack_Push(b *testing.B) {
-	b.StopTimer()
-	s := stack.NewListStack()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		s.Push(nil)
-	}
-	// BenchmarkListStack_Push-8        9940868               115 ns/op
-}
+func BenchmarkStack_Pop(b *testing.B) {
+	n := 1000
 
-func BenchmarkArrayStack(b *testing.B) {
-	b.StopTimer()
-	s := stack.NewArrayStack()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		s.Push(nil)
+	newFunc := func() stack.Stack {
+		return stack.NewArrayStack()
 	}
-	for i := 0; i < b.N; i++ {
-		s.Pop()
-	}
-	// BenchmarkArrayStack-8           17188676                60.9 ns/op
-}
 
-func BenchmarkListStack(b *testing.B) {
-	b.StopTimer()
-	s := stack.NewListStack()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		s.Push(nil)
+	f := func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			s := newFunc()
+			for j := 0; j < n; j++ {
+				s.Push(nil)
+			}
+			b.StartTimer()
+			for j := 0; j < n; j++ {
+				s.Pop()
+			}
+		}
 	}
-	for i := 0; i < b.N; i++ {
-		s.Pop()
+
+	b.Run("ArrayStackPop", f)
+
+	newFunc = func() stack.Stack {
+		return stack.NewListStack()
 	}
-	// BenchmarkListStack-8     9782182               199 ns/op
+	b.Run("ListStackPop", f)
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/stack
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkStack_Pop
+	//BenchmarkStack_Pop/ArrayStackPop
+	//BenchmarkStack_Pop/ArrayStackPop-8         	  539031	      2451 ns/op
+	//BenchmarkStack_Pop/ListStackPop
+	//BenchmarkStack_Pop/ListStackPop-8          	  215617	      5293 ns/op
 }

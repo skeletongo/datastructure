@@ -4,7 +4,12 @@ import (
 	"errors"
 	"math/rand"
 	"testing"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 func testQueue(q Queue) error {
 	var data []int
@@ -55,41 +60,139 @@ func TestLoopRingQueue(t *testing.T) {
 	}
 }
 
-func BenchmarkArrayQueue(b *testing.B) {
-	b.StopTimer()
-	q := NewArrayQueue()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		q.Enqueue(nil)
+// 入队性能测试
+func BenchmarkQueue_Enqueue(b *testing.B) {
+	n := 1000
+	newFunc := func() Queue {
+		return NewArrayQueue()
 	}
-	for i := 0; i < b.N; i++ {
-		q.Dequeue()
+
+	f := func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			q := newFunc()
+			b.StartTimer()
+			for j := 0; j < n; j++ {
+				q.Enqueue(nil)
+			}
+		}
 	}
-	// BenchmarkLoopArrayQueue-8       19110135                74.1 ns/op
+
+	b.Run("ArrayQueueEnqueue", f)
+
+	newFunc = func() Queue {
+		return NewListQueue()
+	}
+	b.Run("ListQueueEnqueue", f)
+
+	newFunc = func() Queue {
+		return NewRingQueue()
+	}
+	b.Run("RingQueueEnqueue", f)
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/queue
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkQueue_Enqueue
+	//BenchmarkQueue_Enqueue/ArrayQueueEnqueue
+	//BenchmarkQueue_Enqueue/ArrayQueueEnqueue-8         	   41953	     29047 ns/op
+	//BenchmarkQueue_Enqueue/ListQueueEnqueue
+	//BenchmarkQueue_Enqueue/ListQueueEnqueue-8          	   31330	     40473 ns/op
+	//BenchmarkQueue_Enqueue/RingQueueEnqueue
+	//BenchmarkQueue_Enqueue/RingQueueEnqueue-8          	   34465	     34310 ns/op
 }
 
-func BenchmarkListQueue(b *testing.B) {
-	b.StopTimer()
-	q := NewListQueue()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		q.Enqueue(nil)
+// 出队性能测试
+func BenchmarkQueue_Dequeue(b *testing.B) {
+	n := 1000
+	newFunc := func() Queue {
+		return NewArrayQueue()
 	}
-	for i := 0; i < b.N; i++ {
-		q.Dequeue()
+
+	f := func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			q := newFunc()
+			for j := 0; j < n; j++ {
+				q.Enqueue(nil)
+			}
+			b.StartTimer()
+			for j := 0; j < n; j++ {
+				q.Dequeue()
+			}
+		}
 	}
-	// BenchmarkLineListQueue-8         6716150               154 ns/op
+
+	b.Run("ArrayQueueDequeue", f)
+
+	newFunc = func() Queue {
+		return NewListQueue()
+	}
+	b.Run("ListQueueDequeue", f)
+
+	newFunc = func() Queue {
+		return NewRingQueue()
+	}
+	b.Run("RingQueueDequeue", f)
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/queue
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkQueue_Dequeue
+	//BenchmarkQueue_Dequeue/ArrayQueueDequeue
+	//BenchmarkQueue_Dequeue/ArrayQueueDequeue-8         	   56192	     20558 ns/op
+	//BenchmarkQueue_Dequeue/ListQueueDequeue
+	//BenchmarkQueue_Dequeue/ListQueueDequeue-8          	  200180	      5204 ns/op
+	//BenchmarkQueue_Dequeue/RingQueueDequeue
+	//BenchmarkQueue_Dequeue/RingQueueDequeue-8          	  142177	      8465 ns/op
 }
 
-func BenchmarkRingQueue(b *testing.B) {
-	b.StopTimer()
-	q := NewRingQueue()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		q.Enqueue(nil)
+// 综合性能测试
+func BenchmarkQueue(b *testing.B) {
+	n := 1000000
+	arr := rand.Perm(n)
+	newFunc := func() Queue {
+		return NewArrayQueue()
 	}
-	for i := 0; i < b.N; i++ {
-		q.Dequeue()
+
+	f := func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			q := newFunc()
+			b.StartTimer()
+			for j := 0; j < n; j++ {
+				if arr[j]%2 == 0 {
+					q.Enqueue(nil)
+				} else {
+					q.Dequeue()
+				}
+			}
+		}
 	}
-	// BenchmarkLoopRingQueue-8        10108131               108 ns/op
+
+	b.Run("ArrayQueue", f)
+
+	newFunc = func() Queue {
+		return NewListQueue()
+	}
+	b.Run("ListQueue", f)
+
+	newFunc = func() Queue {
+		return NewRingQueue()
+	}
+	b.Run("RingQueue", f)
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/queue
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkQueue
+	//BenchmarkQueue/ArrayQueue
+	//BenchmarkQueue/ArrayQueue-8         	      69	  16000912 ns/op
+	//BenchmarkQueue/ListQueue
+	//BenchmarkQueue/ListQueue-8          	      44	  26271632 ns/op
+	//BenchmarkQueue/RingQueue
+	//BenchmarkQueue/RingQueue-8          	      48	  25762088 ns/op
 }

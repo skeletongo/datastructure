@@ -1,18 +1,19 @@
-// 并查集，操作时间复杂度O(log*n), 效率低于O(1)高于O(logN)
-// 时间复杂度：
+// 并查集，时间复杂度O(log*n), 效率低于O(1)高于O(logN)
+// 适合频繁查询或建立连接的网络节点数据
 package uf
+
+import "fmt"
 
 // IUnionFind 并查集
 type IUnionFind interface {
-	Size() int
+	GetSize() int
 	IsConnected(p, q int) bool
-	UnionElements(p, q int)
+	Union(p, q int)
 }
 
 // IElement 数据节点
 type IElement interface {
-	// 获取数据集中单个数据的唯一索引（最大范围 [0, MaxInt-1]）
-	// 生成的索引要小于并查集初始化时的参数n的大小
+	// 数据唯一索引 生成的索引要小于并查集初始化时的参数n的大小
 	UniqueId() int
 }
 
@@ -34,9 +35,21 @@ type UF struct {
 	f FindParentFunc
 }
 
-// TestNew 创建并查集
+// New 创建并查集
 // n 并查集支持的最大数据量
-func TestNew(n int, f FindParentFunc) *UF {
+func New(n int) *UF {
+	uf := new(UF)
+	for i := 0; i < n; i++ {
+		uf.data = append(uf.data, i)
+		uf.rank = append(uf.rank, 1)
+	}
+	uf.f = FindParentFuncLess
+	return uf
+}
+
+// NewFunc 创建并查集
+// n 并查集支持的最大数据量
+func NewFunc(n int, f FindParentFunc) *UF {
 	uf := new(UF)
 	for i := 0; i < n; i++ {
 		uf.data = append(uf.data, i)
@@ -50,40 +63,32 @@ func TestNew(n int, f FindParentFunc) *UF {
 	return uf
 }
 
-// New 创建并查集
-// n 并查集支持的最大数据量
-func New(n int) *UF {
-	uf := new(UF)
-	for i := 0; i < n; i++ {
-		uf.data = append(uf.data, i)
-		uf.rank = append(uf.rank, 1)
-	}
-	uf.f = FindParentFuncLess
-	return uf
-}
-
 func (u *UF) Set(f FindParentFunc) {
 	u.f = f
 }
 
-// Size 并查集支持的最大数据量
-func (u *UF) Size() int {
+// GetSize 并查集支持的最大数据量
+func (u *UF) GetSize() int {
 	return len(u.data)
 }
 
-// IsConnected 两个数据节点是否已连接
-func (u *UF) IsConnected(a, b IElement) bool {
-	if a.UniqueId() == b.UniqueId() {
+// IsConnected 两个节点是否已连接
+func (u *UF) IsConnected(i, j int) bool {
+	if i == j {
 		return true
 	}
-	return u.f(u, a.UniqueId()) == u.f(u, b.UniqueId())
+	return u.f(u, i) == u.f(u, j)
 }
 
-// UnionElements 连接两个数据节点
-func (u *UF) UnionElements(a, b IElement) {
-	i := u.f(u, a.UniqueId())
-	j := u.f(u, b.UniqueId())
+// IsConnectedElements 两个节点是否已连接
+func (u *UF) IsConnectedElements(a, b IElement) bool {
+	return u.IsConnected(a.UniqueId(), b.UniqueId())
+}
 
+// Union 连接两个节点
+func (u *UF) Union(i, j int) {
+	i = u.f(u, i)
+	j = u.f(u, j)
 	if i == j {
 		return
 	}
@@ -100,37 +105,38 @@ func (u *UF) UnionElements(a, b IElement) {
 	}
 }
 
-// FindParentFuncLess 寻找父节点，查询同时只将查询节点指向根节点
-var FindParentFuncLess = FindParentFunc(func(u *UF, i int) int {
-	if i < 0 || i >= len(u.data) {
+// UnionElements 连接两个节点
+func (u *UF) UnionElements(a, b IElement) {
+	u.Union(u.f(u, a.UniqueId()), u.f(u, b.UniqueId()))
+}
+
+// todo 优化打印方式
+func (u *UF) String() string {
+	return fmt.Sprint(u.data)
+}
+
+// FindParentFuncLess 寻找父节点，查询同时做少量路径压缩
+var FindParentFuncLess = FindParentFunc(func(uf *UF, i int) int {
+	if i < 0 || i >= len(uf.data) {
 		panic("index out of Union-Find size")
 	}
-	// 将当前节点指向根节点
-	b := i
-	for i != u.data[i] {
-		i = u.data[i]
+	for i != uf.data[i] {
+		uf.data[i] = uf.data[uf.data[i]]
+		i = uf.data[i]
 	}
-	u.data[b] = i
-	/*
-		这种方式稍微慢一点
-		for i != u.data[i] {
-			u.data[i] = u.data[u.data[i]]
-			i = u.data[i]
-		}
-	*/
 	return i
 })
 
-func findParentMore(u *UF, i int) int {
-	if i < 0 || i >= len(u.data) {
+func findParentMore(uf *UF, i int) int {
+	if i < 0 || i >= len(uf.data) {
 		panic("index out of Union-Find size")
 	}
 	// 路径压缩，将子节点都直接指向根节点
-	if i != u.data[i] {
+	if i != uf.data[i] {
 		// 将当前节点指向跟节点
-		u.data[i] = findParentMore(u, u.data[i])
+		uf.data[i] = findParentMore(uf, uf.data[i])
 	}
-	return u.data[i]
+	return uf.data[i]
 }
 
 // FindParentFuncMore 寻找父节点，查询同时将查询节点及其所有上层节点都指向根节点
