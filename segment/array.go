@@ -10,9 +10,9 @@ import (
 */
 
 type ArraySegment struct {
-	data []interface{}                      // 原数据
-	tree []interface{}                      // 线段树
-	f    func(a, b interface{}) interface{} // 节点融合方法
+	data  []interface{}                      // 原数据
+	tree  []interface{}                      // 线段树
+	Merge func(a, b interface{}) interface{} // 节点融合方法
 }
 
 // NewArraySegment 创建线段树
@@ -24,7 +24,7 @@ func NewArraySegment(arr []interface{}, f func(a, b interface{}) interface{}) *A
 	}
 
 	t := ArraySegment{}
-	t.f = f
+	t.Merge = f
 	t.data = make([]interface{}, len(arr))
 	copy(t.data, arr)
 	t.tree = make([]interface{}, 4*len(arr))
@@ -70,7 +70,7 @@ func (t *ArraySegment) buildTree(treeIndex, l, r int) {
 	t.buildTree(leftIndex, l, mid)
 	t.buildTree(rightIndex, mid+1, r)
 
-	t.tree[treeIndex] = t.f(t.tree[leftIndex], t.tree[rightIndex])
+	t.tree[treeIndex] = t.Merge(t.tree[leftIndex], t.tree[rightIndex])
 }
 
 // Query 查询
@@ -99,7 +99,7 @@ func (t *ArraySegment) query(treeIndex, l, r, ql, qr int) interface{} {
 		return t.query(rightIndex, mid+1, r, ql, qr)
 	}
 	// 左节点中的值和右节点中的值融合
-	return t.f(t.query(leftIndex, l, mid, ql, mid), t.query(rightIndex, mid+1, r, mid+1, qr))
+	return t.Merge(t.query(leftIndex, l, mid, ql, mid), t.query(rightIndex, mid+1, r, mid+1, qr))
 }
 
 // Set 修改原数据
@@ -126,7 +126,7 @@ func (t *ArraySegment) set(treeIndex, l, r, index int, data interface{}) {
 		t.set(rightIndex, mid+1, r, index, data)
 	}
 	// 修改父节点的值，维护线段树的性质
-	t.tree[treeIndex] = t.f(t.tree[leftIndex], t.tree[rightIndex])
+	t.tree[treeIndex] = t.Merge(t.tree[leftIndex], t.tree[rightIndex])
 }
 
 func (t *ArraySegment) String() string {

@@ -2,27 +2,27 @@ package segment
 
 import "dataStructure/common"
 
-type Node struct {
-	left, right *Node
-	Value       interface{}
+type node struct {
+	left, right *node
+	value       interface{}
 }
 
-func (n *Node) GetLeftNode() common.INode {
+func (n *node) GetLeftNode() common.INode {
 	return n.left
 }
 
-func (n *Node) GetRightNode() common.INode {
+func (n *node) GetRightNode() common.INode {
 	return n.right
 }
 
-func (n *Node) GetValue() interface{} {
-	return n.Value
+func (n *node) GetValue() interface{} {
+	return n.value
 }
 
 type BSTSegment struct {
-	data []interface{}                      // 原数据
-	root *Node                              // 线段树
-	f    func(a, b interface{}) interface{} // 节点融合方法
+	data  []interface{}                      // 原数据
+	root  *node                              // 线段树
+	Merge func(a, b interface{}) interface{} // 节点融合方法
 }
 
 func NewBSTSegment(arr []interface{}, f func(a, b interface{}) interface{}) *BSTSegment {
@@ -31,7 +31,7 @@ func NewBSTSegment(arr []interface{}, f func(a, b interface{}) interface{}) *BST
 	}
 
 	t := BSTSegment{}
-	t.f = f
+	t.Merge = f
 	t.data = make([]interface{}, len(arr))
 	copy(t.data, arr)
 	t.root = t.buildTree(0, len(arr)-1)
@@ -49,16 +49,16 @@ func (t *BSTSegment) Get(index int) interface{} {
 	return t.data[index]
 }
 
-func (t *BSTSegment) buildTree(l, r int) *Node {
-	n := new(Node)
+func (t *BSTSegment) buildTree(l, r int) *node {
+	n := new(node)
 	if l == r {
-		n.Value = t.data[l]
+		n.value = t.data[l]
 		return n
 	}
 	mid := l + (r-l)/2
 	n.left = t.buildTree(l, mid)
 	n.right = t.buildTree(mid+1, r)
-	n.Value = t.f(n.left.Value, n.right.Value)
+	n.value = t.Merge(n.left.value, n.right.value)
 	return n
 }
 
@@ -70,9 +70,9 @@ func (t *BSTSegment) Query(ql, qr int) interface{} {
 	return t.query(t.root, 0, t.GetSize()-1, ql, qr)
 }
 
-func (t *BSTSegment) query(n *Node, l, r, ql, qr int) interface{} {
+func (t *BSTSegment) query(n *node, l, r, ql, qr int) interface{} {
 	if l == ql && r == qr {
-		return n.Value
+		return n.value
 	}
 
 	mid := l + (r-l)/2
@@ -84,7 +84,7 @@ func (t *BSTSegment) query(n *Node, l, r, ql, qr int) interface{} {
 		return t.query(n.right, mid+1, r, ql, qr)
 	}
 	// 左节点中的值和右节点中的值融合
-	return t.f(t.query(n.left, l, mid, ql, mid), t.query(n.right, mid+1, r, mid+1, qr))
+	return t.Merge(t.query(n.left, l, mid, ql, mid), t.query(n.right, mid+1, r, mid+1, qr))
 }
 
 func (t *BSTSegment) Set(index int, data interface{}) {
@@ -94,9 +94,9 @@ func (t *BSTSegment) Set(index int, data interface{}) {
 	t.set(t.root, 0, t.GetSize()-1, index, data)
 }
 
-func (t *BSTSegment) set(n *Node, l, r, index int, data interface{}) {
+func (t *BSTSegment) set(n *node, l, r, index int, data interface{}) {
 	if l == r {
-		n.Value = data
+		n.value = data
 		return
 	}
 
@@ -108,7 +108,7 @@ func (t *BSTSegment) set(n *Node, l, r, index int, data interface{}) {
 		t.set(n.right, mid+1, r, index, data)
 	}
 	// 修改父节点的值，维护线段树的性质
-	n.Value = t.f(n.left.Value, n.right.Value)
+	n.value = t.Merge(n.left.value, n.right.value)
 }
 
 func (t *BSTSegment) String() string {

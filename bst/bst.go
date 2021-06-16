@@ -8,36 +8,41 @@ import (
 	"dataStructure/common"
 	"dataStructure/queue"
 	"dataStructure/stack"
+	"fmt"
 )
 
-type Node struct {
-	left, right *Node
-	Value       interface{}
+type node struct {
+	left, right *node
+	key, value  interface{}
 }
 
-func (n *Node) GetLeftNode() common.INode {
+func newNode(key, value interface{}) *node {
+	return &node{key: key, value: value}
+}
+
+func (n *node) GetLeftNode() common.INode {
 	return n.left
 }
 
-func (n *Node) GetRightNode() common.INode {
+func (n *node) GetRightNode() common.INode {
 	return n.right
 }
 
-func (n *Node) GetValue() interface{} {
-	return n.Value
+func (n *node) GetValue() interface{} {
+	return fmt.Sprintf("%v: %v", n.key, n.value)
 }
 
 // BST 二分搜索树
 type BST struct {
 	// 根节点
-	root *Node
+	root *node
 	// 节点数量
 	size int
 	// 元素比较方法
 	Compare func(a, b interface{}) int
 }
 
-// 创建二分搜索树
+// New 创建二分搜索树
 // 参数 f 为自定义元素大小比较函数
 // 大小比较函数 返回值：
 // -1	表示	a<b
@@ -57,342 +62,113 @@ func (b *BST) IsEmpty() bool {
 	return b.size == 0
 }
 
-func (b *BST) add(node *Node, v interface{}) *Node {
-	if node == nil {
+func (b *BST) add(n *node, key, value interface{}) *node {
+	if n == nil {
 		b.size++
-		return &Node{Value: v}
+		return newNode(key, value)
 	}
 
-	r := b.Compare(v, node.Value)
-	if r < 0 {
-		node.left = b.add(node.left, v)
-	} else if r > 0 {
-		node.right = b.add(node.right, v)
+	res := b.Compare(key, n.key)
+	if res < 0 {
+		n.left = b.add(n.left, key, value)
+	} else if res > 0 {
+		n.right = b.add(n.right, key, value)
 	}
-	return node
+	return n
 }
 
 // Add 添加新节点
-func (b *BST) Add(v interface{}) {
-	b.root = b.add(b.root, v)
+func (b *BST) Add(key, value interface{}) {
+	b.root = b.add(b.root, key, value)
 }
 
 // AddNR 添加新节点非递归
-func (b *BST) AddNR(v interface{}) {
+func (b *BST) AddNR(key, value interface{}) {
 	if b.size == 0 {
 		b.size++
-		b.root = &Node{Value: v}
+		b.root = newNode(key, value)
 		return
 	}
 
-	node := b.root
+	n := b.root
 	for {
-		r := b.Compare(v, node.Value)
+		r := b.Compare(key, n.key)
 		switch {
 		case r < 0:
-			if node.left == nil {
+			if n.left == nil {
 				b.size++
-				node.left = &Node{Value: v}
+				n.left = newNode(key, value)
 				return
 			}
-			node = node.left
+			n = n.left
 		case r > 0:
-			if node.right == nil {
+			if n.right == nil {
 				b.size++
-				node.right = &Node{Value: v}
+				n.right = newNode(key, value)
 				return
 			}
-			node = node.right
+			n = n.right
 		default:
 			return
 		}
 	}
 }
 
-func (b *BST) contains(node *Node, v interface{}) bool {
-	if node == nil {
+func (b *BST) contains(n *node, key interface{}) bool {
+	if n == nil {
 		return false
 	}
 
-	r := b.Compare(v, node.Value)
+	r := b.Compare(key, n.key)
 	if r < 0 {
-		return b.contains(node.left, v)
+		return b.contains(n.left, key)
 	}
 	if r > 0 {
-		return b.contains(node.right, v)
+		return b.contains(n.right, key)
 	}
 	return true
 }
 
 // Contains 查询是否包含指定元素
-func (b *BST) Contains(v interface{}) bool {
-	return b.contains(b.root, v)
+func (b *BST) Contains(key interface{}) bool {
+	return b.contains(b.root, key)
 }
 
 // ContainsNR 查询是否包含指定元素非递归
-func (b *BST) ContainsNR(v interface{}) bool {
-	node := b.root
-	for node != nil {
-		r := b.Compare(v, node.Value)
+func (b *BST) ContainsNR(key interface{}) bool {
+	n := b.root
+	for n != nil {
+		r := b.Compare(key, n.key)
 		if r == 0 {
 			return true
 		}
 		if r < 0 {
-			node = node.left
+			n = n.left
 		} else {
-			node = node.right
+			n = n.right
 		}
 	}
 	return false
 }
 
-func (b *BST) preOrder(node *Node, f func(v interface{})) {
-	if node == nil {
-		return
-	}
-
-	f(node.Value)
-	b.preOrder(node.left, f)
-	b.preOrder(node.right, f)
-}
-
-// PreOrder 前序遍历
-func (b *BST) PreOrder(f func(v interface{})) {
-	b.preOrder(b.root, f)
-}
-
-func (b *BST) inOrder(node *Node, f func(v interface{})) {
-	if node == nil {
-		return
-	}
-
-	b.inOrder(node.left, f)
-	f(node.Value)
-	b.inOrder(node.right, f)
-}
-
-// InOrder 中序遍历
-func (b *BST) InOrder(f func(v interface{})) {
-	b.inOrder(b.root, f)
-}
-
-func (b *BST) postOrder(node *Node, f func(v interface{})) {
-	if node == nil {
-		return
-	}
-
-	b.postOrder(node.left, f)
-	b.postOrder(node.right, f)
-	f(node.Value)
-}
-
-// PostOrder 后序遍历
-func (b *BST) PostOrder(f func(v interface{})) {
-	b.postOrder(b.root, f)
-}
-
-// PreOrderNR 前序遍历非递归
-func (b *BST) PreOrderNR(f func(v interface{})) {
-	if b.size == 0 {
-		return
-	}
-	if b.size == 1 {
-		f(b.root.Value)
-		return
-	}
-
-	s := stack.NewArrayStack()
-	s.Push(b.root)
-	for s.Len() != 0 {
-		node := s.Pop().(*Node)
-		f(node.Value)
-		if node.right != nil {
-			s.Push(node.right)
-		}
-		if node.left != nil {
-			s.Push(node.left)
-		}
-	}
-}
-
-// InOrderNR 中序遍历非递归
-func (b *BST) InOrderNR(f func(v interface{})) {
-	if b.size == 0 {
-		return
-	}
-	if b.size == 1 {
-		f(b.root.Value)
-		return
-	}
-
-	var node *Node
-	var flag = true
-	s := stack.NewArrayStack()
-	s.Push(b.root)
-	for s.Len() != 0 {
-		if flag {
-			flag = false
-			for node = s.Peek().(*Node); node.left != nil; node = node.left {
-				s.Push(node.left)
-			}
-		}
-		node = s.Pop().(*Node)
-		f(node.Value)
-		if node.right != nil {
-			s.Push(node.right)
-			flag = true
-		}
-	}
-}
-
-// PostOrderNR 后序遍历非递归(双栈方式)
-func (b *BST) PostOrderNR(f func(v interface{})) {
-	if b.size == 0 {
-		return
-	}
-	if b.size == 1 {
-		f(b.root.Value)
-		return
-	}
-
-	var n *Node
-	s1 := stack.NewArrayStack()
-	s2 := stack.NewArrayStack()
-	s1.Push(b.root)
-	for s1.Len() > 0 {
-		n = s1.Pop().(*Node)
-		s2.Push(n)
-		if n.left != nil {
-			s1.Push(n.left)
-		}
-		if n.right != nil {
-			s1.Push(n.right)
-		}
-	}
-	for s2.Len() > 0 {
-		n = s2.Pop().(*Node)
-		f(n.Value)
-	}
-}
-
-// PreOrderNRC 前序遍历非递归经典版
-func (b *BST) PreOrderNRC(f func(v interface{})) {
-	if b.size == 0 {
-		return
-	}
-	if b.size == 1 {
-		f(b.root.Value)
-		return
-	}
-
-	s := stack.NewArrayStack()
-	n := b.root
-	for s.Len() > 0 || n != nil {
-		if n != nil {
-			f(n.Value)
-			s.Push(n)
-			n = n.left
-		} else {
-			n = s.Pop().(*Node).right
-		}
-	}
-}
-
-// InOrderNRC 中序遍历非递归经典版
-func (b *BST) InOrderNRC(f func(v interface{})) {
-	if b.size == 0 {
-		return
-	}
-	if b.size == 1 {
-		f(b.root.Value)
-		return
-	}
-
-	s := stack.NewArrayStack()
-	n := b.root
-	for s.Len() > 0 || n != nil {
-		if n != nil {
-			s.Push(n)
-			n = n.left
-		} else {
-			n = s.Pop().(*Node)
-			f(n.Value)
-			n = n.right
-		}
-	}
-}
-
-// PostOrderNRC 后序遍历非递归经典版
-func (b *BST) PostOrderNRC(f func(v interface{})) {
-	if b.size == 0 {
-		return
-	}
-	if b.size == 1 {
-		f(b.root.Value)
-		return
-	}
-
-	var ok bool
-	s := stack.NewArrayStack()
-	m := map[*Node]struct{}{}
-	n := b.root
-	for s.Len() > 0 || n != nil {
-		if n != nil {
-			s.Push(n)
-			n = n.left
-		} else {
-			n = s.Peek().(*Node)
-			if _, ok = m[n]; ok {
-				s.Pop()
-				f(n.Value)
-				n = nil
-			} else {
-				m[n] = struct{}{}
-				n = n.right
-			}
-		}
-	}
-}
-
-// LevelOrder 层序遍历
-func (b *BST) LevelOrder(f func(v interface{})) {
-	if b.root == nil {
-		return
-	}
-
-	q := queue.NewArrayQueue()
-	q.Enqueue(b.root)
-	var node *Node
-	for q.Len() > 0 {
-		node = q.Dequeue().(*Node)
-		f(node.Value)
-		if node.left != nil {
-			q.Enqueue(node.left)
-		}
-		if node.right != nil {
-			q.Enqueue(node.right)
-		}
-	}
-}
-
 // findMin 寻找当前节点中的最小值节点
-func findMin(node *Node) *Node {
-	if node.left == nil {
-		return node
+func findMin(n *node) *node {
+	if n.left == nil {
+		return n
 	}
-	return findMin(node.left)
+	return findMin(n.left)
 }
 
 // removeMin 删除当前节点中的最小值节点并返回当前节点删除最小值节点后的根节点
-func (b *BST) removeMin(node *Node) *Node {
-	if node.left == nil {
+func (b *BST) removeMin(n *node) *node {
+	if n.left == nil {
 		b.size--
-		ret := node.right
-		node.right = nil
+		ret := n.right
+		n.right = nil
 		return ret
 	}
-	node.left = b.removeMin(node.left)
-	return node
+	n.left = b.removeMin(n.left)
+	return n
 }
 
 // RemoveMin 删除最小值节点并返回删除的最小值
@@ -400,29 +176,29 @@ func (b *BST) RemoveMin() interface{} {
 	if b.size == 0 {
 		panic("no data")
 	}
-	node := findMin(b.root)
+	n := findMin(b.root)
 	b.root = b.removeMin(b.root)
-	return node.Value
+	return n.key
 }
 
 // findMax 寻找当前节点中的最大值节点
-func findMax(node *Node) *Node {
-	if node.right == nil {
-		return node
+func findMax(n *node) *node {
+	if n.right == nil {
+		return n
 	}
-	return findMax(node.right)
+	return findMax(n.right)
 }
 
 // removeMax 删除当前节点中的最大值节点并返回当前节点删除最大值节点后的根节点
-func (b *BST) removeMax(node *Node) *Node {
-	if node.right == nil {
+func (b *BST) removeMax(n *node) *node {
+	if n.right == nil {
 		b.size--
-		ret := node.left
-		node.left = nil
+		ret := n.left
+		n.left = nil
 		return ret
 	}
-	node.right = b.removeMax(node.right)
-	return node
+	n.right = b.removeMax(n.right)
+	return n
 }
 
 // RemoveMax 删除最大值节点并返回删除的最大值
@@ -431,9 +207,9 @@ func (b *BST) RemoveMax() interface{} {
 		panic("no data")
 	}
 
-	node := findMax(b.root)
+	n := findMax(b.root)
 	b.root = b.removeMax(b.root)
-	return node.Value
+	return n.key
 }
 
 // RemoveMinNR 删除最小值节点并返回删除的最小值
@@ -445,18 +221,18 @@ func (b *BST) RemoveMinNR() interface{} {
 		b.size--
 		r := b.root
 		b.root = nil
-		return r.Value
+		return r.key
 	case 2:
 		b.size--
 		if b.root.left == nil {
 			r := b.root
 			b.root = b.root.right
 			r.right = nil
-			return r.Value
+			return r.key
 		}
 		n := b.root.left
 		b.root.left = nil
-		return n.Value
+		return n.key
 	default:
 		b.size--
 		p := b.root
@@ -467,7 +243,7 @@ func (b *BST) RemoveMinNR() interface{} {
 		}
 		p.left = s.right
 		s.right = nil
-		return s.Value
+		return s.key
 	}
 }
 
@@ -480,18 +256,18 @@ func (b *BST) RemoveMaxNR() interface{} {
 		b.size--
 		r := b.root
 		b.root = nil
-		return r.Value
+		return r.key
 	case 2:
 		b.size--
 		if b.root.left == nil {
 			r := b.root.right
 			b.root.right = nil
-			return r.Value
+			return r.value
 		}
-		r := b.root
+		n := b.root
 		b.root = b.root.left
-		r.left = nil
-		return r.Value
+		n.left = nil
+		return n.key
 	default:
 		b.size--
 		p := b.root
@@ -502,50 +278,327 @@ func (b *BST) RemoveMaxNR() interface{} {
 		}
 		p.right = n.left
 		n.left = nil
-		return n.Value
+		return n.key
 	}
 }
 
 // remove 从当前节点中删除一个特定的值节点并返回删除节点后的当前节点的根节点
-func (b *BST) remove(node *Node, v interface{}) *Node {
-	if node == nil {
+func (b *BST) remove(n *node, key interface{}) *node {
+	if n == nil {
 		return nil
 	}
 
-	r := b.Compare(v, node.Value)
+	r := b.Compare(key, n.key)
 	if r < 0 {
-		node.left = b.remove(node.left, v)
-		return node
+		n.left = b.remove(n.left, key)
+		return n
 	}
 	if r > 0 {
-		node.right = b.remove(node.right, v)
-		return node
+		n.right = b.remove(n.right, key)
+		return n
 	}
 
-	if node.left == nil {
+	if n.left == nil {
 		b.size--
-		ret := node.right
-		node.right = nil
+		ret := n.right
+		n.right = nil
 		return ret
 	}
-	if node.right == nil {
+	if n.right == nil {
 		b.size--
-		ret := node.left
-		node.left = nil
+		ret := n.left
+		n.left = nil
 		return ret
 	}
 
-	n := findMin(node.right)
-	n.right = b.removeMin(node.right)
-	n.left = node.left
-	node.left = nil
-	node.right = nil
-	return n
+	min := findMin(n.right)
+	min.right = b.removeMin(n.right)
+	min.left = n.left
+	n.left = nil
+	n.right = nil
+	return min
 }
 
 // Remove 删除值节点
-func (b *BST) Remove(v interface{}) {
-	b.root = b.remove(b.root, v)
+func (b *BST) Remove(key interface{}) {
+	b.root = b.remove(b.root, key)
+}
+
+func (b *BST) set(n *node, key, value interface{}) *node {
+	if n == nil {
+		b.size++
+		return newNode(key, value)
+	}
+
+	res := b.Compare(n.key, key)
+	if res < 0 {
+		n.right = b.set(n.right, key, value)
+		return n
+	}
+	if res > 0 {
+		n.left = b.set(n.left, key, value)
+		return n
+	}
+	n.value = value
+	return n
+}
+
+// Set 添加元素或修改元素对应的值
+func (b *BST) Set(key, value interface{}) {
+	b.root = b.set(b.root, key, value)
+}
+
+func (b *BST) get(n *node, key interface{}) *node {
+	if n == nil {
+		return nil
+	}
+
+	res := b.Compare(n.key, key)
+	if res < 0 {
+		return b.get(n.right, key)
+	}
+	if res > 0 {
+		return b.get(n.left, key)
+	}
+	return n
+}
+
+// Get 获取元素值
+func (b *BST) Get(key interface{}) interface{} {
+	n := b.get(b.root, key)
+	if n == nil {
+		return nil
+	}
+	return n.value
+}
+
+func (b *BST) preOrder(n *node, f func(key, value interface{})) {
+	if n == nil {
+		return
+	}
+
+	f(n.key, n.value)
+	b.preOrder(n.left, f)
+	b.preOrder(n.right, f)
+}
+
+// PreOrder 前序遍历
+func (b *BST) PreOrder(f func(key, value interface{})) {
+	b.preOrder(b.root, f)
+}
+
+func (b *BST) inOrder(n *node, f func(key, value interface{})) {
+	if n == nil {
+		return
+	}
+
+	b.inOrder(n.left, f)
+	f(n.key, n.value)
+	b.inOrder(n.right, f)
+}
+
+// InOrder 中序遍历
+func (b *BST) InOrder(f func(key, value interface{})) {
+	b.inOrder(b.root, f)
+}
+
+func (b *BST) postOrder(n *node, f func(key, value interface{})) {
+	if n == nil {
+		return
+	}
+
+	b.postOrder(n.left, f)
+	b.postOrder(n.right, f)
+	f(n.key, n.value)
+}
+
+// PostOrder 后序遍历
+func (b *BST) PostOrder(f func(key, value interface{})) {
+	b.postOrder(b.root, f)
+}
+
+// PreOrderNR 前序遍历非递归
+func (b *BST) PreOrderNR(f func(key, value interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.key, b.root.value)
+		return
+	}
+
+	s := stack.NewArrayStack()
+	s.Push(b.root)
+	for s.Len() != 0 {
+		n := s.Pop().(*node)
+		f(n.key, n.value)
+		if n.right != nil {
+			s.Push(n.right)
+		}
+		if n.left != nil {
+			s.Push(n.left)
+		}
+	}
+}
+
+// InOrderNR 中序遍历非递归
+func (b *BST) InOrderNR(f func(key, value interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.key, b.root.value)
+		return
+	}
+
+	var n *node
+	var flag = true
+	s := stack.NewArrayStack()
+	s.Push(b.root)
+	for s.Len() != 0 {
+		if flag {
+			flag = false
+			for n = s.Peek().(*node); n.left != nil; n = n.left {
+				s.Push(n.left)
+			}
+		}
+		n = s.Pop().(*node)
+		f(n.key, n.value)
+		if n.right != nil {
+			s.Push(n.right)
+			flag = true
+		}
+	}
+}
+
+// PostOrderNR 后序遍历非递归(双栈方式)
+func (b *BST) PostOrderNR(f func(key, value interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.key, b.root.value)
+		return
+	}
+
+	var n *node
+	s1 := stack.NewArrayStack()
+	s2 := stack.NewArrayStack()
+	s1.Push(b.root)
+	for s1.Len() > 0 {
+		n = s1.Pop().(*node)
+		s2.Push(n)
+		if n.left != nil {
+			s1.Push(n.left)
+		}
+		if n.right != nil {
+			s1.Push(n.right)
+		}
+	}
+	for s2.Len() > 0 {
+		n = s2.Pop().(*node)
+		f(n.key, n.value)
+	}
+}
+
+// PreOrderNRC 前序遍历非递归经典版
+func (b *BST) PreOrderNRC(f func(key, value interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.key, b.root.value)
+		return
+	}
+
+	s := stack.NewArrayStack()
+	n := b.root
+	for s.Len() > 0 || n != nil {
+		if n != nil {
+			f(n.key, n.value)
+			s.Push(n)
+			n = n.left
+		} else {
+			n = s.Pop().(*node).right
+		}
+	}
+}
+
+// InOrderNRC 中序遍历非递归经典版
+func (b *BST) InOrderNRC(f func(key, value interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.value, b.root.value)
+		return
+	}
+
+	s := stack.NewArrayStack()
+	n := b.root
+	for s.Len() > 0 || n != nil {
+		if n != nil {
+			s.Push(n)
+			n = n.left
+		} else {
+			n = s.Pop().(*node)
+			f(n.key, n.value)
+			n = n.right
+		}
+	}
+}
+
+// PostOrderNRC 后序遍历非递归经典版
+func (b *BST) PostOrderNRC(f func(key, value interface{})) {
+	if b.size == 0 {
+		return
+	}
+	if b.size == 1 {
+		f(b.root.key, b.root.value)
+		return
+	}
+
+	var ok bool
+	s := stack.NewArrayStack()
+	m := map[*node]struct{}{}
+	n := b.root
+	for s.Len() > 0 || n != nil {
+		if n != nil {
+			s.Push(n)
+			n = n.left
+		} else {
+			n = s.Peek().(*node)
+			if _, ok = m[n]; ok {
+				s.Pop()
+				f(n.key, n.value)
+				n = nil
+			} else {
+				m[n] = struct{}{}
+				n = n.right
+			}
+		}
+	}
+}
+
+// LevelOrder 层序遍历
+func (b *BST) LevelOrder(f func(key, value interface{})) {
+	if b.root == nil {
+		return
+	}
+
+	q := queue.NewArrayQueue()
+	q.Enqueue(b.root)
+	var n *node
+	for q.Len() > 0 {
+		n = q.Dequeue().(*node)
+		f(n.key, n.value)
+		if n.left != nil {
+			q.Enqueue(n.left)
+		}
+		if n.right != nil {
+			q.Enqueue(n.right)
+		}
+	}
 }
 
 func (b *BST) String() string {
