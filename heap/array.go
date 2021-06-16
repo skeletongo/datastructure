@@ -116,6 +116,9 @@ func (h *ArrayHeap) Heapify(arr []interface{}) {
 	for _, v := range arr {
 		h.array = append(h.array, v)
 	}
+	if len(arr) <= 1 {
+		return
+	}
 	i := h.parent(h.GetSize() - 1)
 	for ; i >= 0; i-- {
 		h.siftDown(i)
