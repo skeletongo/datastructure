@@ -121,6 +121,14 @@ func (a *AVLTree) findMinNode(n *node) *node {
 }
 
 // leftRotate 左旋转
+// 对节点y进行向左旋转操作，返回旋转后新的根节点x
+//    y                             x
+//  /  \                          /   \
+// T1   x      向左旋转 (y)       y     z
+//     / \   - - - - - - - ->   / \   / \
+//   T2  z                     T1 T2 T3 T4
+//      / \
+//     T3 T4
 func (a *AVLTree) leftRotate(n *node) *node {
 	x := n.right
 	t := x.left
@@ -135,6 +143,14 @@ func (a *AVLTree) leftRotate(n *node) *node {
 }
 
 // rightRotate 右旋转
+// 对节点y进行向右旋转操作，返回旋转后新的根节点x
+//        y                              x
+//       / \                           /   \
+//      x   T4     向右旋转 (y)        z     y
+//     / \       - - - - - - - ->    / \   / \
+//    z   T3                       T1  T2 T3 T4
+//   / \
+// T1   T2
 func (a *AVLTree) rightRotate(n *node) *node {
 	x := n.left
 	t := x.right
@@ -150,8 +166,6 @@ func (a *AVLTree) rightRotate(n *node) *node {
 
 // toBalance 维护节点平衡性
 func (a *AVLTree) toBalance(n *node) *node {
-	// 更新height值
-	n.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
 	// 计算平衡因子
 	balanceFactor := a.getBalanceFactory(n)
 	// 维护平衡
@@ -197,6 +211,18 @@ func (a *AVLTree) add(n *node, key, value interface{}) *node {
 	}
 
 	// 路径回溯维护平衡性
+
+	oldHeight := n.height
+	// 更新height值
+	n.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
+
+	// 对于添加新节点的父节点来说如果高度没有变说明父节点原来就有一个子节点，另外有一个空节点，新节点就添加在这个空节点上
+	// 这样才会导致父节点的高度没有改变，而且父节点的平衡因子一定是0
+	// 因为新添加节点的父节点的高度不变，所以继续回溯路径上的节点的平衡因子也不会改变，平衡性也就不会被打破
+	// **对于删除节点的操作此判断不正确，原因请看删除部分的代码注释**
+	if n.height == oldHeight {
+		return n
+	}
 	return a.toBalance(n)
 }
 
@@ -266,6 +292,16 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 		return nil
 	}
 
+	// 更新height值
+	retNode.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
+
+	// 删除节点时如果回溯路径上的节点高度值没有改变也不能保证平衡因子就不会改变，也就不能保证节点的平衡性不会被打破
+	// 如：
+	//      x		将z节点删除后x节点的高度没有改变，但是平衡性已经被打破
+	//     /  \
+	//    y    z
+	//   /
+	//   m
 	return a.toBalance(retNode)
 }
 
