@@ -263,13 +263,14 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 	} else if res < 0 {
 		retNode = a.remove(n.right, key)
 	} else {
-		a.size--
 		// 当前节点就是要删除的节点
 		if n.left == nil {
+			a.size--
 			r := n.right
 			n.right = nil
 			retNode = r
 		} else if n.right == nil {
+			a.size--
 			l := n.left
 			n.left = nil
 			retNode = l
@@ -278,7 +279,6 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 			// 用右子树中的最小值节点代替当前删除的节点
 			min := a.findMinNode(n.right)
 			min.right = a.remove(n.right, min.key)
-			a.size++
 			min.left = n.left
 			n.left = nil
 			n.right = nil
