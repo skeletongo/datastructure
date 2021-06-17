@@ -16,9 +16,9 @@ type ArrayHeap struct {
 // NewArrayHeap 创建堆
 // 参数 f 为自定义元素大小比较函数
 // 大小比较函数 返回值：
-// -1	表示	a<b
+// 负数	表示	a<b
 // 0	表示	a=b
-// 1	表示	a>b
+// 正数	表示	a>b
 func NewArrayHeap(f func(a, b interface{}) int) *ArrayHeap {
 	return &ArrayHeap{f: f}
 }

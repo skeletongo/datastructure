@@ -45,9 +45,9 @@ type BST struct {
 // New 创建二分搜索树
 // 参数 f 为自定义元素大小比较函数
 // 大小比较函数 返回值：
-// -1	表示	a<b
+// 负数	表示	a<b
 // 0	表示	a=b
-// 1	表示	a>b
+// 正数	表示	a>b
 func New(f func(a, b interface{}) int) *BST {
 	return &BST{Compare: f}
 }

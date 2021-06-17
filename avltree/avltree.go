@@ -41,9 +41,9 @@ type AVLTree struct {
 // New 创建AVL树
 // 参数 f 为自定义元素大小比较函数
 // 大小比较函数 返回值：
-// -1	表示	a<b
+// 负数	表示	a<b
 // 0	表示	a=b
-// 1	表示	a>b
+// 正数	表示	a>b
 func New(f func(a, b interface{}) int) *AVLTree {
 	return &AVLTree{Compare: f}
 }
@@ -115,7 +115,7 @@ func (a *AVLTree) getBalanceFactory(n *node) int {
 func (a *AVLTree) findMinNode(n *node) *node {
 	cur := n
 	for cur.left != nil {
-		cur = n.left
+		cur = cur.left
 	}
 	return cur
 }
@@ -129,15 +129,15 @@ func (a *AVLTree) findMinNode(n *node) *node {
 //   T2  z                     T1 T2 T3 T4
 //      / \
 //     T3 T4
-func (a *AVLTree) leftRotate(n *node) *node {
-	x := n.right
-	t := x.left
+func (a *AVLTree) leftRotate(y *node) *node {
+	x := y.right
+	t2 := x.left
 
-	n.right = t
-	x.left = n
+	x.left = y
+	y.right = t2
 
 	// 维护节点高度
-	n.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
+	y.height = 1 + int(math.Max(float64(a.getHeight(y.left)), float64(a.getHeight(y.right))))
 	x.height = 1 + int(math.Max(float64(a.getHeight(x.left)), float64(a.getHeight(x.right))))
 	return x
 }
@@ -151,15 +151,15 @@ func (a *AVLTree) leftRotate(n *node) *node {
 //    z   T3                       T1  T2 T3 T4
 //   / \
 // T1   T2
-func (a *AVLTree) rightRotate(n *node) *node {
-	x := n.left
-	t := x.right
+func (a *AVLTree) rightRotate(y *node) *node {
+	x := y.left
+	t3 := x.right
 
-	n.left = t
-	x.right = n
+	x.right = y
+	y.left = t3
 
 	// 维护节点高度
-	n.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
+	y.height = 1 + int(math.Max(float64(a.getHeight(y.left)), float64(a.getHeight(y.right))))
 	x.height = 1 + int(math.Max(float64(a.getHeight(x.left)), float64(a.getHeight(x.right))))
 	return x
 }
@@ -247,7 +247,7 @@ func (a *AVLTree) Contains(key interface{}) bool {
 }
 
 // Remove 删除节点
-func (a *AVLTree) Remove(key int) {
+func (a *AVLTree) Remove(key interface{}) {
 	a.root = a.remove(a.root, key)
 }
 
@@ -259,21 +259,21 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 	var retNode *node
 	res := a.Compare(n.key, key)
 	if res > 0 {
-		retNode = a.remove(n.left, key)
+		n.left = a.remove(n.left, key)
+		retNode = n
 	} else if res < 0 {
-		retNode = a.remove(n.right, key)
+		n.right = a.remove(n.right, key)
+		retNode = n
 	} else {
 		// 当前节点就是要删除的节点
 		if n.left == nil {
 			a.size--
-			r := n.right
+			retNode = n.right
 			n.right = nil
-			retNode = r
 		} else if n.right == nil {
 			a.size--
-			l := n.left
+			retNode = n.left
 			n.left = nil
-			retNode = l
 		} else {
 			// 左右都有子树
 			// 用右子树中的最小值节点代替当前删除的节点
@@ -293,7 +293,7 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 	}
 
 	// 更新height值
-	retNode.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
+	retNode.height = 1 + int(math.Max(float64(a.getHeight(retNode.left)), float64(a.getHeight(retNode.right))))
 
 	// 删除节点时如果回溯路径上的节点高度值没有改变也不能保证平衡因子就不会改变，也就不能保证节点的平衡性不会被打破
 	// 如：
