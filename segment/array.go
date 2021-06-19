@@ -130,5 +130,5 @@ func (t *ArraySegment) set(treeIndex, l, r, index int, data interface{}) {
 }
 
 func (t *ArraySegment) String() string {
-	return common.PerPrintBSTSlice(t.tree)
+	return common.PrePrintBSTSlice(t.tree)
 }

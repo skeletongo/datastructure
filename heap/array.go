@@ -76,10 +76,15 @@ func (h *ArrayHeap) Add(e interface{}) {
 }
 
 // siftDown 元素下沉
-func (h *ArrayHeap) siftDown(i int) {
-	j := h.leftChild(i)
-	for ; j < h.GetSize(); j = h.leftChild(i) {
-		if ri := h.rightChild(i); ri < h.GetSize() && h.f(h.array[j], h.array[ri]) < 0 {
+func (h *ArrayHeap) siftDown(i int) bool {
+	i0 := i
+	n := h.GetSize()
+	for {
+		j := h.leftChild(i)
+		if j >= n || j < 0 { // j < 0,当 2*i+1 整数溢出时
+			break
+		}
+		if ri := j + 1; ri < n && h.f(h.array[j], h.array[ri]) < 0 {
 			j = ri
 		}
 		if h.f(h.array[i], h.array[j]) >= 0 {
@@ -88,6 +93,7 @@ func (h *ArrayHeap) siftDown(i int) {
 		h.array[i], h.array[j] = h.array[j], h.array[i]
 		i = j
 	}
+	return i > i0
 }
 
 // ExtractMax 取出元素
@@ -126,5 +132,5 @@ func (h *ArrayHeap) Heapify(arr []interface{}) {
 }
 
 func (h *ArrayHeap) String() string {
-	return common.PerPrintBSTSlice(h.array)
+	return common.PrePrintBSTSlice(h.array)
 }

@@ -57,9 +57,9 @@ func prePrint(buf *bytes.Buffer, prefix string, node INode, n int, end, isLeft b
 	prePrint(buf, prefix, node.GetRightNode(), n+1, true, false)
 }
 
-// PerPrintBSTSlice 前序打印用数组实现的二叉树
+// PrePrintBSTSlice 前序打印用数组实现的二叉树
 // arr 二叉树切片
-func PerPrintBSTSlice(arr []interface{}) string {
+func PrePrintBSTSlice(arr []interface{}) string {
 	buf := &bytes.Buffer{}
 	prePrintBSTSlice(buf, "", arr, 0, 0, false, false)
 	return buf.String()
