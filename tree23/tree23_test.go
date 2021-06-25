@@ -10,7 +10,7 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func TestRBTree(t *testing.T) {
+func TestTree23(t *testing.T) {
 	n := 1000
 	arr := rand.Perm(n)
 	tree := New(func(a, b interface{}) int {
