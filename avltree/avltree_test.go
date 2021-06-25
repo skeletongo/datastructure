@@ -24,7 +24,7 @@ func TestAVLTree(t *testing.T) {
 	var m = make(map[int]int)
 	for k, v := range arr {
 		m[v] = k
-		tree.Add(v, k)
+		tree.Put(v, k)
 	}
 
 	testFunc := func() {
@@ -45,11 +45,11 @@ func TestAVLTree(t *testing.T) {
 		if tree.GetSize() != len(m) {
 			t.Error("GetSize() error")
 		}
-		if !tree.IsBST() {
-			t.Error("IsBST() error")
+		if !tree.isBST() {
+			t.Error("isBST() error")
 		}
-		if !tree.IsBalanced() {
-			t.Error("IsBalanced() error")
+		if !tree.isBalanced() {
+			t.Error("isBalanced() error")
 		}
 		for k, v := range m {
 			if tree.Get(k) != v {
@@ -60,13 +60,8 @@ func TestAVLTree(t *testing.T) {
 
 	testFunc()
 
-	for k := range m {
-		tree.Add(k, rand.Intn(n))
-	}
-	testFunc()
-
 	for k, v := range arr {
-		tree.Set(k, v)
+		tree.Put(k, v)
 		m[k] = v
 	}
 	testFunc()
@@ -86,7 +81,7 @@ func TestAVLTree(t *testing.T) {
 	testFunc()
 
 	for k, v := range arr {
-		tree.Set(k, v)
+		tree.Put(k, v)
 		m[k] = v
 	}
 	testFunc()

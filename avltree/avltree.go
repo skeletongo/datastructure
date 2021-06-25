@@ -58,10 +58,19 @@ func (a *AVLTree) IsEmpty() bool {
 	return a.size == 0
 }
 
-// IsBST 判断是不是二分搜索树
-func (a *AVLTree) IsBST() bool {
+func inOrder(n *node, list *[]interface{}) {
+	if n == nil {
+		return
+	}
+	inOrder(n.left, list)
+	*list = append(*list, n.key)
+	inOrder(n.right, list)
+}
+
+// isBST 判断是不是二分搜索树
+func (a *AVLTree) isBST() bool {
 	list := new([]interface{})
-	a.inOrder(a.root, list)
+	inOrder(a.root, list)
 	for i := 1; i < len(*list); i++ {
 		if a.Compare((*list)[i-1], (*list)[i]) > 0 {
 			return false
@@ -70,49 +79,44 @@ func (a *AVLTree) IsBST() bool {
 	return true
 }
 
-func (a *AVLTree) inOrder(n *node, list *[]interface{}) {
-	if n == nil {
-		return
-	}
-	a.inOrder(n.left, list)
-	*list = append(*list, n.key)
-	a.inOrder(n.right, list)
-}
-
-// IsBalanced 判断是不是平衡二叉树
-func (a *AVLTree) IsBalanced() bool {
-	return a.isBalanced(a.root)
-}
-
-func (a *AVLTree) isBalanced(n *node) bool {
+func isBalanced(n *node) bool {
 	if n == nil {
 		return true
 	}
-	balanceFactor := a.getBalanceFactory(n)
+	balanceFactor := getBalanceFactory(n)
 	if balanceFactor > 1 || balanceFactor < -1 {
 		return false
 	}
-	return a.isBalanced(n.left) && a.isBalanced(n.right)
+	return isBalanced(n.left) && isBalanced(n.right)
 }
 
-// getHeight 获取节点高度
-func (a *AVLTree) getHeight(n *node) int {
+// isBalanced 判断是不是平衡二叉树
+func (a *AVLTree) isBalanced() bool {
+	return isBalanced(a.root)
+}
+
+// height 获取节点高度
+func height(n *node) int {
 	if n == nil {
 		return 0
 	}
 	return n.height
 }
 
+func getHeight(n *node) int {
+	return 1 + int(math.Max(float64(height(n.left)), float64(height(n.right))))
+}
+
 // getBalanceFactory 获取节点的平衡因子
-func (a *AVLTree) getBalanceFactory(n *node) int {
+func getBalanceFactory(n *node) int {
 	if n == nil {
 		return 0
 	}
-	return a.getHeight(n.left) - a.getHeight(n.right)
+	return height(n.left) - height(n.right)
 }
 
 // findMinNode 寻找最小子节点
-func (a *AVLTree) findMinNode(n *node) *node {
+func findMinNode(n *node) *node {
 	cur := n
 	for cur.left != nil {
 		cur = cur.left
@@ -129,7 +133,7 @@ func (a *AVLTree) findMinNode(n *node) *node {
 //   T2  z                     T1 T2 T3 T4
 //      / \
 //     T3 T4
-func (a *AVLTree) leftRotate(y *node) *node {
+func leftRotate(y *node) *node {
 	x := y.right
 	t2 := x.left
 
@@ -137,8 +141,8 @@ func (a *AVLTree) leftRotate(y *node) *node {
 	y.right = t2
 
 	// 维护节点高度
-	y.height = 1 + int(math.Max(float64(a.getHeight(y.left)), float64(a.getHeight(y.right))))
-	x.height = 1 + int(math.Max(float64(a.getHeight(x.left)), float64(a.getHeight(x.right))))
+	y.height = getHeight(y)
+	x.height = getHeight(x)
 	return x
 }
 
@@ -151,7 +155,7 @@ func (a *AVLTree) leftRotate(y *node) *node {
 //    z   T3                       T1  T2 T3 T4
 //   / \
 // T1   T2
-func (a *AVLTree) rightRotate(y *node) *node {
+func rightRotate(y *node) *node {
 	x := y.left
 	t3 := x.right
 
@@ -159,43 +163,43 @@ func (a *AVLTree) rightRotate(y *node) *node {
 	y.left = t3
 
 	// 维护节点高度
-	y.height = 1 + int(math.Max(float64(a.getHeight(y.left)), float64(a.getHeight(y.right))))
-	x.height = 1 + int(math.Max(float64(a.getHeight(x.left)), float64(a.getHeight(x.right))))
+	y.height = getHeight(y)
+	x.height = getHeight(x)
 	return x
 }
 
 // toBalance 维护节点平衡性
-func (a *AVLTree) toBalance(n *node) *node {
+func toBalance(n *node) *node {
 	// 计算平衡因子
-	balanceFactor := a.getBalanceFactory(n)
+	balanceFactor := getBalanceFactory(n)
 	// 维护平衡
 	// LL
-	if balanceFactor > 1 && a.getBalanceFactory(n.left) >= 0 {
-		return a.rightRotate(n)
+	if balanceFactor > 1 && getBalanceFactory(n.left) >= 0 {
+		return rightRotate(n)
 	}
 	// RR
-	if balanceFactor < -1 && a.getBalanceFactory(n.right) <= 0 {
-		return a.leftRotate(n)
+	if balanceFactor < -1 && getBalanceFactory(n.right) <= 0 {
+		return leftRotate(n)
 	}
 	// LR
-	if balanceFactor > 1 && a.getBalanceFactory(n.left) < 0 {
-		n.left = a.leftRotate(n.left)
-		return a.rightRotate(n)
+	if balanceFactor > 1 && getBalanceFactory(n.left) < 0 {
+		n.left = leftRotate(n.left)
+		return rightRotate(n)
 	}
 	// RL
-	if balanceFactor < -1 && a.getBalanceFactory(n.right) > 0 {
-		n.right = a.rightRotate(n.right)
-		return a.leftRotate(n)
+	if balanceFactor < -1 && getBalanceFactory(n.right) > 0 {
+		n.right = rightRotate(n.right)
+		return leftRotate(n)
 	}
 	return n
 }
 
-// Add 添加新节点
-func (a *AVLTree) Add(key, value interface{}) {
-	a.root = a.add(a.root, key, value)
+// Put 添加新节点
+func (a *AVLTree) Put(key, value interface{}) {
+	a.root = a.put(a.root, key, value)
 }
 
-func (a *AVLTree) add(n *node, key, value interface{}) *node {
+func (a *AVLTree) put(n *node, key, value interface{}) *node {
 	if n == nil {
 		a.size++
 		return newNode(key, value)
@@ -203,18 +207,19 @@ func (a *AVLTree) add(n *node, key, value interface{}) *node {
 
 	res := a.Compare(n.key, key)
 	if res == 0 {
+		n.value = value
 		return n
 	} else if res < 0 {
-		n.right = a.add(n.right, key, value)
+		n.right = a.put(n.right, key, value)
 	} else {
-		n.left = a.add(n.left, key, value)
+		n.left = a.put(n.left, key, value)
 	}
 
 	// 路径回溯维护平衡性
 
 	oldHeight := n.height
 	// 更新height值
-	n.height = 1 + int(math.Max(float64(a.getHeight(n.left)), float64(a.getHeight(n.right))))
+	n.height = getHeight(n)
 
 	// 对于添加新节点的父节点来说如果高度没有变说明父节点原来就有一个子节点，另外有一个空节点，新节点就添加在这个空节点上
 	// 这样才会导致父节点的高度没有改变，而且父节点的平衡因子一定是0
@@ -223,7 +228,7 @@ func (a *AVLTree) add(n *node, key, value interface{}) *node {
 	if n.height == oldHeight {
 		return n
 	}
-	return a.toBalance(n)
+	return toBalance(n)
 }
 
 func (a *AVLTree) contains(n *node, key interface{}) bool {
@@ -244,11 +249,6 @@ func (a *AVLTree) contains(n *node, key interface{}) bool {
 // Contains 查询是否包含指定元素
 func (a *AVLTree) Contains(key interface{}) bool {
 	return a.contains(a.root, key)
-}
-
-// Remove 删除节点
-func (a *AVLTree) Remove(key interface{}) {
-	a.root = a.remove(a.root, key)
 }
 
 func (a *AVLTree) remove(n *node, key interface{}) *node {
@@ -277,7 +277,7 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 		} else {
 			// 左右都有子树
 			// 用右子树中的最小值节点代替当前删除的节点
-			min := a.findMinNode(n.right)
+			min := findMinNode(n.right)
 			min.right = a.remove(n.right, min.key)
 			min.left = n.left
 			n.left = nil
@@ -293,7 +293,7 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 	}
 
 	// 更新height值
-	retNode.height = 1 + int(math.Max(float64(a.getHeight(retNode.left)), float64(a.getHeight(retNode.right))))
+	retNode.height = getHeight(retNode)
 
 	// 删除节点时如果回溯路径上的节点高度值没有改变也不能保证平衡因子就不会改变，也就不能保证节点的平衡性不会被打破
 	// 如：
@@ -302,31 +302,12 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 	//    y    z
 	//   /
 	//   m
-	return a.toBalance(retNode)
+	return toBalance(retNode)
 }
 
-func (a *AVLTree) set(n *node, key, value interface{}) *node {
-	if n == nil {
-		a.size++
-		return newNode(key, value)
-	}
-
-	res := a.Compare(n.key, key)
-	if res < 0 {
-		n.right = a.set(n.right, key, value)
-		return n
-	}
-	if res > 0 {
-		n.left = a.set(n.left, key, value)
-		return n
-	}
-	n.value = value
-	return n
-}
-
-// Set 添加元素或修改元素对应的值
-func (a *AVLTree) Set(key, value interface{}) {
-	a.root = a.set(a.root, key, value)
+// Remove 删除节点
+func (a *AVLTree) Remove(key interface{}) {
+	a.root = a.remove(a.root, key)
 }
 
 func (a *AVLTree) get(n *node, key interface{}) *node {
