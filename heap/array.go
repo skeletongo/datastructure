@@ -1,3 +1,4 @@
+// 最大堆
 package heap
 
 import "dataStructure/common"
@@ -34,7 +35,7 @@ func (h *ArrayHeap) IsEmpty() bool {
 }
 
 // parent 查询父节点索引
-func (h *ArrayHeap) parent(i int) int {
+func parent(i int) int {
 	if i == 0 {
 		panic("parent: no parent")
 	}
@@ -42,14 +43,14 @@ func (h *ArrayHeap) parent(i int) int {
 }
 
 // leftChild 查询左节点索引
-func (h *ArrayHeap) leftChild(i int) int {
-	return 2*i + 1
-}
+//func leftChild(i int) int {
+//	return 2*i + 1
+//}
 
 // rightChild 查询右节点索引
-func (h *ArrayHeap) rightChild(i int) int {
-	return 2*i + 2
-}
+//func rightChild(i int) int {
+//	return 2*i + 2
+//}
 
 // findMax 查询最大元素
 func (h *ArrayHeap) findMax() interface{} {
@@ -61,8 +62,8 @@ func (h *ArrayHeap) findMax() interface{} {
 
 // siftUp 元素上浮
 func (h *ArrayHeap) siftUp(i int) {
-	for i > 0 && h.f(h.array[i], h.array[h.parent(i)]) > 0 {
-		j := h.parent(i)
+	for i > 0 && h.f(h.array[i], h.array[parent(i)]) > 0 {
+		j := parent(i)
 		h.array[i], h.array[j] = h.array[j], h.array[i]
 		i = j
 	}
@@ -80,7 +81,7 @@ func (h *ArrayHeap) siftDown(i int) bool {
 	i0 := i
 	n := h.GetSize()
 	for {
-		j := h.leftChild(i)
+		j := 2*i + 1
 		if j >= n || j < 0 { // j < 0,当 2*i+1 整数溢出时
 			break
 		}
@@ -125,7 +126,7 @@ func (h *ArrayHeap) Heapify(arr []interface{}) {
 	if len(arr) <= 1 {
 		return
 	}
-	i := h.parent(h.GetSize() - 1)
+	i := parent(h.GetSize() - 1)
 	for ; i >= 0; i-- {
 		h.siftDown(i)
 	}

@@ -58,14 +58,6 @@ func (t *Trie) Add(word string, v interface{}) interface{} {
 	return temp
 }
 
-// AddR 添加单词，递归方式
-func (t *Trie) AddR(word string, v interface{}) interface{} {
-	if word == "" {
-		return nil
-	}
-	return t.add(t.root, []rune(word), v)
-}
-
 func (t *Trie) add(node *node, word []rune, v interface{}) interface{} {
 	if len(word) == 0 {
 		temp := node.value
@@ -86,6 +78,14 @@ func (t *Trie) add(node *node, word []rune, v interface{}) interface{} {
 	return t.add(node.next[c], word[1:], v)
 }
 
+// AddR 添加单词，递归方式
+func (t *Trie) AddR(word string, v interface{}) interface{} {
+	if word == "" {
+		return nil
+	}
+	return t.add(t.root, []rune(word), v)
+}
+
 // Contains 是否包含某个单词，非递归方式
 func (t *Trie) Contains(word string) bool {
 	cur := t.root
@@ -98,12 +98,7 @@ func (t *Trie) Contains(word string) bool {
 	return cur.isWord
 }
 
-// ContainsR 是否包含某个单词，递归方式
-func (t *Trie) ContainsR(word string) bool {
-	return t.contains(t.root, []rune(word))
-}
-
-func (t *Trie) contains(node *node, word []rune) bool {
+func contains(node *node, word []rune) bool {
 	if len(word) == 0 {
 		return node.isWord
 	}
@@ -111,7 +106,12 @@ func (t *Trie) contains(node *node, word []rune) bool {
 	if node.next[c] == nil {
 		return false
 	}
-	return t.contains(node.next[c], word[1:])
+	return contains(node.next[c], word[1:])
+}
+
+// ContainsR 是否包含某个单词，递归方式
+func (t *Trie) ContainsR(word string) bool {
+	return contains(t.root, []rune(word))
 }
 
 // HasPrefix 是否包含某个前缀的单词
@@ -127,14 +127,6 @@ func (t *Trie) HasPrefix(prefix string) bool {
 		cur = cur.next[v]
 	}
 	return true
-}
-
-// Remove 删除某个单词
-func (t *Trie) Remove(word string) interface{} {
-	if word == "" {
-		return nil
-	}
-	return t.remove(t.root, []rune(word), 0)
 }
 
 func (t *Trie) remove(node *node, word []rune, index int) interface{} {
@@ -158,6 +150,26 @@ func (t *Trie) remove(node *node, word []rune, index int) interface{} {
 	return temp
 }
 
+// Remove 删除某个单词
+func (t *Trie) Remove(word string) interface{} {
+	if word == "" {
+		return nil
+	}
+	return t.remove(t.root, []rune(word), 0)
+}
+
+func findPrefix(data map[string]interface{}, s []rune, n *node) {
+	l := len(s)
+	for k, v := range n.next {
+		s = append(s, k)
+		if v.isWord {
+			data[string(s)] = v.value
+		}
+		findPrefix(data, s, v)
+		s = s[:l]
+	}
+}
+
 // GetPrefix 获取所有包含某前缀的数据，包含前缀本身
 func (t *Trie) GetPrefix(word string) map[string]interface{} {
 	ret := make(map[string]interface{})
@@ -175,19 +187,16 @@ func (t *Trie) GetPrefix(word string) map[string]interface{} {
 		ret[word] = cur.value
 	}
 	// 包含此前缀的所有数据
-	t.findPrefix(ret, []rune(word), cur)
+	findPrefix(ret, []rune(word), cur)
 	return ret
 }
 
-func (t *Trie) findPrefix(data map[string]interface{}, s []rune, n *node) {
-	l := len(s)
-	for k, v := range n.next {
-		s = append(s, k)
+func findPrefixCount(count *int, n *node) {
+	for _, v := range n.next {
 		if v.isWord {
-			data[string(s)] = v.value
+			*count++
 		}
-		t.findPrefix(data, s, v)
-		s = s[:l]
+		findPrefixCount(count, v)
 	}
 }
 
@@ -204,26 +213,11 @@ func (t *Trie) GetPrefixCount(word string) int {
 	if cur.isWord {
 		count++
 	}
-	t.findPrefixCount(&count, cur)
+	findPrefixCount(&count, cur)
 	return count
 }
 
-func (t *Trie) findPrefixCount(count *int, n *node) {
-	for _, v := range n.next {
-		if v.isWord {
-			*count++
-		}
-		t.findPrefixCount(count, v)
-	}
-}
-
-// Range 遍历字典树
-// f函数可以对遍历的数据进行操作，返回值为false时停止遍历
-func (t *Trie) Range(f func(word string, value interface{}) bool) {
-	t.toRange([]rune{}, t.root, f)
-}
-
-func (t *Trie) toRange(s []rune, n *node, f func(word string, value interface{}) bool) bool {
+func toRange(s []rune, n *node, f func(word string, value interface{}) bool) bool {
 	if n.isWord {
 		if !f(string(s), n.value) {
 			return false
@@ -235,12 +229,18 @@ func (t *Trie) toRange(s []rune, n *node, f func(word string, value interface{})
 	l := len(s)
 	for k, v := range n.next {
 		s = append(s, k)
-		if !t.toRange(s, v, f) {
+		if !toRange(s, v, f) {
 			return false
 		}
 		s = s[:l]
 	}
 	return true
+}
+
+// Range 遍历字典树
+// f函数可以对遍历的数据进行操作，返回值为false时停止遍历
+func (t *Trie) Range(f func(word string, value interface{}) bool) {
+	toRange([]rune{}, t.root, f)
 }
 
 func (t *Trie) String() string {

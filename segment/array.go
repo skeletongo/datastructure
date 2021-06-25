@@ -45,11 +45,11 @@ func (t *ArraySegment) Get(index int) interface{} {
 	return t.data[index]
 }
 
-func (t *ArraySegment) leftChild(k int) int {
+func leftChild(k int) int {
 	return 2*k + 1
 }
 
-func (t *ArraySegment) rightChild(k int) int {
+func rightChild(k int) int {
 	return 2*k + 2
 }
 
@@ -64,8 +64,8 @@ func (t *ArraySegment) buildTree(treeIndex, l, r int) {
 	}
 
 	mid := l + (r-l)/2
-	leftIndex := t.leftChild(treeIndex)
-	rightIndex := t.rightChild(treeIndex)
+	leftIndex := leftChild(treeIndex)
+	rightIndex := rightChild(treeIndex)
 
 	t.buildTree(leftIndex, l, mid)
 	t.buildTree(rightIndex, mid+1, r)
@@ -89,8 +89,8 @@ func (t *ArraySegment) query(treeIndex, l, r, ql, qr int) interface{} {
 	}
 
 	mid := l + (r-l)/2
-	leftIndex := t.leftChild(treeIndex)
-	rightIndex := t.rightChild(treeIndex)
+	leftIndex := leftChild(treeIndex)
+	rightIndex := rightChild(treeIndex)
 	// 查询范围有三种情况：在左节点，在右节点，左右节点都有
 	if qr <= mid {
 		return t.query(leftIndex, l, mid, ql, qr)
@@ -117,8 +117,8 @@ func (t *ArraySegment) set(treeIndex, l, r, index int, data interface{}) {
 	}
 
 	mid := l + (r-l)/2
-	leftIndex := t.leftChild(treeIndex)
-	rightIndex := t.rightChild(treeIndex)
+	leftIndex := leftChild(treeIndex)
+	rightIndex := rightChild(treeIndex)
 	// 分两种情况：要修改的元素在左节点，要修改的元素在右节点
 	if index <= mid {
 		t.set(leftIndex, l, mid, index, data)
