@@ -1,4 +1,4 @@
-package rbtree
+package tree23
 
 import (
 	"dataStructure/common"
@@ -38,7 +38,7 @@ func (n *node) GetValue() interface{} {
 	return fmt.Sprintf("%v: %v", n.key, n.value)
 }
 
-type RBTree struct {
+type Tree23 struct {
 	root    *node
 	Compare func(a, b interface{}) int
 }
@@ -49,18 +49,18 @@ type RBTree struct {
 // 负数	表示	a<b
 // 0	表示	a=b
 // 正数	表示	a>b
-func New(f func(a, b interface{}) int) *RBTree {
-	return &RBTree{Compare: f}
+func New(f func(a, b interface{}) int) *Tree23 {
+	return &Tree23{Compare: f}
 }
 
-func (r *RBTree) GetSize() int {
+func (r *Tree23) GetSize() int {
 	if r.root == nil {
 		return 0
 	}
 	return r.root.n
 }
 
-func (r *RBTree) IsEmpty() bool {
+func (r *Tree23) IsEmpty() bool {
 	return r.root == nil
 }
 
@@ -74,7 +74,7 @@ func inOrder(n *node, list *[]interface{}) {
 }
 
 // isBST 判断是不是二分搜索树
-func (r *RBTree) isBST() bool {
+func (r *Tree23) isBST() bool {
 	list := new([]interface{})
 	inOrder(r.root, list)
 	for i := 1; i < len(*list); i++ {
@@ -86,7 +86,7 @@ func (r *RBTree) isBST() bool {
 }
 
 // isBalanced 判断是不是平衡二叉树(黑平衡)
-func (r *RBTree) isBalanced() bool {
+func (r *Tree23) isBalanced() bool {
 	return true
 }
 
@@ -167,7 +167,7 @@ func balance(n *node) *node {
 	return n
 }
 
-func (r *RBTree) put(n *node, key, value interface{}) *node {
+func (r *Tree23) put(n *node, key, value interface{}) *node {
 	if n == nil {
 		return newNode(key, value)
 	}
@@ -185,12 +185,12 @@ func (r *RBTree) put(n *node, key, value interface{}) *node {
 	return balance(n)
 }
 
-func (r *RBTree) Put(key, value interface{}) {
+func (r *Tree23) Put(key, value interface{}) {
 	r.root = r.put(r.root, key, value)
 	r.root.color = Black
 }
 
-func (r *RBTree) contains(n *node, key interface{}) bool {
+func (r *Tree23) contains(n *node, key interface{}) bool {
 	if n == nil {
 		return false
 	}
@@ -205,11 +205,11 @@ func (r *RBTree) contains(n *node, key interface{}) bool {
 	return true
 }
 
-func (r *RBTree) Contains(key interface{}) bool {
+func (r *Tree23) Contains(key interface{}) bool {
 	return r.contains(r.root, key)
 }
 
-func (r *RBTree) get(n *node, key interface{}) interface{} {
+func (r *Tree23) get(n *node, key interface{}) interface{} {
 	if n == nil {
 		return nil
 	}
@@ -224,7 +224,7 @@ func (r *RBTree) get(n *node, key interface{}) interface{} {
 	return n.value
 }
 
-func (r *RBTree) Get(key interface{}) interface{} {
+func (r *Tree23) Get(key interface{}) interface{} {
 	return r.get(r.root, key)
 }
 
@@ -244,7 +244,7 @@ func moveRedLeft(n *node) *node {
 	return n
 }
 
-func (r *RBTree) removeMin(n *node) *node {
+func (r *Tree23) removeMin(n *node) *node {
 	if n.left == nil {
 		return nil
 	}
@@ -256,7 +256,7 @@ func (r *RBTree) removeMin(n *node) *node {
 	return balance(n)
 }
 
-func (r *RBTree) RemoveMin() {
+func (r *Tree23) RemoveMin() {
 	if r.root == nil {
 		return
 	}
@@ -283,7 +283,7 @@ func moveRedRight(n *node) *node {
 	return n
 }
 
-func (r *RBTree) removeMax(n *node) *node {
+func (r *Tree23) removeMax(n *node) *node {
 	if isRed(n.left) {
 		n = rightRotate(n)
 	}
@@ -297,7 +297,7 @@ func (r *RBTree) removeMax(n *node) *node {
 	return balance(n)
 }
 
-func (r *RBTree) RemoveMax() {
+func (r *Tree23) RemoveMax() {
 	if r.root == nil {
 		return
 	}
@@ -324,7 +324,7 @@ func minKey(n *node) interface{} {
 	return cur.key
 }
 
-func (r *RBTree) remove(n *node, key interface{}) *node {
+func (r *Tree23) remove(n *node, key interface{}) *node {
 	if n == nil {
 		return nil
 	}
@@ -356,7 +356,7 @@ func (r *RBTree) remove(n *node, key interface{}) *node {
 	return balance(n)
 }
 
-func (r *RBTree) Remove(key interface{}) {
+func (r *Tree23) Remove(key interface{}) {
 	if r.root == nil {
 		return
 	}
@@ -377,6 +377,6 @@ func (r *RBTree) Remove(key interface{}) {
 	}
 }
 
-func (r *RBTree) String() string {
+func (r *Tree23) String() string {
 	return common.PrePrint(r.root)
 }
