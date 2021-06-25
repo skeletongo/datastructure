@@ -79,10 +79,4 @@ func TestAVLTree(t *testing.T) {
 		}
 	}
 	testFunc()
-
-	for k, v := range arr {
-		tree.Put(k, v)
-		m[k] = v
-	}
-	testFunc()
 }
