@@ -1,7 +1,7 @@
 // 堆
 package heap
 
-import "dataStructure/common"
+import "github.com/skeletongo/dataStructure/common"
 
 /*
  二叉堆 添加和取出元素的时间复杂度 O(logN)

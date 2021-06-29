@@ -5,10 +5,11 @@
 package bst
 
 import (
-	"dataStructure/common"
-	"dataStructure/queue"
-	"dataStructure/stack"
 	"fmt"
+
+	"github.com/skeletongo/dataStructure/common"
+	"github.com/skeletongo/dataStructure/queue"
+	"github.com/skeletongo/dataStructure/stack"
 )
 
 type node struct {

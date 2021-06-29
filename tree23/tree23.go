@@ -2,8 +2,9 @@
 package tree23
 
 import (
-	"dataStructure/common"
 	"fmt"
+
+	"github.com/skeletongo/dataStructure/common"
 )
 
 const (

@@ -2,9 +2,10 @@
 package avltree
 
 import (
-	"dataStructure/common"
 	"fmt"
 	"math"
+
+	"github.com/skeletongo/dataStructure/common"
 )
 
 type node struct {

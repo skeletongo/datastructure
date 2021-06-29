@@ -1,9 +1,10 @@
 package stack_test
 
 import (
-	"dataStructure/stack"
 	"fmt"
 	"testing"
+
+	"github.com/skeletongo/dataStructure/stack"
 )
 
 func Example() {

@@ -1,8 +1,9 @@
 package array_test
 
 import (
-	"dataStructure/array"
 	"fmt"
+
+	"github.com/skeletongo/dataStructure/array"
 )
 
 func ExampleNew() {

@@ -1,8 +1,9 @@
 package uf_test
 
 import (
-	"dataStructure/uf"
 	"fmt"
+
+	"github.com/skeletongo/dataStructure/uf"
 )
 
 type data struct {
