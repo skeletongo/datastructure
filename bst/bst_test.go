@@ -1,7 +1,6 @@
 package bst
 
 import (
-	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -249,20 +248,4 @@ func TestBST(t *testing.T) {
 	if bst.Get(100) != nil {
 		t.Error("Set/Get error \n", bst.String())
 	}
-}
-
-func TestPrePrint(t *testing.T) {
-	bst := New(func(a, b interface{}) int {
-		m := a.(int)
-		n := b.(int)
-		return m - n
-	})
-
-	l := rand.Perm(10)
-	fmt.Println(l)
-	for i := 0; i < len(l); i++ {
-		bst.Add(l[i], nil)
-	}
-
-	fmt.Println(bst.String())
 }

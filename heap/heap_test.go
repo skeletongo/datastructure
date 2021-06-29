@@ -1,7 +1,6 @@
 package heap
 
 import (
-	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -117,15 +116,4 @@ func TestIndexHeap_Heapify(t *testing.T) {
 			t.Error("堆错误")
 		}
 	}
-}
-
-func TestArrayHeap_String(t *testing.T) {
-	maxHeap := New(func(a, b interface{}) int {
-		return a.(int) - b.(int)
-	})
-	n := 20
-	for i := 0; i < n; i++ {
-		maxHeap.Add(rand.Intn(50))
-	}
-	fmt.Println(maxHeap)
 }

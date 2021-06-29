@@ -63,7 +63,8 @@ func (h *IndexHeap) shiftUp(i int) {
 	h.reverse[e] = i
 }
 
-func (h *IndexHeap) shiftDown(i int) {
+func (h *IndexHeap) shiftDown(i int) bool {
+	i0 := i
 	n := len(h.indexes)
 	e := h.indexes[i]
 
@@ -85,6 +86,7 @@ func (h *IndexHeap) shiftDown(i int) {
 	}
 	h.indexes[i] = e
 	h.reverse[e] = i
+	return i > i0
 }
 
 func (h *IndexHeap) contains(index int) bool {
@@ -109,8 +111,9 @@ func (h *IndexHeap) Change(index int, v interface{}) {
 	h.data[index] = v
 	j := h.reverse[index]
 	if len(h.indexes) > 1 {
-		h.shiftUp(j)
-		h.shiftDown(j)
+		if !h.shiftDown(j) {
+			h.shiftUp(j)
+		}
 	}
 }
 

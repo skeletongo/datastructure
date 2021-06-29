@@ -149,15 +149,3 @@ func TestNew2(t *testing.T) {
 		fmt.Println(k, v)
 	}
 }
-
-func TestTrie_Range(t *testing.T) {
-	tree := New()
-	for k, v := range chineseWord {
-		tree.Add(k, v)
-	}
-
-	tree.Range(func(word string, value interface{}) bool {
-		fmt.Println(word, value)
-		return true
-	})
-}
