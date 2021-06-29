@@ -25,13 +25,13 @@ type BSTSegment struct {
 	Merge func(a, b interface{}) interface{} // 节点融合方法
 }
 
-func NewBSTSegment(arr []interface{}, f func(a, b interface{}) interface{}) *BSTSegment {
+func NewBSTSegment(arr []interface{}, merge func(a, b interface{}) interface{}) *BSTSegment {
 	if len(arr) == 0 {
 		panic("NewBSTSegment: no data")
 	}
 
 	t := BSTSegment{}
-	t.Merge = f
+	t.Merge = merge
 	t.data = make([]interface{}, len(arr))
 	copy(t.data, arr)
 	t.root = t.buildTree(0, len(arr)-1)

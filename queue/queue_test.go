@@ -42,6 +42,33 @@ func testQueue(q Queue) error {
 	return nil
 }
 
+func testHeapQueue(q *PriorityQueue) error {
+	n := 100000
+	var data []int
+	for i := 0; i < n; i++ {
+		v := rand.Intn(n)
+		item := &Item{Value: v}
+		q.Enqueue(item)
+		if rand.Intn(2) == 0 {
+			item.Value = rand.Intn(n)
+			HeapUpdate(q, item)
+		}
+	}
+	for v := q.Dequeue(); v != nil; v = q.Dequeue() {
+		data = append(data, v.(*Item).Value.(int))
+	}
+
+	if len(data) != n {
+		return errors.New("1")
+	}
+	for i := 1; i < n; i++ {
+		if data[i-1] > data[i] {
+			return errors.New("2")
+		}
+	}
+	return nil
+}
+
 func TestArrayQueue(t *testing.T) {
 	if err := testQueue(NewArrayQueue()); err != nil {
 		t.Error(err)
@@ -58,6 +85,61 @@ func TestLoopRingQueue(t *testing.T) {
 	if err := testQueue(NewRingQueue()); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestHeapQueue(t *testing.T) {
+	if err := testHeapQueue(NewPriorityQueue(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})); err != nil {
+		t.Error(err)
+	}
+}
+
+// 优先队列入队测试
+func BenchmarkHeapPush(b *testing.B) {
+	n := 1000
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		q := NewPriorityQueue(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+		b.StartTimer()
+		for j := 0; j < n; j++ {
+			q.Enqueue(&Item{Value: rand.Int()})
+		}
+	}
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/queue
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkHeapPush
+	//BenchmarkHeapPush-8   	   12266	     95403 ns/op
+}
+
+// 优先队列出队测试
+func BenchmarkHeapPop(b *testing.B) {
+	n := 1000
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		q := NewPriorityQueue(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+		for j := 0; j < n; j++ {
+			q.Enqueue(&Item{Value: rand.Int()})
+		}
+		b.StartTimer()
+		for j := 0; j < n; j++ {
+			q.Dequeue()
+		}
+	}
+
+	//goos: windows
+	//goarch: amd64
+	//pkg: dataStructure/queue
+	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+	//BenchmarkHeapPop
+	//BenchmarkHeapPop-8   	    5824	    190853 ns/op
 }
 
 // 入队性能测试

@@ -17,14 +17,14 @@ type ArraySegment struct {
 
 // NewArraySegment 创建线段树
 // arr 原数据
-// f 数据融合方法
-func NewArraySegment(arr []interface{}, f func(a, b interface{}) interface{}) *ArraySegment {
+// merge 数据融合方法
+func NewArraySegment(arr []interface{}, merge func(a, b interface{}) interface{}) *ArraySegment {
 	if len(arr) == 0 {
 		panic("NewArraySegment: no data")
 	}
 
 	t := ArraySegment{}
-	t.Merge = f
+	t.Merge = merge
 	t.data = make([]interface{}, len(arr))
 	copy(t.data, arr)
 	t.tree = make([]interface{}, 4*len(arr))

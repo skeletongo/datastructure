@@ -43,13 +43,13 @@ type BST struct {
 }
 
 // New 创建二分搜索树
-// 参数 f 为自定义元素大小比较函数
+// 参数 compare 为自定义元素大小比较函数
 // 大小比较函数 返回值：
 // 负数	表示	a<b
 // 0	表示	a=b
 // 正数	表示	a>b
-func New(f func(a, b interface{}) int) *BST {
-	return &BST{Compare: f}
+func New(compare func(a, b interface{}) int) *BST {
+	return &BST{Compare: compare}
 }
 
 // GetSize 获取节点总数
