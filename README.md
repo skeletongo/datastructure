@@ -1,4 +1,4 @@
-# datastructure
+# dataStructure
 ### 常用数据结构实现
 #### 1.动态数组√  
 #### 2.单向链表-  
