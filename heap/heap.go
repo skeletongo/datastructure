@@ -60,8 +60,7 @@ func (h *Heap) siftUp(i int) {
 }
 
 // siftDown 元素下沉
-func (h *Heap) siftDown(i int) bool {
-	i0 := i
+func (h *Heap) siftDown(i int) {
 	n := len(h.array)
 	e := h.array[i]
 	for {
@@ -79,7 +78,6 @@ func (h *Heap) siftDown(i int) bool {
 		i = j
 	}
 	h.array[i] = e
-	return i > i0
 }
 
 // Add 添加元素
