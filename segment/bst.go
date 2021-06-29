@@ -1,6 +1,6 @@
 package segment
 
-import "github.com/skeletongo/dataStructure/common"
+import "github.com/skeletongo/datastructure/common"
 
 type node struct {
 	left, right *node

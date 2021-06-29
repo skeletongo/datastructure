@@ -111,7 +111,7 @@ func BenchmarkHeapPush(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/queue
+	//pkg: datastructure/queue
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkHeapPush
 	//BenchmarkHeapPush-8   	   12266	     95403 ns/op
@@ -136,7 +136,7 @@ func BenchmarkHeapPop(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/queue
+	//pkg: datastructure/queue
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkHeapPop
 	//BenchmarkHeapPop-8   	    5824	    190853 ns/op
@@ -174,7 +174,7 @@ func BenchmarkQueue_Enqueue(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/queue
+	//pkg: datastructure/queue
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkQueue_Enqueue
 	//BenchmarkQueue_Enqueue/ArrayQueueEnqueue
@@ -220,7 +220,7 @@ func BenchmarkQueue_Dequeue(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/queue
+	//pkg: datastructure/queue
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkQueue_Dequeue
 	//BenchmarkQueue_Dequeue/ArrayQueueDequeue
@@ -268,7 +268,7 @@ func BenchmarkQueue(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/queue
+	//pkg: datastructure/queue
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkQueue
 	//BenchmarkQueue/ArrayQueue

@@ -7,9 +7,9 @@ package bst
 import (
 	"fmt"
 
-	"github.com/skeletongo/dataStructure/common"
-	"github.com/skeletongo/dataStructure/queue"
-	"github.com/skeletongo/dataStructure/stack"
+	"github.com/skeletongo/datastructure/common"
+	"github.com/skeletongo/datastructure/queue"
+	"github.com/skeletongo/datastructure/stack"
 )
 
 type node struct {

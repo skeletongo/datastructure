@@ -4,7 +4,7 @@ package tree23
 import (
 	"fmt"
 
-	"github.com/skeletongo/dataStructure/common"
+	"github.com/skeletongo/datastructure/common"
 )
 
 const (

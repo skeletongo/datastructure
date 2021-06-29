@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/skeletongo/dataStructure/common"
+	"github.com/skeletongo/datastructure/common"
 )
 
 type node struct {

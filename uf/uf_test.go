@@ -114,7 +114,7 @@ func BenchmarkUF_IsConnected(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/uf
+	//pkg: datastructure/uf
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkUF_IsConnected
 	//BenchmarkUF_IsConnected/FindParentFuncLess
@@ -146,7 +146,7 @@ func BenchmarkUF_Union(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/uf
+	//pkg: datastructure/uf
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkUF_Union
 	//BenchmarkUF_Union/FindParentFuncLess

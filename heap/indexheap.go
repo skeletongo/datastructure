@@ -1,6 +1,6 @@
 package heap
 
-import "github.com/skeletongo/dataStructure/common"
+import "github.com/skeletongo/datastructure/common"
 
 // IndexHeap 索引堆
 type IndexHeap struct {

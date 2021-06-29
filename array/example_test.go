@@ -3,7 +3,7 @@ package array_test
 import (
 	"fmt"
 
-	"github.com/skeletongo/dataStructure/array"
+	"github.com/skeletongo/datastructure/array"
 )
 
 func ExampleNew() {

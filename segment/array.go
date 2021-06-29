@@ -1,7 +1,7 @@
 package segment
 
 import (
-	"github.com/skeletongo/dataStructure/common"
+	"github.com/skeletongo/datastructure/common"
 )
 
 /*

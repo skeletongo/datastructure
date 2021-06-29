@@ -3,7 +3,7 @@ package queue_test
 import (
 	"fmt"
 
-	"github.com/skeletongo/dataStructure/queue"
+	"github.com/skeletongo/datastructure/queue"
 )
 
 func ExampleArrayQueue() {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/skeletongo/dataStructure/stack"
+	"github.com/skeletongo/datastructure/stack"
 )
 
 func Example() {
@@ -62,7 +62,7 @@ func BenchmarkStack_Push(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/stack
+	//pkg: datastructure/stack
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkStack_Push
 	//BenchmarkStack_Push/ArrayStackPush
@@ -101,7 +101,7 @@ func BenchmarkStack_Pop(b *testing.B) {
 
 	//goos: windows
 	//goarch: amd64
-	//pkg: dataStructure/stack
+	//pkg: datastructure/stack
 	//cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 	//BenchmarkStack_Pop
 	//BenchmarkStack_Pop/ArrayStackPop

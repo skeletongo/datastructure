@@ -1,3 +1,3 @@
-module github.com/skeletongo/dataStructure
+module github.com/skeletongo/datastructure
 
 go 1.15
