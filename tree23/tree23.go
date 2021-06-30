@@ -2,43 +2,8 @@
 package tree23
 
 import (
-	"fmt"
-
 	"github.com/skeletongo/datastructure/common"
 )
-
-const (
-	Red   = true
-	Black = false
-)
-
-type node struct {
-	left, right *node
-	color       bool
-	n           int         // 以当前节点为根的树的节点数量
-	key, value  interface{} // 存储映射的键值对
-}
-
-func newNode(key, value interface{}) *node {
-	return &node{
-		key:   key,
-		value: value,
-		color: Red,
-		n:     1,
-	}
-}
-
-func (n *node) GetLeftNode() common.INode {
-	return n.left
-}
-
-func (n *node) GetRightNode() common.INode {
-	return n.right
-}
-
-func (n *node) GetValue() interface{} {
-	return fmt.Sprintf("%v: %v", n.key, n.value)
-}
 
 type Tree23 struct {
 	root    *node
@@ -153,7 +118,9 @@ func flipColors(n *node) {
 	n.right.color = Black
 }
 
-// balance 维护红节点的位置，也是分解4节点(颜色翻转)的过程
+// balance 维护红节点的位置
+// 1.将不正确的3节点和4节点变幻成正确的3节点和4节点
+// 2.将4节点分解成两个2节点，将剩余的节点向它的父节点融合
 // 隐含条件，n不为nil
 func balance(n *node) *node {
 	if isRed(n.right) && !isRed(n.left) {
