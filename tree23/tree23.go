@@ -346,6 +346,10 @@ func (r *Tree23) Remove(key interface{}) {
 	}
 }
 
+func (r *Tree23) Range(f func(key, value interface{})) {
+	common.PreOrder(r.root, f)
+}
+
 func (r *Tree23) String() string {
 	return common.PrePrint(r.root)
 }

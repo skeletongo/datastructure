@@ -5,8 +5,6 @@
 package bst
 
 import (
-	"fmt"
-
 	"github.com/skeletongo/datastructure/common"
 	"github.com/skeletongo/datastructure/queue"
 	"github.com/skeletongo/datastructure/stack"
@@ -21,16 +19,20 @@ func newNode(key, value interface{}) *node {
 	return &node{key: key, value: value}
 }
 
-func (n *node) GetLeftNode() common.INode {
+func (n *node) GetLeftNode() common.INodeKey {
 	return n.left
 }
 
-func (n *node) GetRightNode() common.INode {
+func (n *node) GetRightNode() common.INodeKey {
 	return n.right
 }
 
+func (n *node) GetKey() interface{} {
+	return n.key
+}
+
 func (n *node) GetValue() interface{} {
-	return fmt.Sprintf("%v: %v", n.key, n.value)
+	return n.value
 }
 
 // BST 二分搜索树
@@ -600,6 +602,10 @@ func (b *BST) LevelOrder(f func(key, value interface{})) {
 			q.Enqueue(n.right)
 		}
 	}
+}
+
+func (b *BST) Range(f func(key, value interface{})) {
+	common.PreOrder(b.root, f)
 }
 
 func (b *BST) String() string {

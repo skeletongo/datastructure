@@ -1,8 +1,6 @@
 package tree23
 
 import (
-	"fmt"
-
 	"github.com/skeletongo/datastructure/common"
 )
 
@@ -27,14 +25,18 @@ func newNode(key, value interface{}) *node {
 	}
 }
 
-func (n *node) GetLeftNode() common.INode {
+func (n *node) GetLeftNode() common.INodeKey {
 	return n.left
 }
 
-func (n *node) GetRightNode() common.INode {
+func (n *node) GetRightNode() common.INodeKey {
 	return n.right
 }
 
+func (n *node) GetKey() interface{} {
+	return n.key
+}
+
 func (n *node) GetValue() interface{} {
-	return fmt.Sprintf("%v: %v", n.key, n.value)
+	return n.value
 }

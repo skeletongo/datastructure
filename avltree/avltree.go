@@ -2,7 +2,6 @@
 package avltree
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/skeletongo/datastructure/common"
@@ -30,8 +29,12 @@ func (n *node) GetRightNode() common.INode {
 	return n.right
 }
 
+func (n *node) GetKey() interface{} {
+	return n.key
+}
+
 func (n *node) GetValue() interface{} {
-	return fmt.Sprintf("%v: %v", n.key, n.value)
+	return n.value
 }
 
 type AVLTree struct {
