@@ -339,6 +339,10 @@ func (a *AVLTree) Get(key interface{}) interface{} {
 	return n.value
 }
 
+func (a *AVLTree) Range(f func(key, value interface{})) {
+	common.PreOrder(a.root, f)
+}
+
 func (a *AVLTree) String() string {
 	return common.PrePrint(a.root)
 }

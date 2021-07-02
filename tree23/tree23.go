@@ -20,15 +20,15 @@ func New(compare func(a, b interface{}) int) *Tree23 {
 	return &Tree23{Compare: compare}
 }
 
-func (r *Tree23) GetSize() int {
-	if r.root == nil {
+func (t *Tree23) GetSize() int {
+	if t.root == nil {
 		return 0
 	}
-	return r.root.n
+	return t.root.n
 }
 
-func (r *Tree23) IsEmpty() bool {
-	return r.root == nil
+func (t *Tree23) IsEmpty() bool {
+	return t.root == nil
 }
 
 func inOrder(n *node, list *[]interface{}) {
@@ -41,11 +41,11 @@ func inOrder(n *node, list *[]interface{}) {
 }
 
 // isBST 判断是不是二分搜索树
-func (r *Tree23) isBST() bool {
-	list := new([]interface{})
-	inOrder(r.root, list)
-	for i := 1; i < len(*list); i++ {
-		if r.Compare((*list)[i-1], (*list)[i]) > 0 {
+func (t *Tree23) isBST() bool {
+	arr := new([]interface{})
+	inOrder(t.root, arr)
+	for i := 1; i < len(*arr); i++ {
+		if t.Compare((*arr)[i-1], (*arr)[i]) > 0 {
 			return false
 		}
 	}
@@ -53,7 +53,7 @@ func (r *Tree23) isBST() bool {
 }
 
 // isBalanced 判断是不是平衡二叉树(黑平衡)
-func (r *Tree23) isBalanced() bool {
+func (t *Tree23) isBalanced() bool {
 	return true
 }
 
@@ -136,16 +136,16 @@ func balance(n *node) *node {
 	return n
 }
 
-func (r *Tree23) put(n *node, key, value interface{}) *node {
+func (t *Tree23) put(n *node, key, value interface{}) *node {
 	if n == nil {
 		return newNode(key, value)
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		n.left = r.put(n.left, key, value)
+		n.left = t.put(n.left, key, value)
 	} else if res < 0 {
-		n.right = r.put(n.right, key, value)
+		n.right = t.put(n.right, key, value)
 	} else {
 		n.value = value
 		return n
@@ -154,47 +154,47 @@ func (r *Tree23) put(n *node, key, value interface{}) *node {
 	return balance(n)
 }
 
-func (r *Tree23) Put(key, value interface{}) {
-	r.root = r.put(r.root, key, value)
-	r.root.color = Black
+func (t *Tree23) Put(key, value interface{}) {
+	t.root = t.put(t.root, key, value)
+	t.root.color = Black
 }
 
-func (r *Tree23) contains(n *node, key interface{}) bool {
+func (t *Tree23) contains(n *node, key interface{}) bool {
 	if n == nil {
 		return false
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		return r.contains(n.left, key)
+		return t.contains(n.left, key)
 	}
 	if res < 0 {
-		return r.contains(n.right, key)
+		return t.contains(n.right, key)
 	}
 	return true
 }
 
-func (r *Tree23) Contains(key interface{}) bool {
-	return r.contains(r.root, key)
+func (t *Tree23) Contains(key interface{}) bool {
+	return t.contains(t.root, key)
 }
 
-func (r *Tree23) get(n *node, key interface{}) interface{} {
+func (t *Tree23) get(n *node, key interface{}) interface{} {
 	if n == nil {
 		return nil
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		return r.get(n.left, key)
+		return t.get(n.left, key)
 	}
 	if res < 0 {
-		return r.get(n.right, key)
+		return t.get(n.right, key)
 	}
 	return n.value
 }
 
-func (r *Tree23) Get(key interface{}) interface{} {
-	return r.get(r.root, key)
+func (t *Tree23) Get(key interface{}) interface{} {
+	return t.get(t.root, key)
 }
 
 // colorsFlip 颜色翻转
@@ -213,7 +213,7 @@ func moveRedLeft(n *node) *node {
 	return n
 }
 
-func (r *Tree23) removeMin(n *node) *node {
+func (t *Tree23) removeMin(n *node) *node {
 	if n.left == nil {
 		return nil
 	}
@@ -221,26 +221,26 @@ func (r *Tree23) removeMin(n *node) *node {
 	if !isRed(n.left) && !isRed(n.left.left) {
 		n = moveRedLeft(n)
 	}
-	n.left = r.removeMin(n.left)
+	n.left = t.removeMin(n.left)
 	return balance(n)
 }
 
-func (r *Tree23) RemoveMin() {
-	if r.root == nil {
+func (t *Tree23) RemoveMin() {
+	if t.root == nil {
 		return
 	}
 
-	if r.root.n == 1 {
-		r.root = nil
+	if t.root.n == 1 {
+		t.root = nil
 		return
 	}
 
-	if !isRed(r.root.left) && !isRed(r.root.right) {
-		r.root.color = Red
+	if !isRed(t.root.left) && !isRed(t.root.right) {
+		t.root.color = Red
 	}
-	r.root = r.removeMin(r.root)
-	if !r.IsEmpty() {
-		r.root.color = Black
+	t.root = t.removeMin(t.root)
+	if !t.IsEmpty() {
+		t.root.color = Black
 	}
 }
 
@@ -252,7 +252,7 @@ func moveRedRight(n *node) *node {
 	return n
 }
 
-func (r *Tree23) removeMax(n *node) *node {
+func (t *Tree23) removeMax(n *node) *node {
 	if isRed(n.left) {
 		n = rightRotate(n)
 	}
@@ -262,26 +262,26 @@ func (r *Tree23) removeMax(n *node) *node {
 	if !isRed(n.right) && !isRed(n.right.left) {
 		n = moveRedRight(n)
 	}
-	n.right = r.removeMax(n.right)
+	n.right = t.removeMax(n.right)
 	return balance(n)
 }
 
-func (r *Tree23) RemoveMax() {
-	if r.root == nil {
+func (t *Tree23) RemoveMax() {
+	if t.root == nil {
 		return
 	}
 
-	if r.root.n == 1 {
-		r.root = nil
+	if t.root.n == 1 {
+		t.root = nil
 		return
 	}
 
-	if !isRed(r.root.left) && !isRed(r.root.right) {
-		r.root.color = Red
+	if !isRed(t.root.left) && !isRed(t.root.right) {
+		t.root.color = Red
 	}
-	r.root = r.removeMax(r.root)
-	if !r.IsEmpty() {
-		r.root.color = Black
+	t.root = t.removeMax(t.root)
+	if !t.IsEmpty() {
+		t.root.color = Black
 	}
 }
 
@@ -293,17 +293,17 @@ func minKey(n *node) interface{} {
 	return cur.key
 }
 
-func (r *Tree23) remove(n *node, key interface{}) *node {
+func (t *Tree23) remove(n *node, key interface{}) *node {
 	if n == nil {
 		return nil
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
 		if !isRed(n.left) && !isRed(n.left.left) {
 			n = moveRedLeft(n)
 		}
-		n.left = r.remove(n.left, key)
+		n.left = t.remove(n.left, key)
 	} else {
 		if isRed(n.left) {
 			n = rightRotate(n)
@@ -316,40 +316,40 @@ func (r *Tree23) remove(n *node, key interface{}) *node {
 		}
 		if res == 0 {
 			n.key = minKey(n.right)
-			n.value = r.get(n.right, n.key)
-			n.right = r.removeMin(n.right)
+			n.value = t.get(n.right, n.key)
+			n.right = t.removeMin(n.right)
 		} else {
-			n.right = r.remove(n.right, key)
+			n.right = t.remove(n.right, key)
 		}
 	}
 	return balance(n)
 }
 
-func (r *Tree23) Remove(key interface{}) {
-	if r.root == nil {
+func (t *Tree23) Remove(key interface{}) {
+	if t.root == nil {
 		return
 	}
 
-	if r.root.n == 1 {
-		if r.Compare(r.root.key, key) == 0 {
-			r.root = nil
+	if t.root.n == 1 {
+		if t.Compare(t.root.key, key) == 0 {
+			t.root = nil
 		}
 		return
 	}
 
-	if !isRed(r.root.left) && !isRed(r.root.right) {
-		r.root.color = Red
+	if !isRed(t.root.left) && !isRed(t.root.right) {
+		t.root.color = Red
 	}
-	r.root = r.remove(r.root, key)
-	if !r.IsEmpty() {
-		r.root.color = Black
+	t.root = t.remove(t.root, key)
+	if !t.IsEmpty() {
+		t.root.color = Black
 	}
 }
 
-func (r *Tree23) Range(f func(key, value interface{})) {
-	common.PreOrder(r.root, f)
+func (t *Tree23) Range(f func(key, value interface{})) {
+	common.PreOrder(t.root, f)
 }
 
-func (r *Tree23) String() string {
-	return common.PrePrint(r.root)
+func (t *Tree23) String() string {
+	return common.PrePrint(t.root)
 }

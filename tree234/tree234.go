@@ -1,5 +1,7 @@
 package tree234
 
+import "github.com/skeletongo/datastructure/common"
+
 type Tree234 struct {
 	root    *node
 	Compare func(a, b interface{}) int
@@ -15,15 +17,15 @@ func New(compare func(a, b interface{}) int) *Tree234 {
 	return &Tree234{Compare: compare}
 }
 
-func (r *Tree234) GetSize() int {
-	if r.root == nil {
+func (t *Tree234) GetSize() int {
+	if t.root == nil {
 		return 0
 	}
-	return r.root.n
+	return t.root.n
 }
 
-func (r *Tree234) IsEmpty() bool {
-	return r.root == nil
+func (t *Tree234) IsEmpty() bool {
+	return t.root == nil
 }
 
 func inOrder(n *node, list *[]interface{}) {
@@ -36,11 +38,11 @@ func inOrder(n *node, list *[]interface{}) {
 }
 
 // isBST 判断是不是二分搜索树
-func (r *Tree234) isBST() bool {
-	list := new([]interface{})
-	inOrder(r.root, list)
-	for i := 1; i < len(*list); i++ {
-		if r.Compare((*list)[i-1], (*list)[i]) > 0 {
+func (t *Tree234) isBST() bool {
+	arr := new([]interface{})
+	inOrder(t.root, arr)
+	for i := 1; i < len(*arr); i++ {
+		if t.Compare((*arr)[i-1], (*arr)[i]) > 0 {
 			return false
 		}
 	}
@@ -48,7 +50,7 @@ func (r *Tree234) isBST() bool {
 }
 
 // isBalanced 判断是不是平衡二叉树(黑平衡)
-func (r *Tree234) isBalanced() bool {
+func (t *Tree234) isBalanced() bool {
 	return true
 }
 
@@ -147,16 +149,16 @@ func balance(n *node) *node {
 	return n
 }
 
-func (r *Tree234) put(n *node, key, value interface{}) *node {
+func (t *Tree234) put(n *node, key, value interface{}) *node {
 	if n == nil {
 		return newNode(key, value)
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		n.left = r.put(n.left, key, value)
+		n.left = t.put(n.left, key, value)
 	} else if res < 0 {
-		n.right = r.put(n.right, key, value)
+		n.right = t.put(n.right, key, value)
 	} else {
 		n.value = value
 		return n
@@ -165,9 +167,9 @@ func (r *Tree234) put(n *node, key, value interface{}) *node {
 	return balance(n)
 }
 
-func (r *Tree234) Put(key, value interface{}) {
-	r.root = r.put(r.root, key, value)
-	r.root.color = Black
+func (t *Tree234) Put(key, value interface{}) {
+	t.root = t.put(t.root, key, value)
+	t.root.color = Black
 }
 
 // put 方式定义允许存在的节点有四种，分别是2节点，左倾3节点，右倾3节点，4节点
@@ -175,7 +177,7 @@ func (r *Tree234) Put(key, value interface{}) {
 // 区别：
 // put2 方式代码简化，减少了很多判断，去掉了判断右倾3节点的情况，但是增加了左旋转的次数，相对于 put 方式
 // put 方式判断的情况比较多但是减少了旋转次数
-func (r *Tree234) put2(n *node, key, value interface{}) *node {
+func (t *Tree234) put2(n *node, key, value interface{}) *node {
 	if n == nil {
 		return newNode(key, value)
 	}
@@ -184,11 +186,11 @@ func (r *Tree234) put2(n *node, key, value interface{}) *node {
 		flipColors(n)
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		n.left = r.put(n.left, key, value)
+		n.left = t.put(n.left, key, value)
 	} else if res < 0 {
-		n.right = r.put(n.right, key, value)
+		n.right = t.put(n.right, key, value)
 	} else {
 		n.value = value
 		return n
@@ -205,40 +207,48 @@ func (r *Tree234) put2(n *node, key, value interface{}) *node {
 	return n
 }
 
-func (r *Tree234) contains(n *node, key interface{}) bool {
+func (t *Tree234) contains(n *node, key interface{}) bool {
 	if n == nil {
 		return false
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		return r.contains(n.left, key)
+		return t.contains(n.left, key)
 	}
 	if res < 0 {
-		return r.contains(n.right, key)
+		return t.contains(n.right, key)
 	}
 	return true
 }
 
-func (r *Tree234) Contains(key interface{}) bool {
-	return r.contains(r.root, key)
+func (t *Tree234) Contains(key interface{}) bool {
+	return t.contains(t.root, key)
 }
 
-func (r *Tree234) get(n *node, key interface{}) interface{} {
+func (t *Tree234) get(n *node, key interface{}) interface{} {
 	if n == nil {
 		return nil
 	}
 
-	res := r.Compare(n.key, key)
+	res := t.Compare(n.key, key)
 	if res > 0 {
-		return r.get(n.left, key)
+		return t.get(n.left, key)
 	}
 	if res < 0 {
-		return r.get(n.right, key)
+		return t.get(n.right, key)
 	}
 	return n.value
 }
 
-func (r *Tree234) Get(key interface{}) interface{} {
-	return r.get(r.root, key)
+func (t *Tree234) Get(key interface{}) interface{} {
+	return t.get(t.root, key)
+}
+
+func (t *Tree234) Range(f func(key, value interface{})) {
+	common.PreOrder(t.root, f)
+}
+
+func (t *Tree234) String() string {
+	return common.PrePrint(t.root)
 }

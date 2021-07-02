@@ -375,49 +375,19 @@ func (b *BST) Get(key interface{}) interface{} {
 	return n.value
 }
 
-func preOrder(n *node, f func(key, value interface{})) {
-	if n == nil {
-		return
-	}
-
-	f(n.key, n.value)
-	preOrder(n.left, f)
-	preOrder(n.right, f)
-}
-
 // PreOrder 前序遍历
 func (b *BST) PreOrder(f func(key, value interface{})) {
-	preOrder(b.root, f)
-}
-
-func inOrder(n *node, f func(key, value interface{})) {
-	if n == nil {
-		return
-	}
-
-	inOrder(n.left, f)
-	f(n.key, n.value)
-	inOrder(n.right, f)
+	common.PreOrder(b.root, f)
 }
 
 // InOrder 中序遍历
 func (b *BST) InOrder(f func(key, value interface{})) {
-	inOrder(b.root, f)
-}
-
-func postOrder(n *node, f func(key, value interface{})) {
-	if n == nil {
-		return
-	}
-
-	postOrder(n.left, f)
-	postOrder(n.right, f)
-	f(n.key, n.value)
+	common.InOrder(b.root, f)
 }
 
 // PostOrder 后序遍历
 func (b *BST) PostOrder(f func(key, value interface{})) {
-	postOrder(b.root, f)
+	common.PostOrder(b.root, f)
 }
 
 // PreOrderNR 前序遍历非递归
