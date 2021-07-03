@@ -21,6 +21,9 @@ import (
 // PrePrint 前序打印二叉树
 // n 二叉树节点
 func PrePrint(n interface{}) string {
+	if n == nil || reflect.ValueOf(n).IsNil() {
+		return ""
+	}
 	buf := &bytes.Buffer{}
 	prePrint(buf, "", n, 0, false, false)
 	return buf.String()
@@ -29,7 +32,7 @@ func PrePrint(n interface{}) string {
 func prePrint(buf *bytes.Buffer, prefix string, node interface{}, n int, end, isLeft bool) {
 	// 接口值包含两部分，所包含的动态类型和动态类型的值
 	// 只有两部分都为nil，接口值才等于nil
-	if reflect.ValueOf(node).IsNil() {
+	if node == nil || reflect.ValueOf(node).IsNil() {
 		return
 	}
 	if n > 0 {
@@ -47,7 +50,7 @@ func prePrint(buf *bytes.Buffer, prefix string, node interface{}, n int, end, is
 			prefix = prefix[:len(prefix)-3] + "|  "
 		}
 	}
-	prePrint(buf, prefix, getLeftNode(node), n+1, reflect.ValueOf(getRightNode(node)).IsNil(), true)
+	prePrint(buf, prefix, getLeftNode(node), n+1, getRightNode(node) == nil, true)
 	prePrint(buf, prefix, getRightNode(node), n+1, true, false)
 }
 

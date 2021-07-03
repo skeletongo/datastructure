@@ -1,6 +1,9 @@
 package common
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 type INode interface {
 	GetLeftNode() INode
@@ -18,9 +21,17 @@ type INodeKey interface {
 func getLeftNode(v interface{}) interface{} {
 	switch val := v.(type) {
 	case INode:
-		return val.GetLeftNode()
+		n := val.GetLeftNode()
+		if reflect.ValueOf(n).IsNil() {
+			return nil
+		}
+		return n
 	case INodeKey:
-		return val.GetLeftNode()
+		n := val.GetLeftNode()
+		if reflect.ValueOf(n).IsNil() {
+			return nil
+		}
+		return n
 	default:
 		panic("invalid node")
 	}
@@ -29,9 +40,17 @@ func getLeftNode(v interface{}) interface{} {
 func getRightNode(v interface{}) interface{} {
 	switch val := v.(type) {
 	case INode:
-		return val.GetRightNode()
+		n := val.GetRightNode()
+		if reflect.ValueOf(n).IsNil() {
+			return nil
+		}
+		return n
 	case INodeKey:
-		return val.GetRightNode()
+		n := val.GetRightNode()
+		if reflect.ValueOf(n).IsNil() {
+			return nil
+		}
+		return n
 	default:
 		panic("invalid node")
 	}
@@ -66,6 +85,6 @@ func getString(v interface{}) string {
 	case INodeKey:
 		return fmt.Sprintf("%v: %v", val.GetKey(), val.GetValue())
 	default:
-		panic("invalid node")
+		return ""
 	}
 }

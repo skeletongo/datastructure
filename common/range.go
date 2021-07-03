@@ -1,7 +1,9 @@
 package common
 
+import "reflect"
+
 func PreOrder(n interface{}, f func(key, value interface{})) {
-	if n == nil {
+	if n == nil || reflect.ValueOf(n).IsNil() {
 		return
 	}
 
@@ -11,7 +13,7 @@ func PreOrder(n interface{}, f func(key, value interface{})) {
 }
 
 func InOrder(n interface{}, f func(key, value interface{})) {
-	if n == nil {
+	if n == nil || reflect.ValueOf(n).IsNil() {
 		return
 	}
 
@@ -21,7 +23,7 @@ func InOrder(n interface{}, f func(key, value interface{})) {
 }
 
 func PostOrder(n interface{}, f func(key, value interface{})) {
-	if n == nil {
+	if n == nil || reflect.ValueOf(n).IsNil() {
 		return
 	}
 

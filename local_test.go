@@ -1,8 +1,8 @@
 package datastructure
 
 import (
-	"container/ring"
 	"fmt"
+	"math/rand"
 	"testing"
 )
 
@@ -13,6 +13,7 @@ func Test1(t *testing.T) {
 }
 
 func Test2(t *testing.T) {
-	r := ring.New(0)
-	r.Next()
+	b := 0b11001
+	print(b)
+	rand.Float64()
 }

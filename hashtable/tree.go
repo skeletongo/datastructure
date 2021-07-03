@@ -1,6 +1,7 @@
 package hashtable
 
 import (
+	"bytes"
 	"github.com/skeletongo/datastructure/tree23"
 )
 
@@ -79,4 +80,15 @@ func (t *TableTree) Contains(key interface{}) bool {
 
 func (t *TableTree) Get(key interface{}) interface{} {
 	return t.tableTree[hash(key, t.m)].Get(key)
+}
+
+func (t *TableTree) String() string {
+	buf := bytes.Buffer{}
+	for _, v := range t.tableTree {
+		if v.GetSize() > 0 {
+			buf.WriteString(v.String())
+			buf.WriteString("\n")
+		}
+	}
+	return buf.String()
 }

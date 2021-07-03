@@ -100,17 +100,11 @@ func TestTree23(t *testing.T) {
 	}
 
 	// 删除
-	for i := 0; i < n; i++ {
-		if rand.Intn(10) < 5 {
-			for k := range m {
-				tree.Remove(k)
-				delete(m, k)
-				break
-			}
-			if rand.Intn(10) < 5 {
-				testFunc()
-			}
+	for len(m) > 0 {
+		for k := range m {
+			tree.Remove(k)
+			delete(m, k)
+			testFunc()
 		}
 	}
-	testFunc()
 }

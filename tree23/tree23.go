@@ -298,8 +298,7 @@ func (t *Tree23) remove(n *node, key interface{}) *node {
 		return nil
 	}
 
-	res := t.Compare(n.key, key)
-	if res > 0 {
+	if t.Compare(n.key, key) > 0 {
 		if !isRed(n.left) && !isRed(n.left.left) {
 			n = moveRedLeft(n)
 		}
@@ -308,13 +307,13 @@ func (t *Tree23) remove(n *node, key interface{}) *node {
 		if isRed(n.left) {
 			n = rightRotate(n)
 		}
-		if res == 0 && n.right == nil {
+		if t.Compare(n.key, key) == 0 && n.right == nil {
 			return nil
 		}
 		if !isRed(n.right) && !isRed(n.right.left) {
 			n = moveRedRight(n)
 		}
-		if res == 0 {
+		if t.Compare(n.key, key) == 0 {
 			n.key = minKey(n.right)
 			n.value = t.get(n.right, n.key)
 			n.right = t.removeMin(n.right)
