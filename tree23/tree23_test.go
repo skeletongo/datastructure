@@ -111,7 +111,7 @@ func TestTree23_String(t *testing.T) {
 	fmt.Println(tree)
 }
 
-func TestPrintSvg(t *testing.T) {
+func TestPrintImg(t *testing.T) {
 	tree := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
@@ -119,7 +119,7 @@ func TestPrintSvg(t *testing.T) {
 	for i := 0; i < len(arr); i++ {
 		tree.Put(arr[i], nil)
 	}
-	tree.Svg("")
+	tree.Img("")
 }
 
 func TestTree23_Put(t *testing.T) {
@@ -128,11 +128,12 @@ func TestTree23_Put(t *testing.T) {
 	tree := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
-	arr := []int{1, 2, 0}
+	arr := rand.Perm(10)
 	for i := 0; i < len(arr); i++ {
 		tree.Put(arr[i], nil)
-		fmt.Println(tree)
-		tree.Svg(fmt.Sprintf("%d_add_%d", i, arr[i]))
+		if err := tree.Img(fmt.Sprintf("%d_add_%d", i, arr[i])); err != nil {
+			t.Fatal(err)
+		}
 		index++
 	}
 }

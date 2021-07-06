@@ -256,10 +256,10 @@ func (t *Tree234) Range(f func(n common.INode)) {
 	common.PreOrder(t.root, f)
 }
 
-// Svg 生成svg矢量图
-func (t *Tree234) Svg(filename string) error {
+// Img 生成图
+func (t *Tree234) Img(filename string) error {
 	if filename == "" {
-		filename = "tree23"
+		filename = "tree234"
 	}
 	if t.GetSize() > 0 {
 		t.root.BuildIndex()

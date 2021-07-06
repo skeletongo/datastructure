@@ -91,7 +91,7 @@ func PrintTree(root ITreeNode, fileName string) error {
 	if err != nil {
 		return err
 	}
-	dirSvg := path.Join(dir, "svg")
+	dirSvg := path.Join(dir, "img")
 	dirDot := path.Join(dirSvg, "dot")
 	if err = NewDir(dirSvg); err != nil {
 		return err
@@ -122,7 +122,12 @@ func PrintTree(root ITreeNode, fileName string) error {
 	printNode(fw, root)
 	fw.WriteString("}")
 	fw.Close()
-	return exec.Command("dot", dotFile, "-Tsvg", "-o", svgFile).Run()
+
+	cmd := exec.Command("dot", dotFile, "-Tsvg", "-o", svgFile)
+	if err = cmd.Run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func printNode(fw io.Writer, root ITreeNode) {

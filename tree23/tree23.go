@@ -453,8 +453,8 @@ func (t *Tree23) Range(f func(n common.INode)) {
 	common.PreOrder(t.root, f)
 }
 
-// Svg 生成svg矢量图
-func (t *Tree23) Svg(filename string) error {
+// Img 生成图
+func (t *Tree23) Img(filename string) error {
 	if filename == "" {
 		filename = "tree23"
 	}
