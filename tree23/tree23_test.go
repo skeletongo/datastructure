@@ -121,3 +121,18 @@ func TestPrintSvg(t *testing.T) {
 	}
 	tree.Svg("")
 }
+
+func TestTree23_Put(t *testing.T) {
+	// 输出添加过程
+	index := 0
+	tree := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+	arr := []int{1, 2, 0}
+	for i := 0; i < len(arr); i++ {
+		tree.Put(arr[i], nil)
+		fmt.Println(tree)
+		tree.Svg(fmt.Sprintf("%d_add_%d", i, arr[i]))
+		index++
+	}
+}

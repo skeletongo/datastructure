@@ -21,6 +21,7 @@ type ITreeNode interface {
 	GetIndex() int
 	SetIndex(index int)
 	GetColor() string
+	Reset()
 }
 
 type TreeNode struct {
@@ -42,6 +43,11 @@ func (t *TreeNode) IsWrite() bool {
 
 func (t *TreeNode) Write() {
 	t.isWrite = true
+}
+
+func (t *TreeNode) Reset() {
+	t.Index = 0
+	t.isWrite = false
 }
 
 func StyleByColor(color string) string {
@@ -66,30 +72,40 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
+func NewDir(path string) error {
+	exist, err := PathExists(path)
+	if err != nil {
+		return err
+	}
+	if exist {
+		return nil
+	}
+	if err := os.Mkdir(path, 0666); err != nil {
+		return err
+	}
+	return nil
+}
+
 func PrintTree(root ITreeNode, fileName string) error {
 	dir, err := os.Getwd()
 	if err != nil {
 		return err
 	}
-
-	d := path.Join(dir, "svg")
-	exist, err := PathExists(d)
-	if err != nil {
+	dirSvg := path.Join(dir, "svg")
+	dirDot := path.Join(dirSvg, "dot")
+	if err = NewDir(dirSvg); err != nil {
 		return err
 	}
-
-	if !exist {
-		if err := os.Mkdir(d, 0666); err != nil {
-			return err
-		}
+	if err = NewDir(dirDot); err != nil {
+		return err
 	}
 
 	if IsNil(root) {
 		return nil
 	}
 
-	fileName = path.Join(d, fileName)
-	dotFile := fmt.Sprintf("%s.dot", fileName)
+	svgFile := fmt.Sprintf("%s.svg", path.Join(dirSvg, fileName))
+	dotFile := fmt.Sprintf("%s.dot", path.Join(dirDot, fileName))
 	fw, err := os.Create(dotFile)
 	if err != nil {
 		return err
@@ -106,7 +122,7 @@ func PrintTree(root ITreeNode, fileName string) error {
 	printNode(fw, root)
 	fw.WriteString("}")
 	fw.Close()
-	return exec.Command("dot", dotFile, "-Tsvg", "-o"+fileName+".svg").Run()
+	return exec.Command("dot", dotFile, "-Tsvg", "-o", svgFile).Run()
 }
 
 func printNode(fw io.Writer, root ITreeNode) {

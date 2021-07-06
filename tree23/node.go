@@ -64,6 +64,7 @@ func (n *node) BuildIndex() {
 	i := 0
 	common.LevelOrder(n, func(node common.INode) {
 		treeNode := node.(common.ITreeNode)
+		treeNode.Reset()
 		treeNode.SetIndex(i)
 		i++
 	})
