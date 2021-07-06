@@ -1,6 +1,9 @@
 package segment
 
-import "github.com/skeletongo/datastructure/common"
+import (
+	"fmt"
+	"github.com/skeletongo/datastructure/common"
+)
 
 type node struct {
 	left, right *node
@@ -15,8 +18,16 @@ func (n *node) GetRightNode() common.INode {
 	return n.right
 }
 
+func (n *node) GetKey() interface{} {
+	return n.value
+}
+
 func (n *node) GetValue() interface{} {
 	return n.value
+}
+
+func (n *node) String() string {
+	return fmt.Sprintf("%v", n.value)
 }
 
 type BSTSegment struct {

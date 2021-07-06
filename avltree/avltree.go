@@ -7,36 +7,6 @@ import (
 	"github.com/skeletongo/datastructure/common"
 )
 
-type node struct {
-	height      int // 以当前节点为根的树的高度
-	left, right *node
-	key, value  interface{} // 存储映射的键值对
-}
-
-func newNode(key, value interface{}) *node {
-	return &node{
-		height: 1,
-		key:    key,
-		value:  value,
-	}
-}
-
-func (n *node) GetLeftNode() common.INode {
-	return n.left
-}
-
-func (n *node) GetRightNode() common.INode {
-	return n.right
-}
-
-func (n *node) GetKey() interface{} {
-	return n.key
-}
-
-func (n *node) GetValue() interface{} {
-	return n.value
-}
-
 type AVLTree struct {
 	size    int
 	root    *node
@@ -339,7 +309,7 @@ func (a *AVLTree) Get(key interface{}) interface{} {
 	return n.value
 }
 
-func (a *AVLTree) Range(f func(key, value interface{})) {
+func (a *AVLTree) Range(f func(n common.INode)) {
 	common.PreOrder(a.root, f)
 }
 

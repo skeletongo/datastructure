@@ -1,6 +1,7 @@
 package avltree
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -73,4 +74,16 @@ func TestAVLTree(t *testing.T) {
 			testFunc()
 		}
 	}
+}
+
+func TestNode_String(t *testing.T) {
+	bst := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+
+	arr := rand.Perm(10)
+	for i := 0; i < len(arr); i++ {
+		bst.Put(arr[i], nil)
+	}
+	fmt.Println(bst)
 }

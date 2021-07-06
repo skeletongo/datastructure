@@ -1,0 +1,35 @@
+digraph G {
+    graph [nodesep=0.1]
+    node [shape=circle]
+    edge [arrowhead=vee]
+    0 [group=0,label="4: <nil>",color=black,style=filled,fontcolor=white]
+    1 [group=1,label="2: <nil>",color=black,style=filled,fontcolor=white]
+    0 -> 1
+    3 [group=3,label="1: <nil>",color=black,style=filled,fontcolor=white]
+    1 -> 3
+    3 -> 7
+    7 [label="0: <nil>",color=red,style=filled,fontcolor=white]
+    _3 [group=3,label="",width=0,style=invis]
+    3 -> _3 [style=invis]
+    _1 [group=1,label="",width=0,style=invis]
+    1 -> _1 [style=invis]
+    1 -> 4
+    4 [label="3: <nil>",color=black,style=filled,fontcolor=white]
+    _0 [group=0,label="",width=0,style=invis]
+    0 -> _0 [style=invis]
+    2 [group=2,label="8: <nil>",color=black,style=filled,fontcolor=white]
+    0 -> 2
+    5 [group=5,label="6: <nil>",color=red,style=filled,fontcolor=white]
+    2 -> 5
+    5 -> 8
+    8 [label="5: <nil>",color=black,style=filled,fontcolor=white]
+    _5 [group=5,label="",width=0,style=invis]
+    5 -> _5 [style=invis]
+    5 -> 9
+    9 [label="7: <nil>",color=black,style=filled,fontcolor=white]
+    _2 [group=2,label="",width=0,style=invis]
+    2 -> _2 [style=invis]
+    2 -> 6
+    6 [label="9: <nil>",color=black,style=filled,fontcolor=white]
+    {rank=same;_0;8}
+}

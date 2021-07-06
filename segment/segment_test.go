@@ -51,3 +51,11 @@ func TestNewBSTSegment(t *testing.T) {
 		return NewBSTSegment(arr, f)
 	})
 }
+
+func TestNode_String(t *testing.T) {
+	arr := []interface{}{-2, 0, 3, -5, 2, -1}
+	bst := NewBSTSegment(arr, func(a, b interface{}) interface{} {
+		return a.(int) + b.(int)
+	})
+	fmt.Println(bst)
+}

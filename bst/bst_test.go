@@ -1,9 +1,12 @@
 package bst
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
+
+	"github.com/skeletongo/datastructure/common"
 )
 
 /////////////////
@@ -54,25 +57,25 @@ func TestBST(t *testing.T) {
 	}
 
 	n := 0
-	bst.PreOrder(func(k, v interface{}) {
+	bst.PreOrder(func(node common.INode) {
 		//fmt.Println(v)
-		if res1[n] != k {
+		if res1[n] != node.GetKey() {
 			t.Error("PreOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.InOrder(func(k, v interface{}) {
-		if res2[n] != k {
+	bst.InOrder(func(node common.INode) {
+		if res2[n] != node.GetKey() {
 			t.Error("InOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.PostOrder(func(k, v interface{}) {
-		if res3[n] != k {
+	bst.PostOrder(func(node common.INode) {
+		if res3[n] != node.GetKey() {
 			t.Error("PostOrder error")
 		}
 		n++
@@ -248,4 +251,16 @@ func TestBST(t *testing.T) {
 	if bst.Get(100) != nil {
 		t.Error("Set/Get error \n", bst.String())
 	}
+}
+
+func TestNode_String(t *testing.T) {
+	bst := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+
+	arr := rand.Perm(10)
+	for i := 0; i < len(arr); i++ {
+		bst.Add(arr[i], nil)
+	}
+	fmt.Println(bst)
 }

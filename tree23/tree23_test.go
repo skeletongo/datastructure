@@ -1,6 +1,7 @@
 package tree23
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -10,101 +11,113 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func TestTree23(t *testing.T) {
-	n := 1000
-	arr := rand.Perm(n)
+func TestTree23_RemoveMin(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+		n := rand.Intn(1000)
+		arr := rand.Perm(n)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+		}
+
+		for i := 0; i < n; i++ {
+			if !tree.Contains(i) && tree.GetSize() != n-i {
+				t.Fatal("Put error")
+			}
+			tree.RemoveMin()
+			tree.isBalanced()
+			if tree.Contains(i) || tree.GetSize() != n-i-1 {
+				t.Fatal("RemoveMin error")
+			}
+		}
+	}
+}
+
+func TestTree23_RemoveMax(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+		n := rand.Intn(1000)
+		arr := rand.Perm(n)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+		}
+
+		for i := n - 1; i >= 0; i-- {
+			if !tree.Contains(i) && tree.GetSize() != i+1 {
+				t.Fatal("Put error")
+			}
+			tree.RemoveMax()
+			tree.isBalanced()
+			if tree.Contains(i) || tree.GetSize() != i {
+				t.Fatal("RemoveMax error")
+			}
+		}
+	}
+}
+
+func TestTree23_Remove(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		fmt.Println("------------------")
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+		n := rand.Intn(9)
+		arr := rand.Perm(n)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+		}
+
+		for i := 0; i < 2*n; i++ {
+			key := rand.Intn(n)
+			if rand.Intn(2) == 0 {
+				key = -key
+			}
+			has := tree.Contains(key)
+			size := tree.GetSize()
+			fmt.Println(key)
+			fmt.Println(tree)
+			tree.Remove(key)
+			if has {
+				if tree.Contains(key) {
+					t.Fatal("Remove error")
+				}
+				if tree.GetSize()+1 != size {
+					//t.Fatal("Remove GetSize error", tree.GetSize(), size)
+				}
+			} else {
+				if tree.Contains(key) {
+					t.Fatal("Contains error")
+				}
+				if tree.GetSize() != size {
+					//t.Fatal("Remove GetSize error", tree.GetSize(), size)
+				}
+			}
+		}
+	}
+}
+
+func TestTree23_String(t *testing.T) {
 	tree := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
-
-	if !tree.IsEmpty() {
-		t.Error("IsEmpty() != true error")
+	arr := rand.Perm(10)
+	for i := 0; i < len(arr); i++ {
+		tree.Put(arr[i], nil)
 	}
+	fmt.Println(tree)
+}
 
-	var m = make(map[int]int)
-	for k, v := range arr {
-		m[v] = k
-		tree.Put(v, k)
+func TestPrintSvg(t *testing.T) {
+	tree := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+	arr := rand.Perm(10)
+	for i := 0; i < len(arr); i++ {
+		tree.Put(arr[i], nil)
 	}
-
-	testFunc := func() {
-		ids := rand.Perm(2 * len(m))
-		for _, v := range ids {
-			_, ok := m[v]
-			if tree.Contains(v) != ok {
-				t.Error("Contains() error")
-			}
-			if (tree.Get(v) != nil) != ok {
-				t.Error("Get() error")
-			}
-		}
-
-		if tree.IsEmpty() != (len(m) == 0) {
-			t.Error("IsEmpty() error")
-		}
-		if tree.GetSize() != len(m) {
-			t.Error("GetSize() error")
-		}
-		if !tree.isBST() {
-			t.Error("isBST() error")
-		}
-		if !tree.isBalanced() {
-			t.Error("isBalanced() error")
-		}
-		for k, v := range m {
-			if tree.Get(k) != v {
-				t.Error("Get(v) error")
-			}
-		}
-	}
-
-	testFunc()
-
-	// 修改
-	for k, v := range arr {
-		tree.Put(k, v)
-		m[k] = v
-	}
-	testFunc()
-
-	// 删除最小键
-	for len(m) > 0 {
-		var min = n
-		for k := range m {
-			if k < min {
-				min = k
-			}
-		}
-		delete(m, min)
-		tree.RemoveMin()
-		testFunc()
-	}
-
-	for k, v := range arr {
-		m[v] = k
-		tree.Put(v, k)
-	}
-	testFunc()
-
-	// 删除最大键
-	for len(m) > 0 {
-		var max = -1
-		for k := range m {
-			if k > max {
-				max = k
-			}
-		}
-		delete(m, max)
-		tree.RemoveMax()
-		testFunc()
-	}
-
-	// 删除
-	for len(m) > 0 {
-		for k := range m {
-			tree.Remove(k)
-			delete(m, k)
-			testFunc()
-		}
-	}
+	tree.Svg("")
 }

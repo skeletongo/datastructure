@@ -49,7 +49,7 @@ func (t *Tree234) isBST() bool {
 	return true
 }
 
-// isBalanced 判断是不是平衡二叉树(黑平衡)
+// todo isBalanced 判断是不是平衡二叉树(黑平衡)
 func (t *Tree234) isBalanced() bool {
 	return true
 }
@@ -64,14 +64,6 @@ func size(n *node) int {
 // 隐含条件，n不为nil
 func getSize(n *node) int {
 	return size(n.left) + size(n.right) + 1
-}
-
-// isRed 是否为红节点
-func isRed(n *node) bool {
-	if n == nil {
-		return Black
-	}
-	return n.color // n.color == red 不用等号判断需要定义Red为true
 }
 
 // leftRotate 左旋转
@@ -245,8 +237,35 @@ func (t *Tree234) Get(key interface{}) interface{} {
 	return t.get(t.root, key)
 }
 
-func (t *Tree234) Range(f func(key, value interface{})) {
+// todo RemoveMin
+func (t *Tree234) RemoveMin() {
+
+}
+
+// todo RemoveMax
+func (t *Tree234) RemoveMax() {
+
+}
+
+// todo Remove
+func (t *Tree234) Remove(key interface{}) {
+
+}
+
+func (t *Tree234) Range(f func(n common.INode)) {
 	common.PreOrder(t.root, f)
+}
+
+// Svg 生成svg矢量图
+func (t *Tree234) Svg(filename string) error {
+	if filename == "" {
+		filename = "tree23"
+	}
+	if t.GetSize() > 0 {
+		t.root.BuildIndex()
+		return common.PrintTree(t.root, filename)
+	}
+	return nil
 }
 
 func (t *Tree234) String() string {

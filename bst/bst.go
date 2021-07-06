@@ -10,31 +10,6 @@ import (
 	"github.com/skeletongo/datastructure/stack"
 )
 
-type node struct {
-	left, right *node
-	key, value  interface{}
-}
-
-func newNode(key, value interface{}) *node {
-	return &node{key: key, value: value}
-}
-
-func (n *node) GetLeftNode() common.INodeKey {
-	return n.left
-}
-
-func (n *node) GetRightNode() common.INodeKey {
-	return n.right
-}
-
-func (n *node) GetKey() interface{} {
-	return n.key
-}
-
-func (n *node) GetValue() interface{} {
-	return n.value
-}
-
 // BST 二分搜索树
 type BST struct {
 	// 根节点
@@ -376,17 +351,17 @@ func (b *BST) Get(key interface{}) interface{} {
 }
 
 // PreOrder 前序遍历
-func (b *BST) PreOrder(f func(key, value interface{})) {
+func (b *BST) PreOrder(f func(n common.INode)) {
 	common.PreOrder(b.root, f)
 }
 
 // InOrder 中序遍历
-func (b *BST) InOrder(f func(key, value interface{})) {
+func (b *BST) InOrder(f func(n common.INode)) {
 	common.InOrder(b.root, f)
 }
 
 // PostOrder 后序遍历
-func (b *BST) PostOrder(f func(key, value interface{})) {
+func (b *BST) PostOrder(f func(n common.INode)) {
 	common.PostOrder(b.root, f)
 }
 
@@ -574,7 +549,7 @@ func (b *BST) LevelOrder(f func(key, value interface{})) {
 	}
 }
 
-func (b *BST) Range(f func(key, value interface{})) {
+func (b *BST) Range(f func(n common.INode)) {
 	common.PreOrder(b.root, f)
 }
 
