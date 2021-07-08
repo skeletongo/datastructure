@@ -1,6 +1,7 @@
 package tree234
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -10,107 +11,181 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func TestTree234(t *testing.T) {
-	n := 1000
-	arr := rand.Perm(n)
+func TestTree234_Put(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+
+		n := rand.Intn(1000)
+		arr := rand.Perm(n)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+			if !tree.isBalanced() {
+				t.Fatal("balance error", arr)
+			}
+			if !tree.Contains(arr[i]) {
+				t.Fatal("contains error", arr)
+			}
+			if tree.GetSize() != i+1 {
+				t.Fatal("size error", arr)
+			}
+		}
+	}
+}
+
+func TestTree234_RemoveMin(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+
+		n := rand.Intn(1000)
+		arr := rand.Perm(n)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+		}
+
+		for i := 0; i < n; i++ {
+			tree.RemoveMin()
+			if !tree.isBalanced() {
+				t.Fatal("balance error", arr)
+			}
+			if tree.Contains(i) {
+				t.Fatal("contains error", arr)
+			}
+			if tree.GetSize() != n-1-i {
+				t.Fatal("size error", arr)
+			}
+		}
+	}
+}
+
+func TestTree234_RemoveMax(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+
+		n := rand.Intn(1000)
+		arr := rand.Perm(n)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+		}
+
+		for i := n - 1; i >= 0; i-- {
+			tree.RemoveMax()
+			if !tree.isBalanced() {
+				t.Fatal("balance error", arr)
+			}
+			if tree.Contains(i) {
+				t.Fatal("contains error", arr)
+			}
+			if tree.GetSize() != i {
+				t.Fatal("size error", arr)
+			}
+		}
+	}
+}
+
+func TestTree234_Remove(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		tree := New(func(a, b interface{}) int {
+			return a.(int) - b.(int)
+		})
+
+		n := rand.Intn(1000)
+		arr := rand.Perm(n)
+		arr2 := make([]int, n)
+		copy(arr2, arr)
+		for i := 0; i < len(arr); i++ {
+			tree.Put(arr[i], nil)
+		}
+
+		delArr := []int{}
+		for i := 0; i < n; i++ {
+			j := rand.Intn(len(arr2))
+			key := arr2[j]
+			arr2 = append(arr2[:j], arr2[j+1:]...)
+			delArr = append(delArr, key)
+			tree.Remove(key)
+			if !tree.isBalanced() {
+				t.Fatal("balance error", arr, delArr)
+			}
+			if tree.Contains(key) {
+				t.Fatal("contains error")
+			}
+			if tree.GetSize() != n-1-i {
+				t.Fatal("size error")
+			}
+		}
+	}
+}
+
+// 输出删除最小值的过程,辅助调试代码
+func TestTree234_RemoveMin_Image(t *testing.T) {
 	tree := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
 	})
 
-	if !tree.IsEmpty() {
-		t.Error("IsEmpty() != true error")
+	arr := []int{}
+	for _, v := range arr {
+		tree.Put(v, nil)
 	}
 
-	var m = make(map[int]int)
-	for k, v := range arr {
-		m[v] = k
-		tree.Put(v, k)
+	if err := tree.Img(fmt.Sprintf("%d_removemin", 0)); err != nil {
+		t.Fatal(err)
 	}
-
-	testFunc := func() {
-		ids := rand.Perm(2 * len(m))
-		for _, v := range ids {
-			_, ok := m[v]
-			if tree.Contains(v) != ok {
-				t.Error("Contains() error")
-			}
-			if (tree.Get(v) != nil) != ok {
-				t.Error("Get() error")
-			}
-		}
-
-		if tree.IsEmpty() != (len(m) == 0) {
-			t.Error("IsEmpty() error")
-		}
-		if tree.GetSize() != len(m) {
-			t.Error("GetSize() error")
-		}
-		if !tree.isBST() {
-			t.Error("isBST() error")
-		}
-		if !tree.isBalanced() {
-			t.Error("isBalanced() error")
-		}
-		for k, v := range m {
-			if tree.Get(k) != v {
-				t.Error("Get(v) error")
-			}
+	for i := 0; i < len(arr); i++ {
+		tree.RemoveMin()
+		tree.isBalanced()
+		if err := tree.Img(fmt.Sprintf("%d_removemin", i+1)); err != nil {
+			t.Fatal(err)
 		}
 	}
+}
 
-	testFunc()
+// 输出删除最大值的过程,辅助调试代码
+func TestTree234_RemoveMax_Image(t *testing.T) {
+	tree := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
 
-	// 修改
-	for k, v := range arr {
-		tree.Put(k, v)
-		m[k] = v
+	arr := []int{}
+	for _, v := range arr {
+		tree.Put(v, nil)
 	}
-	testFunc()
 
-	// 删除最小键
-	//for len(m) > 0 {
-	//	var min = n
-	//	for k := range m {
-	//		if k < min {
-	//			min = k
-	//		}
-	//	}
-	//	delete(m, min)
-	//	tree.RemoveMin()
-	//	testFunc()
-	//}
-	//
-	//for k, v := range arr {
-	//	m[v] = k
-	//	tree.Put(v, k)
-	//}
-	//testFunc()
+	if err := tree.Img(fmt.Sprintf("%d_removemax", 0)); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < len(arr); i++ {
+		tree.RemoveMax()
+		if err := tree.Img(fmt.Sprintf("%d_removemax", i+1)); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
 
-	// 删除最大键
-	//for len(m) > 0 {
-	//	var max = -1
-	//	for k := range m {
-	//		if k > max {
-	//			max = k
-	//		}
-	//	}
-	//	delete(m, max)
-	//	tree.RemoveMax()
-	//	testFunc()
-	//}
+// 输出删除节点的过程,辅助调试代码
+func TestTree234_Remove_Image(t *testing.T) {
+	tree := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
 
-	// 删除
-	//for i := 0; i < n; i++ {
-	//	if rand.Intn(10) < 5 {
-	//		for k := range m {
-	//			tree.Remove(k)
-	//			delete(m, k)
-	//			break
-	//		}
-	//		if rand.Intn(10) < 5 {
-	//			testFunc()
-	//		}
-	//	}
-	//}
-	//testFunc()
+	arr := []int{}
+	delArr := []int{}
+	for _, v := range arr {
+		tree.Put(v, nil)
+	}
+
+	if err := tree.Img(fmt.Sprintf("%d_remove", 0)); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < len(delArr); i++ {
+		tree.Remove(delArr[i])
+		if err := tree.Img(fmt.Sprintf("%d_remove_%d", i+1, delArr[i])); err != nil {
+			t.Fatal(err)
+		}
+	}
 }

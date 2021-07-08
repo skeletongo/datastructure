@@ -1,6 +1,9 @@
+// 红黑树（2-3-4树）
 package tree234
 
-import "github.com/skeletongo/datastructure/common"
+import (
+	"github.com/skeletongo/datastructure/common"
+)
 
 type Tree234 struct {
 	root    *node
@@ -49,9 +52,29 @@ func (t *Tree234) isBST() bool {
 	return true
 }
 
-// todo isBalanced 判断是不是平衡二叉树(黑平衡)
+func preOrder(n *node) bool {
+	if n == nil {
+		return true
+	}
+
+	if isRed(n) && (isRed(n.left) || isRed(n.right)) {
+		return false
+	}
+	if isRed(n) && n.left != nil && n.right == nil {
+		return false
+	}
+	if isRed(n) && n.left == nil && n.right != nil {
+		return false
+	}
+	if preOrder(n.left) {
+		return preOrder(n.right)
+	}
+	return false
+}
+
+// isBalanced 判断是不是平衡二叉树(黑平衡)
 func (t *Tree234) isBalanced() bool {
-	return true
+	return preOrder(t.root)
 }
 
 func size(n *node) int {
@@ -107,69 +130,7 @@ func flipColors(n *node) {
 	n.right.color = Black
 }
 
-func isFlipColors(n *node) {
-	if isRed(n.left) && isRed(n.right) {
-		if isRed(n.left.left) || isRed(n.left.right) || isRed(n.right.left) || isRed(n.right.right) {
-			flipColors(n)
-		}
-	}
-}
-
-// balance 维护红节点的位置，
-// 1.将不正确的4节点变幻成正确的4节点
-// 2.将5节点分解成一个2节点和一个4节点，并将剩余的节点向它的父节点融合
-// 隐含条件，n不为nil
-func balance(n *node) *node {
-	if isRed(n.left) {
-		if isRed(n.left.right) {
-			n.left = leftRotate(n.left)
-		}
-		if isRed(n.left.left) {
-			n = rightRotate(n)
-		}
-		isFlipColors(n)
-	} else if isRed(n.right) {
-		if isRed(n.right.left) {
-			n.right = rightRotate(n.right)
-		}
-		if isRed(n.right.right) {
-			n = leftRotate(n)
-		}
-		isFlipColors(n)
-	}
-	n.n = getSize(n)
-	return n
-}
-
 func (t *Tree234) put(n *node, key, value interface{}) *node {
-	if n == nil {
-		return newNode(key, value)
-	}
-
-	res := t.Compare(n.key, key)
-	if res > 0 {
-		n.left = t.put(n.left, key, value)
-	} else if res < 0 {
-		n.right = t.put(n.right, key, value)
-	} else {
-		n.value = value
-		return n
-	}
-
-	return balance(n)
-}
-
-func (t *Tree234) Put(key, value interface{}) {
-	t.root = t.put(t.root, key, value)
-	t.root.color = Black
-}
-
-// put 方式定义允许存在的节点有四种，分别是2节点，左倾3节点，右倾3节点，4节点
-// put2 方式定义允许存在的节点有三种，分别是2节点，左倾3节点，4节点
-// 区别：
-// put2 方式代码简化，减少了很多判断，去掉了判断右倾3节点的情况，但是增加了左旋转的次数，相对于 put 方式
-// put 方式判断的情况比较多但是减少了旋转次数
-func (t *Tree234) put2(n *node, key, value interface{}) *node {
 	if n == nil {
 		return newNode(key, value)
 	}
@@ -188,15 +149,29 @@ func (t *Tree234) put2(n *node, key, value interface{}) *node {
 		return n
 	}
 
-	if isRed(n.right) && !isRed(n.left) {
-		n = leftRotate(n)
+	// 路径回溯维护平衡性
+	if isRed(n.left) {
+		if isRed(n.left.right) {
+			n.left = leftRotate(n.left)
+		}
+		if isRed(n.left.left) {
+			n = rightRotate(n)
+		}
+	} else if isRed(n.right) {
+		if isRed(n.right.left) {
+			n.right = rightRotate(n.right)
+		}
+		if isRed(n.right.right) {
+			n = leftRotate(n)
+		}
 	}
-	if isRed(n.left) && isRed(n.left.left) {
-		n = rightRotate(n)
-	}
-
 	n.n = getSize(n)
 	return n
+}
+
+func (t *Tree234) Put(key, value interface{}) {
+	t.root = t.put(t.root, key, value)
+	t.root.color = Black
 }
 
 func (t *Tree234) contains(n *node, key interface{}) bool {
@@ -237,19 +212,260 @@ func (t *Tree234) Get(key interface{}) interface{} {
 	return t.get(t.root, key)
 }
 
-// todo RemoveMin
+// colorsFlip 颜色翻转
+func colorsFlip(n *node) {
+	n.color = Black
+	n.left.color = Red
+	n.right.color = Red
+}
+
+// n为红节点，并且左右子节点都是黑色，都不为空
+func moveRedLeft(n *node) *node {
+	colorsFlip(n)
+	if isRed(n.right.left) {
+		n.right = rightRotate(n.right)
+		n = leftRotate(n)
+	}
+	return n
+}
+
+// n为红节点，并且左右子节点都是黑色，都不为空
+func moveRedRight(n *node) *node {
+	colorsFlip(n)
+	if isRed(n.left.right) {
+		n.left = leftRotate(n.left)
+		n = rightRotate(n)
+	}
+	return n
+}
+
+func (t *Tree234) removeMin(n *node) *node {
+	if n.left == nil {
+		if n.right != nil {
+			n = leftRotate(n)
+		} else {
+			return nil
+		}
+	}
+	switch {
+	case isRed(n.left) || isRed(n.left.left) || isRed(n.left.right):
+	case isRed(n.right):
+		n = leftRotate(n)
+	default:
+		n = moveRedLeft(n)
+	}
+	n.left = t.removeMin(n.left)
+
+	// 路径回溯维护平衡性
+	if isRed(n.left) && isRed(n.left.left) {
+		if !isRed(n.right) {
+			n = rightRotate(n)
+		} else {
+			flipColors(n)
+		}
+	} else if isRed(n.right) && isRed(n.right.right) {
+		if !isRed(n.left) {
+			n = leftRotate(n)
+		} else {
+			flipColors(n)
+		}
+	}
+	n.n = getSize(n)
+	return n
+}
+
 func (t *Tree234) RemoveMin() {
+	if t.root == nil {
+		return
+	}
 
+	if t.root.n == 1 {
+		t.root = nil
+		return
+	}
+
+	if !isRed(t.root.left) && isRed(t.root.right) {
+		t.root.color = Red
+	}
+	t.root = t.removeMin(t.root)
+	if !t.IsEmpty() {
+		t.root.color = Black
+	}
 }
 
-// todo RemoveMax
+func (t *Tree234) removeMax(n *node) *node {
+	if n.right == nil {
+		if n.left != nil {
+			n = rightRotate(n)
+		} else {
+			return nil
+		}
+	}
+	switch {
+	case isRed(n.right) || isRed(n.right.right) || isRed(n.right.left):
+	case isRed(n.left):
+		n = rightRotate(n)
+	default:
+		n = moveRedRight(n)
+	}
+	n.right = t.removeMax(n.right)
+
+	// 路径回溯维护平衡性
+	if isRed(n.left) && isRed(n.left.left) {
+		if !isRed(n.right) {
+			n = rightRotate(n)
+		} else {
+			flipColors(n)
+		}
+	} else if isRed(n.right) && isRed(n.right.right) {
+		if !isRed(n.left) {
+			n = leftRotate(n)
+		} else {
+			flipColors(n)
+		}
+	}
+	n.n = getSize(n)
+	return n
+}
+
 func (t *Tree234) RemoveMax() {
+	if t.root == nil {
+		return
+	}
 
+	if t.root.n == 1 {
+		t.root = nil
+		return
+	}
+
+	if !isRed(t.root.left) && isRed(t.root.right) {
+		t.root.color = Red
+	}
+	t.root = t.removeMax(t.root)
+	if !t.IsEmpty() {
+		t.root.color = Black
+	}
 }
 
-// todo Remove
-func (t *Tree234) Remove(key interface{}) {
+func minKey(n *node) interface{} {
+	cur := n
+	for cur.left != nil {
+		cur = cur.left
+	}
+	return cur.key
+}
 
+func maxKey(n *node) interface{} {
+	cur := n
+	for cur.right != nil {
+		cur = cur.right
+	}
+	return cur.key
+}
+
+func (t *Tree234) remove(n *node, key interface{}) *node {
+	if n == nil {
+		return nil
+	}
+
+	res := t.Compare(n.key, key)
+	if res > 0 {
+		if n.left == nil {
+			if n.right != nil {
+				n = leftRotate(n)
+			} else {
+				return nil
+			}
+		}
+		switch {
+		case isRed(n.left) || isRed(n.left.left) || isRed(n.left.right):
+		case isRed(n.right):
+			n = leftRotate(n)
+		default:
+			n = moveRedLeft(n)
+		}
+		n.left = t.remove(n.left, key)
+	} else if res < 0 {
+		if n.right == nil {
+			if n.left != nil {
+				n = rightRotate(n)
+			} else {
+				return nil
+			}
+		}
+		switch {
+		case isRed(n.right) || isRed(n.right.right) || isRed(n.right.left):
+		case isRed(n.left):
+			n = rightRotate(n)
+		default:
+			n = moveRedRight(n)
+		}
+		n.right = t.remove(n.right, key)
+	} else {
+		if n.left == nil && n.right == nil {
+			return nil
+		}
+		if !isRed(n.left) && !isRed(n.right) {
+			colorsFlip(n)
+		}
+		if isRed(n.right) {
+			n.key = minKey(n.right)
+			n.value = t.get(n.right, n.key)
+			n.right = t.removeMin(n.right)
+		} else {
+			n.key = maxKey(n.left)
+			n.value = t.get(n.left, n.key)
+			n.left = t.removeMax(n.left)
+		}
+	}
+
+	// 路径回溯维护平衡性
+	if isRed(n.left) && !isRed(n.right) {
+		if isRed(n.left.right) && !isRed(n.left.left) {
+			n.left = leftRotate(n.left)
+		}
+		if isRed(n.left.left) {
+			n = rightRotate(n)
+			if n.right != nil && isRed(n.right.left) {
+				flipColors(n)
+			}
+		}
+	} else if isRed(n.right) && !isRed(n.left) {
+		if isRed(n.right.left) && !isRed(n.right.right) {
+			n.right = rightRotate(n.right)
+		}
+		if isRed(n.right.right) {
+			n = leftRotate(n)
+			if n.left != nil && isRed(n.left.right) {
+				flipColors(n)
+			}
+		}
+	} else if isRed(n.left) && isRed(n.right) {
+		if isRed(n.left.left) || isRed(n.left.right) || isRed(n.right.left) || isRed(n.right.right) {
+			flipColors(n)
+		}
+	}
+	n.n = getSize(n)
+	return n
+}
+
+func (t *Tree234) Remove(key interface{}) {
+	if t.root == nil {
+		return
+	}
+
+	if t.root.n == 1 {
+		t.root = nil
+		return
+	}
+
+	if !isRed(t.root.left) && isRed(t.root.right) {
+		t.root.color = Red
+	}
+	t.root = t.remove(t.root, key)
+	if !t.IsEmpty() {
+		t.root.color = Black
+	}
 }
 
 func (t *Tree234) Range(f func(n common.INode)) {
