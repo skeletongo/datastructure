@@ -2,6 +2,7 @@ package hashtable
 
 import (
 	"bytes"
+	"github.com/skeletongo/datastructure/common"
 	"github.com/skeletongo/datastructure/tree23"
 )
 
@@ -39,8 +40,8 @@ func (t *TableTree) resize() {
 		newTableTree[i] = tree23.New(t.Compare)
 	}
 	for _, v := range t.tableTree {
-		v.Range(func(key, value interface{}) {
-			newTableTree[hash(key, t.m)].Put(key, value)
+		v.Range(func(n common.INode) {
+			newTableTree[hash(n.GetKey(), t.m)].Put(n.GetKey(), n.GetValue())
 		})
 	}
 	t.tableTree = newTableTree
