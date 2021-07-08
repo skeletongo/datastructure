@@ -1,4 +1,4 @@
-// 2-3树
+// 左倾红黑树（2-3树）
 package tree23
 
 import (
@@ -133,24 +133,6 @@ func flipColors(n *node) {
 	n.right.color = Black
 }
 
-// balance 维护红节点的位置
-// 1.将不正确的3节点和4节点变幻成正确的3节点和4节点
-// 2.将4节点分解成两个2节点，将剩余的节点向它的父节点融合
-// 隐含条件，n不为nil
-func balance(n *node) *node {
-	if isRed(n.right) && !isRed(n.left) {
-		n = leftRotate(n)
-	}
-	if isRed(n.left) && isRed(n.left.left) {
-		n = rightRotate(n)
-	}
-	if isRed(n.left) && isRed(n.right) {
-		flipColors(n)
-	}
-	n.n = getSize(n)
-	return n
-}
-
 func (t *Tree23) put(n *node, key, value interface{}) *node {
 	if n == nil {
 		return newNode(key, value)
@@ -166,7 +148,18 @@ func (t *Tree23) put(n *node, key, value interface{}) *node {
 		return n
 	}
 
-	return balance(n)
+	// 路径回溯维护平衡性
+	if isRed(n.right) && !isRed(n.left) {
+		n = leftRotate(n)
+	}
+	if isRed(n.left) && isRed(n.left.left) {
+		n = rightRotate(n)
+	}
+	if isRed(n.left) && isRed(n.right) {
+		flipColors(n)
+	}
+	n.n = getSize(n)
+	return n
 }
 
 func (t *Tree23) Put(key, value interface{}) {
@@ -253,7 +246,22 @@ func (t *Tree23) removeMin(n *node) *node {
 		n = moveRedLeft(n)
 	}
 	n.left = t.removeMin(n.left)
-	return balance(n)
+
+	// 路径回溯维护平衡性
+	if isRed(n.right) && !isRed(n.left) {
+		n = leftRotate(n)
+	}
+	// 删除最小值不会出现连续两个红色右节点的情况，因为默认红色节点在左侧；
+	// 当前节点可能是个4节点，并且左节点的左节点是红节点，这样的话只需要分解4节点就可以；
+	if isRed(n.left) && isRed(n.left.left) && !isRed(n.right) {
+		n = rightRotate(n)
+	}
+	// 分解4节点
+	if isRed(n.left) && isRed(n.right) {
+		flipColors(n)
+	}
+	n.n = getSize(n)
+	return n
 }
 
 func (t *Tree23) RemoveMin() {
@@ -297,12 +305,20 @@ func (t *Tree23) removeMax(n *node) *node {
 	}
 	n.right = t.removeMax(n.right)
 
+	// 路径回溯维护平衡性
 	if isRed(n.right) && !isRed(n.left) {
 		n = leftRotate(n)
 	}
-	if isRed(n.left) && isRed(n.left.left) {
+	// 删除最大值会出现连续两个红色右节点的情况
+	if isRed(n.left) && isRed(n.left.right) {
+		n.left = leftRotate(n.left)
+	}
+	// 删除最大值会出现连续两个红色左节点的情况，因为默认红色节点在左侧，当寻找最大值的过程中颜色翻转时并且最大值就是右节点；
+	// 当前节点可能是个4节点，并且左节点的左节点是红节点，这样的话只需要分解4节点就可以；
+	if isRed(n.left) && isRed(n.left.left) && !isRed(n.right) {
 		n = rightRotate(n)
 	}
+	// 分解4节点
 	if isRed(n.left) && isRed(n.right) {
 		flipColors(n)
 	}
@@ -337,68 +353,9 @@ func minKey(n *node) interface{} {
 	return cur.key
 }
 
-func maxKey(n *node) interface{} {
-	cur := n
-	for cur.right != nil {
-		cur = cur.right
-	}
-	return cur.key
-}
-
-func (t *Tree23) remove2(n *node, key interface{}) *node {
+func (t *Tree23) remove(n *node, key interface{}) *node {
 	res := t.Compare(n.key, key)
 	if res > 0 {
-		if n.left == nil {
-			return n
-		}
-		if !isRed(n.left) && !isRed(n.left.left) {
-			n = moveRedLeft(n)
-		}
-		n.left = t.remove2(n.left, key)
-	} else if res < 0 {
-		if isRed(n.left) {
-			n = rightRotate(n)
-		}
-		if n.right == nil {
-			return n
-		}
-		if !isRed(n.right) && !isRed(n.right.left) {
-			n = moveRedRight(n)
-		}
-		n.right = t.remove2(n.right, key)
-	} else {
-		if n.left == nil && n.right == nil {
-			return nil
-		}
-		if n.left != nil {
-			n.key = maxKey(n.left)
-			n.value = t.get(n.left, n.key)
-			n.left = t.removeMax(n.left)
-		} else {
-			n.key = minKey(n.right)
-			n.value = t.get(n.right, n.key)
-			n.right = t.removeMin(n.right)
-		}
-	}
-
-	if isRed(n.right) && !isRed(n.left) {
-		n = leftRotate(n)
-	}
-	if isRed(n.left) && isRed(n.left.right) {
-		n.left = leftRotate(n.left)
-	}
-	if isRed(n.left) && isRed(n.left.left) {
-		n = rightRotate(n)
-	}
-	if isRed(n.left) && isRed(n.right) {
-		flipColors(n)
-	}
-	n.n = getSize(n)
-	return n
-}
-
-func (t *Tree23) remove(n *node, key interface{}) *node {
-	if t.Compare(n.key, key) > 0 {
 		if !isRed(n.left) && !isRed(n.left.left) {
 			n = moveRedLeft(n)
 		}
@@ -421,7 +378,21 @@ func (t *Tree23) remove(n *node, key interface{}) *node {
 			n.right = t.remove(n.right, key)
 		}
 	}
-	return balance(n)
+
+	if isRed(n.right) && !isRed(n.left) {
+		n = leftRotate(n)
+	}
+	if isRed(n.left) && isRed(n.left.right) {
+		n.left = leftRotate(n.left)
+	}
+	if isRed(n.left) && isRed(n.left.left) && !isRed(n.right) {
+		n = rightRotate(n)
+	}
+	if isRed(n.left) && isRed(n.right) {
+		flipColors(n)
+	}
+	n.n = getSize(n)
+	return n
 }
 
 func (t *Tree23) Remove(key interface{}) {
@@ -443,7 +414,7 @@ func (t *Tree23) Remove(key interface{}) {
 	if !isRed(t.root.left) {
 		t.root.color = Red
 	}
-	t.root = t.remove2(t.root, key)
+	t.root = t.remove(t.root, key)
 	if !t.IsEmpty() {
 		t.root.color = Black
 	}

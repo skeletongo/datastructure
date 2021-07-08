@@ -10,7 +10,6 @@ import (
 
 /*
 生成二叉树图
-参考：https://studygolang.com/topics/11380
 */
 
 type ITreeNode interface {
