@@ -98,24 +98,29 @@ func TestTree234_Remove(t *testing.T) {
 		arr := rand.Perm(n)
 		arr2 := make([]int, n)
 		copy(arr2, arr)
-		for i := 0; i < len(arr); i++ {
+		for i := 0; i < len(arr)/2; i++ {
 			tree.Put(arr[i], nil)
 		}
 
 		delArr := []int{}
+
 		for i := 0; i < n; i++ {
 			j := rand.Intn(len(arr2))
 			key := arr2[j]
 			arr2 = append(arr2[:j], arr2[j+1:]...)
+
 			delArr = append(delArr, key)
+
+			size := tree.GetSize()
+			has := tree.Contains(key)
 			tree.Remove(key)
 			if !tree.isBalanced() {
-				t.Fatal("balance error", arr, delArr)
+				t.Fatal("balance error", arr[:len(arr)/2], delArr)
 			}
 			if tree.Contains(key) {
 				t.Fatal("contains error")
 			}
-			if tree.GetSize() != n-1-i {
+			if (has && tree.GetSize() != size-1) || (!has && tree.GetSize() != size) {
 				t.Fatal("size error")
 			}
 		}

@@ -364,18 +364,10 @@ func maxKey(n *node) interface{} {
 }
 
 func (t *Tree234) remove(n *node, key interface{}) *node {
-	if n == nil {
-		return nil
-	}
-
 	res := t.Compare(n.key, key)
 	if res > 0 {
 		if n.left == nil {
-			if n.right != nil {
-				n = leftRotate(n)
-			} else {
-				return nil
-			}
+			n = leftRotate(n)
 		}
 		switch {
 		case isRed(n.left) || isRed(n.left.left) || isRed(n.left.right):
@@ -387,11 +379,7 @@ func (t *Tree234) remove(n *node, key interface{}) *node {
 		n.left = t.remove(n.left, key)
 	} else if res < 0 {
 		if n.right == nil {
-			if n.left != nil {
-				n = rightRotate(n)
-			} else {
-				return nil
-			}
+			n = rightRotate(n)
 		}
 		switch {
 		case isRed(n.right) || isRed(n.right.right) || isRed(n.right.left):
@@ -455,7 +443,13 @@ func (t *Tree234) Remove(key interface{}) {
 	}
 
 	if t.root.n == 1 {
-		t.root = nil
+		if t.Compare(t.root.key, key) == 0 {
+			t.root = nil
+		}
+		return
+	}
+
+	if !t.Contains(key) {
 		return
 	}
 
