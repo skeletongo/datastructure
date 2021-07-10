@@ -2,6 +2,7 @@ package avltree
 
 import (
 	"fmt"
+
 	"github.com/skeletongo/datastructure/common"
 )
 
