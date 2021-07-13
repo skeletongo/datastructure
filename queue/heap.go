@@ -109,6 +109,11 @@ func HeapPop(q *PriorityQueue) *Item {
 	return heap.Pop(q).(*Item)
 }
 
+// HeapRemove 删除元素
+func HeapRemove(q *PriorityQueue, index int) {
+	heap.Remove(q, index)
+}
+
 // HeapUpdate 元素值修改后更新优先队列(维护堆的性质)
 func HeapUpdate(q *PriorityQueue, item *Item) {
 	heap.Fix(q, item.index)
