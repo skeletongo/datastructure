@@ -117,6 +117,14 @@ func HeapRemove(q *PriorityQueue, index int) *Item {
 	return heap.Remove(q, index).(*Item)
 }
 
+// HeapPeek 查看队首元素
+func HeapPeek(q *PriorityQueue) *Item {
+	if q.Len() == 0 {
+		return nil
+	}
+	return q.Items[0]
+}
+
 // HeapUpdate 元素值修改后更新优先队列(维护堆的性质)
 func HeapUpdate(q *PriorityQueue, item *Item) {
 	heap.Fix(q, item.index)
