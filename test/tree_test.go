@@ -80,6 +80,20 @@ func BenchmarkTree_Contains(b *testing.B) {
 			}
 		}
 	})
+
+	b.Run("GoMapContains", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			m := map[int]struct{}{}
+			for i := 0; i < len(arr); i++ {
+				m[arr[i]] = struct{}{}
+			}
+			b.StartTimer()
+			for i := 0; i < len(delArr); i++ {
+				_, _ = m[delArr[i]]
+			}
+		}
+	})
 }
 
 func BenchmarkTree_Put(b *testing.B) {
@@ -125,6 +139,17 @@ func BenchmarkTree_Put(b *testing.B) {
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
 				tree.Set(arr[i], nil)
+			}
+		}
+	})
+
+	b.Run("GoMapPut", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			m := map[int]struct{}{}
+			b.StartTimer()
+			for i := 0; i < len(arr); i++ {
+				m[arr[i]] = struct{}{}
 			}
 		}
 	})
@@ -188,11 +213,25 @@ func BenchmarkTree_Remove(b *testing.B) {
 			}
 		}
 	})
+
+	b.Run("GoMapRemove", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			m := map[int]struct{}{}
+			for i := 0; i < len(arr); i++ {
+				m[arr[i]] = struct{}{}
+			}
+			b.StartTimer()
+			for i := 0; i < len(delArr); i++ {
+				delete(m, delArr[i])
+			}
+		}
+	})
 }
 
 func BenchmarkTree_All(b *testing.B) {
-	arr := rand.Perm(10000000)
-	delArr := rand.Perm(10000000)
+	arr := rand.Perm(1000000)
+	delArr := rand.Perm(1000000)
 	b.Run("AVLTreeAll", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			b.StopTimer()
@@ -257,6 +296,23 @@ func BenchmarkTree_All(b *testing.B) {
 			}
 			for i := 0; i < len(delArr); i++ {
 				tree.Remove(delArr[i])
+			}
+		}
+	})
+
+	b.Run("GoMapAll", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			m := map[int]struct{}{}
+			b.StartTimer()
+			for i := 0; i < len(arr); i++ {
+				m[arr[i]] = struct{}{}
+			}
+			for i := 0; i < len(delArr); i++ {
+				_, _ = m[delArr[i]]
+			}
+			for i := 0; i < len(delArr); i++ {
+				delete(m, delArr[i])
 			}
 		}
 	})
