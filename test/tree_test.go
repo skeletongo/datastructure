@@ -30,7 +30,7 @@ func BenchmarkTree_Contains(b *testing.B) {
 			b.StopTimer()
 			tree := avltree.New(compare)
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			b.StartTimer()
 			for i := 0; i < len(delArr); i++ {
@@ -44,7 +44,7 @@ func BenchmarkTree_Contains(b *testing.B) {
 			b.StopTimer()
 			tree := tree23.New(compare)
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			b.StartTimer()
 			for i := 0; i < len(delArr); i++ {
@@ -58,7 +58,7 @@ func BenchmarkTree_Contains(b *testing.B) {
 			b.StopTimer()
 			tree := tree234.New(compare)
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			b.StartTimer()
 			for i := 0; i < len(delArr); i++ {
@@ -105,7 +105,7 @@ func BenchmarkTree_Put(b *testing.B) {
 			tree := avltree.New(compare)
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 		}
 	})
@@ -116,7 +116,7 @@ func BenchmarkTree_Put(b *testing.B) {
 			tree := tree23.New(compare)
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 		}
 	})
@@ -127,7 +127,7 @@ func BenchmarkTree_Put(b *testing.B) {
 			tree := tree234.New(compare)
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 		}
 	})
@@ -163,7 +163,7 @@ func BenchmarkTree_Remove(b *testing.B) {
 			b.StopTimer()
 			tree := avltree.New(compare)
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			b.StartTimer()
 			for i := 0; i < len(delArr); i++ {
@@ -177,7 +177,7 @@ func BenchmarkTree_Remove(b *testing.B) {
 			b.StopTimer()
 			tree := tree23.New(compare)
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			b.StartTimer()
 			for i := 0; i < len(delArr); i++ {
@@ -191,7 +191,7 @@ func BenchmarkTree_Remove(b *testing.B) {
 			b.StopTimer()
 			tree := tree234.New(compare)
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			b.StartTimer()
 			for i := 0; i < len(delArr); i++ {
@@ -238,7 +238,7 @@ func BenchmarkTree_All(b *testing.B) {
 			tree := avltree.New(compare)
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			for i := 0; i < len(delArr); i++ {
 				tree.Contains(delArr[i])
@@ -255,7 +255,7 @@ func BenchmarkTree_All(b *testing.B) {
 			tree := tree23.New(compare)
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			for i := 0; i < len(delArr); i++ {
 				tree.Contains(delArr[i])
@@ -272,7 +272,7 @@ func BenchmarkTree_All(b *testing.B) {
 			tree := tree234.New(compare)
 			b.StartTimer()
 			for i := 0; i < len(arr); i++ {
-				tree.Put(arr[i], nil)
+				tree.Put(arr[i])
 			}
 			for i := 0; i < len(delArr); i++ {
 				tree.Contains(delArr[i])

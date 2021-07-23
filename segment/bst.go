@@ -2,6 +2,7 @@ package segment
 
 import (
 	"fmt"
+
 	"github.com/skeletongo/datastructure/common"
 )
 
@@ -10,16 +11,12 @@ type node struct {
 	value       interface{}
 }
 
-func (n *node) GetLeftNode() common.INode {
+func (n *node) GetLeftNode() common.BSTNode {
 	return n.left
 }
 
-func (n *node) GetRightNode() common.INode {
+func (n *node) GetRightNode() common.BSTNode {
 	return n.right
-}
-
-func (n *node) GetKey() interface{} {
-	return n.value
 }
 
 func (n *node) GetValue() interface{} {
@@ -123,5 +120,5 @@ func (t *BSTSegment) set(n *node, l, r, index int, data interface{}) {
 }
 
 func (t *BSTSegment) String() string {
-	return common.PrePrint(t.root)
+	return common.PrePrintBST(t.root)
 }

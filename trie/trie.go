@@ -7,19 +7,6 @@ import (
 	"fmt"
 )
 
-type node struct {
-	isWord bool
-	next   map[rune]*node // 使用rune类型可以支持多种语言而非只支持英文
-	value  interface{}
-}
-
-func newNode() *node {
-	return &node{
-		isWord: false,
-		next:   make(map[rune]*node),
-	}
-}
-
 type Trie struct {
 	size int
 	root *node

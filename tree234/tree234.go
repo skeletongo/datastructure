@@ -36,7 +36,7 @@ func inOrder(n *node, list *[]interface{}) {
 		return
 	}
 	inOrder(n.left, list)
-	*list = append(*list, n.key)
+	*list = append(*list, n.value)
 	inOrder(n.right, list)
 }
 
@@ -130,20 +130,20 @@ func flipColors(n *node) {
 	n.right.color = Black
 }
 
-func (t *Tree234) put(n *node, key, value interface{}) *node {
+func (t *Tree234) put(n *node, value interface{}) *node {
 	if n == nil {
-		return newNode(key, value)
+		return newNode(value)
 	}
 
 	if isRed(n.left) && isRed(n.right) {
 		flipColors(n)
 	}
 
-	res := t.Compare(n.key, key)
+	res := t.Compare(n.value, value)
 	if res > 0 {
-		n.left = t.put(n.left, key, value)
+		n.left = t.put(n.left, value)
 	} else if res < 0 {
-		n.right = t.put(n.right, key, value)
+		n.right = t.put(n.right, value)
 	} else {
 		n.value = value
 		return n
@@ -169,47 +169,47 @@ func (t *Tree234) put(n *node, key, value interface{}) *node {
 	return n
 }
 
-func (t *Tree234) Put(key, value interface{}) {
-	t.root = t.put(t.root, key, value)
+func (t *Tree234) Put(value interface{}) {
+	t.root = t.put(t.root, value)
 	t.root.color = Black
 }
 
-func (t *Tree234) contains(n *node, key interface{}) bool {
+func (t *Tree234) contains(n *node, value interface{}) bool {
 	if n == nil {
 		return false
 	}
 
-	res := t.Compare(n.key, key)
+	res := t.Compare(n.value, value)
 	if res > 0 {
-		return t.contains(n.left, key)
+		return t.contains(n.left, value)
 	}
 	if res < 0 {
-		return t.contains(n.right, key)
+		return t.contains(n.right, value)
 	}
 	return true
 }
 
-func (t *Tree234) Contains(key interface{}) bool {
-	return t.contains(t.root, key)
+func (t *Tree234) Contains(value interface{}) bool {
+	return t.contains(t.root, value)
 }
 
-func (t *Tree234) get(n *node, key interface{}) interface{} {
+func (t *Tree234) get(n *node, value interface{}) interface{} {
 	if n == nil {
 		return nil
 	}
 
-	res := t.Compare(n.key, key)
+	res := t.Compare(n.value, value)
 	if res > 0 {
-		return t.get(n.left, key)
+		return t.get(n.left, value)
 	}
 	if res < 0 {
-		return t.get(n.right, key)
+		return t.get(n.right, value)
 	}
 	return n.value
 }
 
-func (t *Tree234) Get(key interface{}) interface{} {
-	return t.get(t.root, key)
+func (t *Tree234) Get(value interface{}) interface{} {
+	return t.get(t.root, value)
 }
 
 // colorsFlip 颜色翻转
@@ -347,24 +347,24 @@ func (t *Tree234) RemoveMax() {
 	}
 }
 
-func minKey(n *node) interface{} {
+func minNode(n *node) interface{} {
 	cur := n
 	for cur.left != nil {
 		cur = cur.left
 	}
-	return cur.key
+	return cur.value
 }
 
-func maxKey(n *node) interface{} {
+func maxNode(n *node) interface{} {
 	cur := n
 	for cur.right != nil {
 		cur = cur.right
 	}
-	return cur.key
+	return cur.value
 }
 
-func (t *Tree234) remove(n *node, key interface{}) *node {
-	res := t.Compare(n.key, key)
+func (t *Tree234) remove(n *node, value interface{}) *node {
+	res := t.Compare(n.value, value)
 	if res > 0 {
 		if n.left == nil {
 			n = leftRotate(n)
@@ -376,7 +376,7 @@ func (t *Tree234) remove(n *node, key interface{}) *node {
 		default:
 			n = moveRedLeft(n)
 		}
-		n.left = t.remove(n.left, key)
+		n.left = t.remove(n.left, value)
 	} else if res < 0 {
 		if n.right == nil {
 			n = rightRotate(n)
@@ -388,7 +388,7 @@ func (t *Tree234) remove(n *node, key interface{}) *node {
 		default:
 			n = moveRedRight(n)
 		}
-		n.right = t.remove(n.right, key)
+		n.right = t.remove(n.right, value)
 	} else {
 		if n.left == nil && n.right == nil {
 			return nil
@@ -397,12 +397,10 @@ func (t *Tree234) remove(n *node, key interface{}) *node {
 			colorsFlip(n)
 		}
 		if isRed(n.right) {
-			n.key = minKey(n.right)
-			n.value = t.get(n.right, n.key)
+			n.value = minNode(n.right)
 			n.right = t.removeMin(n.right)
 		} else {
-			n.key = maxKey(n.left)
-			n.value = t.get(n.left, n.key)
+			n.value = maxNode(n.left)
 			n.left = t.removeMax(n.left)
 		}
 	}
@@ -437,47 +435,46 @@ func (t *Tree234) remove(n *node, key interface{}) *node {
 	return n
 }
 
-func (t *Tree234) Remove(key interface{}) {
+func (t *Tree234) Remove(value interface{}) {
 	if t.root == nil {
 		return
 	}
 
 	if t.root.n == 1 {
-		if t.Compare(t.root.key, key) == 0 {
+		if t.Compare(t.root.value, value) == 0 {
 			t.root = nil
 		}
 		return
 	}
 
-	if !t.Contains(key) {
+	if !t.Contains(value) {
 		return
 	}
 
 	if !isRed(t.root.left) && isRed(t.root.right) {
 		t.root.color = Red
 	}
-	t.root = t.remove(t.root, key)
+	t.root = t.remove(t.root, value)
 	if !t.IsEmpty() {
 		t.root.color = Black
 	}
 }
 
-func (t *Tree234) Range(f func(n common.INode)) {
+func (t *Tree234) Range(f func(interface{})) {
 	common.PreOrder(t.root, f)
 }
 
-// Img 生成图
+// Img 生成图片
 func (t *Tree234) Img(filename string) error {
 	if filename == "" {
 		filename = "tree234"
 	}
 	if t.GetSize() > 0 {
-		t.root.BuildIndex()
-		return common.PrintTree(t.root, filename)
+		return common.BSTSvg(t.root, filename)
 	}
 	return nil
 }
 
 func (t *Tree234) String() string {
-	return common.PrePrint(t.root)
+	return common.PrePrintBST(t.root)
 }

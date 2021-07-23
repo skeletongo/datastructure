@@ -12,66 +12,49 @@ const (
 )
 
 type node struct {
-	common.TreeNode
 	left, right *node
 	color       bool
 	n           int         // 以当前节点为根的树的节点数量
-	key, value  interface{} // 存储映射的键值对
+	value       interface{} // 存储映射的键值对
 }
 
-func newNode(key, value interface{}) *node {
+func newNode(value interface{}) *node {
 	return &node{
-		key:   key,
 		value: value,
 		color: Red,
 		n:     1,
 	}
 }
 
-func (n *node) GetLeftNode() common.INode {
+func (n *node) GetLeftNode() common.BSTNode {
 	return n.left
 }
 
-func (n *node) GetRightNode() common.INode {
+func (n *node) GetRightNode() common.BSTNode {
 	return n.right
-}
-
-func (n *node) GetKey() interface{} {
-	return n.key
 }
 
 func (n *node) GetValue() interface{} {
 	return n.value
 }
 
-func (n *node) GetColor() string {
-	if isRed(n) {
-		return "red"
-	}
-	return "black"
-}
-
-func (n *node) GetLeftTreeNode() common.ITreeNode {
+func (n *node) LeftNode() common.BSTNodeGraph {
 	return n.left
 }
 
-func (n *node) GetRightTreeNode() common.ITreeNode {
+func (n *node) RightNode() common.BSTNodeGraph {
 	return n.right
 }
 
-// BuildIndex 以层序遍历的顺序给节点设置递增编号，这个是画svg图用的
-func (n *node) BuildIndex() {
-	i := 0
-	common.LevelOrder(n, func(node common.INode) {
-		treeNode := node.(common.ITreeNode)
-		treeNode.Reset()
-		treeNode.SetIndex(i)
-		i++
-	})
+func (n *node) GetAttribute() string {
+	if isRed(n) {
+		return ",color=red,style=filled,fontcolor=white"
+	}
+	return ",color=black,style=filled,fontcolor=white"
 }
 
 func (n *node) String() string {
-	return fmt.Sprintf("%v: %v", n.key, n.value)
+	return fmt.Sprintf("%v", n.value)
 }
 
 // isRed 是否为红节点

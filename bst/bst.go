@@ -6,7 +6,6 @@ package bst
 
 import (
 	"github.com/skeletongo/datastructure/common"
-	"github.com/skeletongo/datastructure/queue"
 	"github.com/skeletongo/datastructure/stack"
 )
 
@@ -40,49 +39,49 @@ func (b *BST) IsEmpty() bool {
 	return b.size == 0
 }
 
-func (b *BST) add(n *node, key, value interface{}) *node {
+func (b *BST) add(n *node, value interface{}) *node {
 	if n == nil {
 		b.size++
-		return newNode(key, value)
+		return newNode(value)
 	}
 
-	res := b.Compare(key, n.key)
+	res := b.Compare(value, n.value)
 	if res < 0 {
-		n.left = b.add(n.left, key, value)
+		n.left = b.add(n.left, value)
 	} else if res > 0 {
-		n.right = b.add(n.right, key, value)
+		n.right = b.add(n.right, value)
 	}
 	return n
 }
 
 // Add 添加新节点
-func (b *BST) Add(key, value interface{}) {
-	b.root = b.add(b.root, key, value)
+func (b *BST) Add(value interface{}) {
+	b.root = b.add(b.root, value)
 }
 
 // AddNR 添加新节点非递归
-func (b *BST) AddNR(key, value interface{}) {
+func (b *BST) AddNR(value interface{}) {
 	if b.size == 0 {
 		b.size++
-		b.root = newNode(key, value)
+		b.root = newNode(value)
 		return
 	}
 
 	n := b.root
 	for {
-		r := b.Compare(key, n.key)
+		r := b.Compare(value, n.value)
 		switch {
 		case r < 0:
 			if n.left == nil {
 				b.size++
-				n.left = newNode(key, value)
+				n.left = newNode(value)
 				return
 			}
 			n = n.left
 		case r > 0:
 			if n.right == nil {
 				b.size++
-				n.right = newNode(key, value)
+				n.right = newNode(value)
 				return
 			}
 			n = n.right
@@ -92,31 +91,31 @@ func (b *BST) AddNR(key, value interface{}) {
 	}
 }
 
-func (b *BST) contains(n *node, key interface{}) bool {
+func (b *BST) contains(n *node, value interface{}) bool {
 	if n == nil {
 		return false
 	}
 
-	r := b.Compare(key, n.key)
+	r := b.Compare(value, n.value)
 	if r < 0 {
-		return b.contains(n.left, key)
+		return b.contains(n.left, value)
 	}
 	if r > 0 {
-		return b.contains(n.right, key)
+		return b.contains(n.right, value)
 	}
 	return true
 }
 
 // Contains 查询是否包含指定元素
-func (b *BST) Contains(key interface{}) bool {
-	return b.contains(b.root, key)
+func (b *BST) Contains(value interface{}) bool {
+	return b.contains(b.root, value)
 }
 
 // ContainsNR 查询是否包含指定元素非递归
-func (b *BST) ContainsNR(key interface{}) bool {
+func (b *BST) ContainsNR(value interface{}) bool {
 	n := b.root
 	for n != nil {
-		r := b.Compare(key, n.key)
+		r := b.Compare(value, n.value)
 		if r == 0 {
 			return true
 		}
@@ -156,7 +155,7 @@ func (b *BST) RemoveMin() interface{} {
 	}
 	n := findMin(b.root)
 	b.root = b.removeMin(b.root)
-	return n.key
+	return n.value
 }
 
 // findMax 寻找当前节点中的最大值节点
@@ -187,7 +186,7 @@ func (b *BST) RemoveMax() interface{} {
 
 	n := findMax(b.root)
 	b.root = b.removeMax(b.root)
-	return n.key
+	return n.value
 }
 
 // RemoveMinNR 删除最小值节点并返回删除的最小值
@@ -199,18 +198,18 @@ func (b *BST) RemoveMinNR() interface{} {
 		b.size--
 		r := b.root
 		b.root = nil
-		return r.key
+		return r.value
 	case 2:
 		b.size--
 		if b.root.left == nil {
 			r := b.root
 			b.root = b.root.right
 			r.right = nil
-			return r.key
+			return r.value
 		}
 		n := b.root.left
 		b.root.left = nil
-		return n.key
+		return n.value
 	default:
 		b.size--
 		p := b.root
@@ -221,7 +220,7 @@ func (b *BST) RemoveMinNR() interface{} {
 		}
 		p.left = s.right
 		s.right = nil
-		return s.key
+		return s.value
 	}
 }
 
@@ -234,7 +233,7 @@ func (b *BST) RemoveMaxNR() interface{} {
 		b.size--
 		r := b.root
 		b.root = nil
-		return r.key
+		return r.value
 	case 2:
 		b.size--
 		if b.root.left == nil {
@@ -245,7 +244,7 @@ func (b *BST) RemoveMaxNR() interface{} {
 		n := b.root
 		b.root = b.root.left
 		n.left = nil
-		return n.key
+		return n.value
 	default:
 		b.size--
 		p := b.root
@@ -256,23 +255,23 @@ func (b *BST) RemoveMaxNR() interface{} {
 		}
 		p.right = n.left
 		n.left = nil
-		return n.key
+		return n.value
 	}
 }
 
 // remove 从当前节点中删除一个特定的值节点并返回删除节点后的当前节点的根节点
-func (b *BST) remove(n *node, key interface{}) *node {
+func (b *BST) remove(n *node, value interface{}) *node {
 	if n == nil {
 		return nil
 	}
 
-	r := b.Compare(key, n.key)
+	r := b.Compare(value, n.value)
 	if r < 0 {
-		n.left = b.remove(n.left, key)
+		n.left = b.remove(n.left, value)
 		return n
 	}
 	if r > 0 {
-		n.right = b.remove(n.right, key)
+		n.right = b.remove(n.right, value)
 		return n
 	}
 
@@ -302,19 +301,19 @@ func (b *BST) Remove(key interface{}) {
 	b.root = b.remove(b.root, key)
 }
 
-func (b *BST) set(n *node, key, value interface{}) *node {
+func (b *BST) set(n *node, value interface{}) *node {
 	if n == nil {
 		b.size++
-		return newNode(key, value)
+		return newNode(value)
 	}
 
-	res := b.Compare(n.key, key)
+	res := b.Compare(n.value, value)
 	if res < 0 {
-		n.right = b.set(n.right, key, value)
+		n.right = b.set(n.right, value)
 		return n
 	}
 	if res > 0 {
-		n.left = b.set(n.left, key, value)
+		n.left = b.set(n.left, value)
 		return n
 	}
 	n.value = value
@@ -322,28 +321,28 @@ func (b *BST) set(n *node, key, value interface{}) *node {
 }
 
 // Set 添加元素或修改元素对应的值
-func (b *BST) Set(key, value interface{}) {
-	b.root = b.set(b.root, key, value)
+func (b *BST) Set(value interface{}) {
+	b.root = b.set(b.root, value)
 }
 
-func (b *BST) get(n *node, key interface{}) *node {
+func (b *BST) get(n *node, value interface{}) *node {
 	if n == nil {
 		return nil
 	}
 
-	res := b.Compare(n.key, key)
+	res := b.Compare(n.value, value)
 	if res < 0 {
-		return b.get(n.right, key)
+		return b.get(n.right, value)
 	}
 	if res > 0 {
-		return b.get(n.left, key)
+		return b.get(n.left, value)
 	}
 	return n
 }
 
 // Get 获取元素值
-func (b *BST) Get(key interface{}) interface{} {
-	n := b.get(b.root, key)
+func (b *BST) Get(value interface{}) interface{} {
+	n := b.get(b.root, value)
 	if n == nil {
 		return nil
 	}
@@ -351,27 +350,27 @@ func (b *BST) Get(key interface{}) interface{} {
 }
 
 // PreOrder 前序遍历
-func (b *BST) PreOrder(f func(n common.INode)) {
+func (b *BST) PreOrder(f func(v interface{})) {
 	common.PreOrder(b.root, f)
 }
 
 // InOrder 中序遍历
-func (b *BST) InOrder(f func(n common.INode)) {
+func (b *BST) InOrder(f func(v interface{})) {
 	common.InOrder(b.root, f)
 }
 
 // PostOrder 后序遍历
-func (b *BST) PostOrder(f func(n common.INode)) {
+func (b *BST) PostOrder(f func(v interface{})) {
 	common.PostOrder(b.root, f)
 }
 
 // PreOrderNR 前序遍历非递归
-func (b *BST) PreOrderNR(f func(key, value interface{})) {
+func (b *BST) PreOrderNR(f func(value interface{})) {
 	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
-		f(b.root.key, b.root.value)
+		f(b.root.value)
 		return
 	}
 
@@ -379,7 +378,7 @@ func (b *BST) PreOrderNR(f func(key, value interface{})) {
 	s.Push(b.root)
 	for s.Len() != 0 {
 		n := s.Pop().(*node)
-		f(n.key, n.value)
+		f(n.value)
 		if n.right != nil {
 			s.Push(n.right)
 		}
@@ -390,12 +389,12 @@ func (b *BST) PreOrderNR(f func(key, value interface{})) {
 }
 
 // InOrderNR 中序遍历非递归
-func (b *BST) InOrderNR(f func(key, value interface{})) {
+func (b *BST) InOrderNR(f func(interface{})) {
 	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
-		f(b.root.key, b.root.value)
+		f(b.root.value)
 		return
 	}
 
@@ -411,7 +410,7 @@ func (b *BST) InOrderNR(f func(key, value interface{})) {
 			}
 		}
 		n = s.Pop().(*node)
-		f(n.key, n.value)
+		f(n.value)
 		if n.right != nil {
 			s.Push(n.right)
 			flag = true
@@ -420,12 +419,12 @@ func (b *BST) InOrderNR(f func(key, value interface{})) {
 }
 
 // PostOrderNR 后序遍历非递归(双栈方式)
-func (b *BST) PostOrderNR(f func(key, value interface{})) {
+func (b *BST) PostOrderNR(f func(interface{})) {
 	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
-		f(b.root.key, b.root.value)
+		f(b.root.value)
 		return
 	}
 
@@ -445,17 +444,17 @@ func (b *BST) PostOrderNR(f func(key, value interface{})) {
 	}
 	for s2.Len() > 0 {
 		n = s2.Pop().(*node)
-		f(n.key, n.value)
+		f(n.value)
 	}
 }
 
 // PreOrderNRC 前序遍历非递归经典版
-func (b *BST) PreOrderNRC(f func(key, value interface{})) {
+func (b *BST) PreOrderNRC(f func(interface{})) {
 	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
-		f(b.root.key, b.root.value)
+		f(b.root.value)
 		return
 	}
 
@@ -463,7 +462,7 @@ func (b *BST) PreOrderNRC(f func(key, value interface{})) {
 	n := b.root
 	for s.Len() > 0 || n != nil {
 		if n != nil {
-			f(n.key, n.value)
+			f(n.value)
 			s.Push(n)
 			n = n.left
 		} else {
@@ -473,12 +472,12 @@ func (b *BST) PreOrderNRC(f func(key, value interface{})) {
 }
 
 // InOrderNRC 中序遍历非递归经典版
-func (b *BST) InOrderNRC(f func(key, value interface{})) {
+func (b *BST) InOrderNRC(f func(interface{})) {
 	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
-		f(b.root.value, b.root.value)
+		f(b.root.value)
 		return
 	}
 
@@ -490,19 +489,19 @@ func (b *BST) InOrderNRC(f func(key, value interface{})) {
 			n = n.left
 		} else {
 			n = s.Pop().(*node)
-			f(n.key, n.value)
+			f(n.value)
 			n = n.right
 		}
 	}
 }
 
 // PostOrderNRC 后序遍历非递归经典版
-func (b *BST) PostOrderNRC(f func(key, value interface{})) {
+func (b *BST) PostOrderNRC(f func(interface{})) {
 	if b.size == 0 {
 		return
 	}
 	if b.size == 1 {
-		f(b.root.key, b.root.value)
+		f(b.root.value)
 		return
 	}
 
@@ -518,7 +517,7 @@ func (b *BST) PostOrderNRC(f func(key, value interface{})) {
 			n = s.Peek().(*node)
 			if _, ok = m[n]; ok {
 				s.Pop()
-				f(n.key, n.value)
+				f(n.value)
 				n = nil
 			} else {
 				m[n] = struct{}{}
@@ -529,30 +528,25 @@ func (b *BST) PostOrderNRC(f func(key, value interface{})) {
 }
 
 // LevelOrder 层序遍历
-func (b *BST) LevelOrder(f func(key, value interface{})) {
-	if b.root == nil {
-		return
-	}
-
-	q := queue.NewArrayQueue()
-	q.Enqueue(b.root)
-	var n *node
-	for q.Len() > 0 {
-		n = q.Dequeue().(*node)
-		f(n.key, n.value)
-		if n.left != nil {
-			q.Enqueue(n.left)
-		}
-		if n.right != nil {
-			q.Enqueue(n.right)
-		}
-	}
+func (b *BST) LevelOrder(f func(interface{})) {
+	common.LevelOrder(b.root, f)
 }
 
-func (b *BST) Range(f func(n common.INode)) {
+func (b *BST) Range(f func(interface{})) {
 	common.PreOrder(b.root, f)
 }
 
+// Img 生成图片
+func (b *BST) Img(filename string) error {
+	if filename == "" {
+		filename = "bst"
+	}
+	if b.GetSize() > 0 {
+		return common.BSTSvg(b.root, filename)
+	}
+	return nil
+}
+
 func (b *BST) String() string {
-	return common.PrePrint(b.root)
+	return common.PrePrintBST(b.root)
 }

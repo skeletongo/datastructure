@@ -15,7 +15,7 @@ func TestAVLTree(t *testing.T) {
 	n := 1000
 	arr := rand.Perm(n)
 	tree := New(func(a, b interface{}) int {
-		return a.(int) - b.(int)
+		return a.([]int)[0] - b.([]int)[0]
 	})
 
 	if !tree.IsEmpty() {
@@ -25,17 +25,17 @@ func TestAVLTree(t *testing.T) {
 	var m = make(map[int]int)
 	for k, v := range arr {
 		m[v] = k
-		tree.Put(v, k)
+		tree.Put([]int{v, k})
 	}
 
 	testFunc := func() {
 		ids := rand.Perm(2 * len(m))
 		for _, v := range ids {
 			_, ok := m[v]
-			if tree.Contains(v) != ok {
+			if tree.Contains([]int{v}) != ok {
 				t.Error("Contains() error")
 			}
-			if (tree.Get(v) != nil) != ok {
+			if (tree.Get([]int{v}) != nil) != ok {
 				t.Error("Get() error")
 			}
 		}
@@ -53,7 +53,7 @@ func TestAVLTree(t *testing.T) {
 			t.Error("isBalanced() error")
 		}
 		for k, v := range m {
-			if tree.Get(k) != v {
+			if tree.Get([]int{k}).([]int)[1] != v {
 				t.Error("Get(v) error")
 			}
 		}
@@ -62,14 +62,14 @@ func TestAVLTree(t *testing.T) {
 	testFunc()
 
 	for k, v := range arr {
-		tree.Put(k, v)
+		tree.Put([]int{k, v})
 		m[k] = v
 	}
 	testFunc()
 
 	for len(m) > 0 {
 		for k := range m {
-			tree.Remove(k)
+			tree.Remove([]int{k})
 			delete(m, k)
 			testFunc()
 		}
@@ -83,7 +83,7 @@ func TestNode_String(t *testing.T) {
 
 	arr := rand.Perm(10)
 	for i := 0; i < len(arr); i++ {
-		bst.Put(arr[i], nil)
+		bst.Put(arr[i])
 	}
 	fmt.Println(bst)
 }
@@ -97,7 +97,7 @@ func TestAVLTree_Put(t *testing.T) {
 		n := rand.Intn(1000)
 		arr := rand.Perm(n)
 		for i := 0; i < len(arr); i++ {
-			tree.Put(arr[i], nil)
+			tree.Put(arr[i])
 			if !tree.isBalanced() {
 				t.Fatal("balance error", arr)
 			}
@@ -122,7 +122,7 @@ func TestAVLTree_Remove(t *testing.T) {
 		arr2 := make([]int, n)
 		copy(arr2, arr)
 		for i := 0; i < len(arr)/2; i++ {
-			tree.Put(arr[i], nil)
+			tree.Put(arr[i])
 		}
 
 		delArr := []int{}
@@ -149,4 +149,16 @@ func TestAVLTree_Remove(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestPrintImg(t *testing.T) {
+	tree := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+
+	arr := rand.Perm(20)
+	for i := 0; i < len(arr); i++ {
+		tree.Put(arr[i])
+	}
+	tree.Img("")
 }

@@ -38,7 +38,7 @@ func inOrder(n *node, list *[]interface{}) {
 		return
 	}
 	inOrder(n.left, list)
-	*list = append(*list, n.key)
+	*list = append(*list, n.value)
 	inOrder(n.right, list)
 }
 
@@ -170,24 +170,24 @@ func toBalance(n *node) *node {
 }
 
 // Put 添加新节点
-func (a *AVLTree) Put(key, value interface{}) {
-	a.root = a.put(a.root, key, value)
+func (a *AVLTree) Put(value interface{}) {
+	a.root = a.put(a.root, value)
 }
 
-func (a *AVLTree) put(n *node, key, value interface{}) *node {
+func (a *AVLTree) put(n *node, value interface{}) *node {
 	if n == nil {
 		a.size++
-		return newNode(key, value)
+		return newNode(value)
 	}
 
-	res := a.Compare(n.key, key)
+	res := a.Compare(n.value, value)
 	if res == 0 {
 		n.value = value
 		return n
 	} else if res < 0 {
-		n.right = a.put(n.right, key, value)
+		n.right = a.put(n.right, value)
 	} else {
-		n.left = a.put(n.left, key, value)
+		n.left = a.put(n.left, value)
 	}
 
 	// 路径回溯维护平衡性
@@ -206,38 +206,38 @@ func (a *AVLTree) put(n *node, key, value interface{}) *node {
 	return toBalance(n)
 }
 
-func (a *AVLTree) contains(n *node, key interface{}) bool {
+func (a *AVLTree) contains(n *node, value interface{}) bool {
 	if n == nil {
 		return false
 	}
 
-	r := a.Compare(n.key, key)
+	r := a.Compare(n.value, value)
 	if r < 0 {
-		return a.contains(n.right, key)
+		return a.contains(n.right, value)
 	}
 	if r > 0 {
-		return a.contains(n.left, key)
+		return a.contains(n.left, value)
 	}
 	return true
 }
 
 // Contains 查询是否包含指定元素
-func (a *AVLTree) Contains(key interface{}) bool {
-	return a.contains(a.root, key)
+func (a *AVLTree) Contains(value interface{}) bool {
+	return a.contains(a.root, value)
 }
 
-func (a *AVLTree) remove(n *node, key interface{}) *node {
+func (a *AVLTree) remove(n *node, value interface{}) *node {
 	if n == nil {
 		return nil
 	}
 
 	var retNode *node
-	res := a.Compare(n.key, key)
+	res := a.Compare(n.value, value)
 	if res > 0 {
-		n.left = a.remove(n.left, key)
+		n.left = a.remove(n.left, value)
 		retNode = n
 	} else if res < 0 {
-		n.right = a.remove(n.right, key)
+		n.right = a.remove(n.right, value)
 		retNode = n
 	} else {
 		// 当前节点就是要删除的节点
@@ -253,7 +253,7 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 			// 左右都有子树
 			// 用右子树中的最小值节点代替当前删除的节点
 			min := findMinNode(n.right)
-			min.right = a.remove(n.right, min.key)
+			min.right = a.remove(n.right, min.value)
 			min.left = n.left
 			n.left = nil
 			n.right = nil
@@ -281,21 +281,21 @@ func (a *AVLTree) remove(n *node, key interface{}) *node {
 }
 
 // Remove 删除节点
-func (a *AVLTree) Remove(key interface{}) {
-	a.root = a.remove(a.root, key)
+func (a *AVLTree) Remove(value interface{}) {
+	a.root = a.remove(a.root, value)
 }
 
-func (a *AVLTree) get(n *node, key interface{}) *node {
+func (a *AVLTree) get(n *node, value interface{}) *node {
 	if n == nil {
 		return nil
 	}
 
-	res := a.Compare(n.key, key)
+	res := a.Compare(n.value, value)
 	if res < 0 {
-		return a.get(n.right, key)
+		return a.get(n.right, value)
 	}
 	if res > 0 {
-		return a.get(n.left, key)
+		return a.get(n.left, value)
 	}
 	return n
 }
@@ -309,10 +309,21 @@ func (a *AVLTree) Get(key interface{}) interface{} {
 	return n.value
 }
 
-func (a *AVLTree) Range(f func(n common.INode)) {
+func (a *AVLTree) Range(f func(interface{})) {
 	common.PreOrder(a.root, f)
 }
 
+// Img 生成图片
+func (a *AVLTree) Img(filename string) error {
+	if filename == "" {
+		filename = "bst"
+	}
+	if a.GetSize() > 0 {
+		return common.BSTSvg(a.root, filename)
+	}
+	return nil
+}
+
 func (a *AVLTree) String() string {
-	return common.PrePrint(a.root)
+	return common.PrePrintBST(a.root)
 }

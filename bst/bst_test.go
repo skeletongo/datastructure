@@ -5,8 +5,6 @@ import (
 	"math/rand"
 	"testing"
 	"time"
-
-	"github.com/skeletongo/datastructure/common"
 )
 
 /////////////////
@@ -29,7 +27,7 @@ var testBST = New(func(a, b interface{}) int {
 func init() {
 	rand.Seed(time.Now().UnixNano())
 	for _, v := range list {
-		testBST.Add(v, nil)
+		testBST.Add(v)
 	}
 }
 
@@ -53,29 +51,29 @@ func TestBST(t *testing.T) {
 	})
 
 	for _, v := range list {
-		bst.Add(v, nil)
+		bst.Add(v)
 	}
 
 	n := 0
-	bst.PreOrder(func(node common.INode) {
+	bst.PreOrder(func(v interface{}) {
 		//fmt.Println(v)
-		if res1[n] != node.GetKey() {
+		if res1[n] != v.(int) {
 			t.Error("PreOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.InOrder(func(node common.INode) {
-		if res2[n] != node.GetKey() {
+	bst.InOrder(func(v interface{}) {
+		if res2[n] != v.(int) {
 			t.Error("InOrder error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.PostOrder(func(node common.INode) {
-		if res3[n] != node.GetKey() {
+	bst.PostOrder(func(v interface{}) {
+		if res3[n] != v.(int) {
 			t.Error("PostOrder error")
 		}
 		n++
@@ -98,54 +96,54 @@ func TestBST(t *testing.T) {
 	})
 
 	for _, v := range list {
-		bst.AddNR(v, nil)
+		bst.AddNR(v)
 	}
 
 	n = 0
-	bst.PreOrderNR(func(k, v interface{}) {
+	bst.PreOrderNR(func(v interface{}) {
 		//fmt.Println(v)
-		if res1[n] != k {
+		if res1[n] != v.(int) {
 			t.Error("PreOrderNR error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.InOrderNR(func(k, v interface{}) {
-		if res2[n] != k {
+	bst.InOrderNR(func(v interface{}) {
+		if res2[n] != v.(int) {
 			t.Error("InOrderNR error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.PostOrderNR(func(k, v interface{}) {
-		if res3[n] != k {
+	bst.PostOrderNR(func(v interface{}) {
+		if res3[n] != v.(int) {
 			t.Error("PostOrderNR error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.PreOrderNRC(func(k, v interface{}) {
+	bst.PreOrderNRC(func(v interface{}) {
 		//fmt.Println(v)
-		if res1[n] != k {
+		if res1[n] != v.(int) {
 			t.Error("PreOrderNRC error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.InOrderNRC(func(k, v interface{}) {
-		if res2[n] != k {
+	bst.InOrderNRC(func(v interface{}) {
+		if res2[n] != v.(int) {
 			t.Error("InOrderNRC error")
 		}
 		n++
 	})
 
 	n = 0
-	bst.PostOrderNRC(func(k, v interface{}) {
-		if res3[n] != k {
+	bst.PostOrderNRC(func(v interface{}) {
+		if res3[n] != v.(int) {
 			t.Error("PostOrderNRC error")
 		}
 		n++
@@ -163,8 +161,8 @@ func TestBST(t *testing.T) {
 
 	// LevelOrder
 	n = 0
-	bst.LevelOrder(func(k, v interface{}) {
-		if res4[n] != k {
+	bst.LevelOrder(func(v interface{}) {
+		if res4[n] != v.(int) {
 			t.Error("LevelOrder error")
 		}
 		n++
@@ -184,8 +182,8 @@ func TestBST(t *testing.T) {
 		t.Error("GetSize error", n)
 	}
 
-	bst.Add(1, nil)
-	bst.Add(8, nil)
+	bst.Add(1)
+	bst.Add(8)
 
 	if v := bst.RemoveMinNR(); v != 1 {
 		t.Error("RemoveMinNR", v)
@@ -199,8 +197,8 @@ func TestBST(t *testing.T) {
 		t.Error("GetSize error", n)
 	}
 
-	bst.Add(1, nil)
-	bst.Add(8, nil)
+	bst.Add(1)
+	bst.Add(8)
 
 	// Remove
 
@@ -211,7 +209,7 @@ func TestBST(t *testing.T) {
 	if bst.Contains(1) || !bst.Contains(2) {
 		t.Error("Remove error")
 	}
-	bst.Add(1, nil)
+	bst.Add(1)
 
 	bst.Remove(2)
 	if n = bst.GetSize(); n != 7 {
@@ -220,7 +218,7 @@ func TestBST(t *testing.T) {
 	if bst.Contains(2) || !bst.Contains(1) {
 		t.Error("Remove error")
 	}
-	bst.Add(2, nil)
+	bst.Add(2)
 
 	bst.Remove(6)
 	if n = bst.GetSize(); n != 7 {
@@ -229,7 +227,7 @@ func TestBST(t *testing.T) {
 	if bst.Contains(6) || !bst.Contains(7) {
 		t.Error("Remove error")
 	}
-	bst.Add(6, nil)
+	bst.Add(6)
 
 	bst.Remove(3)
 	if n = bst.GetSize(); n != 7 {
@@ -238,10 +236,10 @@ func TestBST(t *testing.T) {
 	if bst.Contains(3) || !bst.Contains(4) || !bst.Contains(4) {
 		t.Error("Remove error")
 	}
-	bst.Add(3, nil)
+	bst.Add(3)
 
 	for _, v := range list {
-		bst.Set(v, v)
+		bst.Set(v)
 	}
 	for _, v := range list {
 		if bst.Get(v) != v {
@@ -253,6 +251,18 @@ func TestBST(t *testing.T) {
 	}
 }
 
+func TestPrintImg(t *testing.T) {
+	bst := New(func(a, b interface{}) int {
+		return a.(int) - b.(int)
+	})
+
+	arr := rand.Perm(20)
+	for i := 0; i < len(arr); i++ {
+		bst.Add(arr[i])
+	}
+	bst.Img("")
+}
+
 func TestNode_String(t *testing.T) {
 	bst := New(func(a, b interface{}) int {
 		return a.(int) - b.(int)
@@ -260,7 +270,7 @@ func TestNode_String(t *testing.T) {
 
 	arr := rand.Perm(10)
 	for i := 0; i < len(arr); i++ {
-		bst.Add(arr[i], nil)
+		bst.Add(arr[i])
 	}
 	fmt.Println(bst)
 }

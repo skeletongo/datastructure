@@ -20,7 +20,7 @@ func TestTree234_Put(t *testing.T) {
 		n := rand.Intn(1000)
 		arr := rand.Perm(n)
 		for i := 0; i < len(arr); i++ {
-			tree.Put(arr[i], nil)
+			tree.Put(arr[i])
 			if !tree.isBalanced() {
 				t.Fatal("balance error", arr)
 			}
@@ -43,7 +43,7 @@ func TestTree234_RemoveMin(t *testing.T) {
 		n := rand.Intn(1000)
 		arr := rand.Perm(n)
 		for i := 0; i < len(arr); i++ {
-			tree.Put(arr[i], nil)
+			tree.Put(arr[i])
 		}
 
 		for i := 0; i < n; i++ {
@@ -70,7 +70,7 @@ func TestTree234_RemoveMax(t *testing.T) {
 		n := rand.Intn(1000)
 		arr := rand.Perm(n)
 		for i := 0; i < len(arr); i++ {
-			tree.Put(arr[i], nil)
+			tree.Put(arr[i])
 		}
 
 		for i := n - 1; i >= 0; i-- {
@@ -99,7 +99,7 @@ func TestTree234_Remove(t *testing.T) {
 		arr2 := make([]int, n)
 		copy(arr2, arr)
 		for i := 0; i < len(arr)/2; i++ {
-			tree.Put(arr[i], nil)
+			tree.Put(arr[i])
 		}
 
 		delArr := []int{}
@@ -135,7 +135,7 @@ func TestTree234_RemoveMin_Image(t *testing.T) {
 
 	arr := []int{}
 	for _, v := range arr {
-		tree.Put(v, nil)
+		tree.Put(v)
 	}
 
 	if err := tree.Img(fmt.Sprintf("%d_removemin", 0)); err != nil {
@@ -158,7 +158,7 @@ func TestTree234_RemoveMax_Image(t *testing.T) {
 
 	arr := []int{}
 	for _, v := range arr {
-		tree.Put(v, nil)
+		tree.Put(v)
 	}
 
 	if err := tree.Img(fmt.Sprintf("%d_removemax", 0)); err != nil {
@@ -181,7 +181,7 @@ func TestTree234_Remove_Image(t *testing.T) {
 	arr := []int{}
 	delArr := []int{}
 	for _, v := range arr {
-		tree.Put(v, nil)
+		tree.Put(v)
 	}
 
 	if err := tree.Img(fmt.Sprintf("%d_remove", 0)); err != nil {
