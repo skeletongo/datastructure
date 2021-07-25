@@ -89,13 +89,13 @@ type BSTNodeGraph interface {
 	GetAttribute() string
 }
 
-func postOrder(w io.Writer, n BSTNodeGraph, m map[BSTNodeGraph]int, i *int) {
+func bstPostOrder(w io.Writer, n BSTNodeGraph, m map[BSTNodeGraph]int, i *int) {
 	if IsNil(n) {
 		return
 	}
 
-	postOrder(w, n.LeftNode(), m, i)
-	postOrder(w, n.RightNode(), m, i)
+	bstPostOrder(w, n.LeftNode(), m, i)
+	bstPostOrder(w, n.RightNode(), m, i)
 
 	w.Write([]byte(fmt.Sprintf("%v[label = \"<f0> |<f1> %v|<f2> \"%v]\n", *i, n, n.GetAttribute())))
 
@@ -119,7 +119,7 @@ func NewBSTDot(w io.Writer, root BSTNodeGraph) (err error) {
 
 	i := 0
 	m := map[BSTNodeGraph]int{}
-	postOrder(w, root, m, &i)
+	bstPostOrder(w, root, m, &i)
 
 	_, err = w.Write([]byte(`}`))
 	return
