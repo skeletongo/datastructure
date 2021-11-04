@@ -1,4 +1,4 @@
-// 左倾红黑树（2-3树）
+// Package tree23 左倾红黑树（2-3树）
 package tree23
 
 import (

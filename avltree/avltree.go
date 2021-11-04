@@ -1,4 +1,4 @@
-// AVL树
+// Package avltree AVL树
 package avltree
 
 import (

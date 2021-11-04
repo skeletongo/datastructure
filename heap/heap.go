@@ -1,4 +1,4 @@
-// 堆
+// Package heap 堆
 package heap
 
 import "github.com/skeletongo/datastructure/common"

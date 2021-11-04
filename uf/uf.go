@@ -1,4 +1,4 @@
-// 并查集，时间复杂度O(log*n), 效率低于O(1)高于O(logN)
+// Package uf 并查集，时间复杂度O(log*n), 效率低于O(1)高于O(logN)
 // 适合频繁查询或建立连接的网络节点数据
 package uf
 
@@ -13,7 +13,7 @@ type IUnionFind interface {
 
 // IElement 数据节点
 type IElement interface {
-	// 数据唯一索引 生成的索引要小于并查集初始化时的参数n的大小
+	// UniqueId 数据唯一索引 生成的索引要小于并查集初始化时的参数n的大小
 	UniqueId() int
 }
 

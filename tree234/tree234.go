@@ -1,4 +1,4 @@
-// 红黑树（2-3-4树）
+// Package tree234 红黑树（2-3-4树）
 package tree234
 
 import (

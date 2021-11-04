@@ -1,4 +1,4 @@
-// 动态数组，其实go语言本身的slice就是动态数组,这里只是演示动态数组这种数据结构
+// Package array 动态数组，其实go语言本身的slice就是动态数组,这里只是演示动态数组这种数据结构
 package array
 
 import (
@@ -132,7 +132,7 @@ func (a *Array) Swap(i, j int) {
 	a.data[i], a.data[j] = a.data[j], a.data[i]
 }
 
-// ContainsByFunc 是否包含某个元素
+// Contains 是否包含某个元素
 func (a *Array) Contains(e interface{}, f func(a, b interface{}) bool) bool {
 	for i := 0; i < a.len; i++ {
 		if f(a.data[i], e) {
