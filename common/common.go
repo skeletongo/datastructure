@@ -68,9 +68,5 @@ func NewImg(filename string, root interface{}, f func(w io.Writer, root interfac
 	if err = f(w, root); err != nil {
 		return err
 	}
-	cmd := exec.Command("dot", dotFile, "-Tsvg", "-o", svgFile)
-	if err = cmd.Run(); err != nil {
-		return err
-	}
-	return nil
+	return exec.Command("dot", dotFile, "-Tsvg", "-o", svgFile).Run()
 }
