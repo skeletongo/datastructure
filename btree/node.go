@@ -10,8 +10,16 @@ import (
 type node struct {
 	n        int           // 以当前节点为根的子树中的键值对数量
 	parent   *node         // 父节点
-	values   []interface{} // 所有键值对
+	values   []interface{} // 所有元素
 	children []*node       // 所有子节点
+}
+
+// count 计算元素数量
+func (n *node) count() {
+	n.n = len(n.values)
+	for _, v := range n.children {
+		n.n += v.n
+	}
 }
 
 func (n *node) GetChildren() []common.TreeNode {
