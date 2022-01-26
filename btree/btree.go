@@ -283,7 +283,7 @@ func (b *BTree) Get(value interface{}) interface{} {
 	return b.get(b.root, value)
 }
 
-// bringLeft 叶子节点向左兄弟节点借一个元素
+// bringLeft 当前节点向左兄弟节点借一个元素
 // k 当前节点在父节点中的位置
 func (b *BTree) bringLeft(n *node, k int) {
 	otherNode := n.parent.children[k-1]
@@ -310,7 +310,7 @@ func (b *BTree) bringLeft(n *node, k int) {
 	}
 }
 
-// bringRight 叶子节点向右兄弟节点借一个元素
+// bringRight 当前节点向右兄弟节点借一个元素
 // k 当前节点在父节点中的位置
 func (b *BTree) bringRight(n *node, k int) {
 	otherNode := n.parent.children[k+1]
