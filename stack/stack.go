@@ -1,4 +1,4 @@
-// 栈
+// Package stack 栈
 package stack
 
 type Stack interface {

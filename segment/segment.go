@@ -1,4 +1,4 @@
-// 一维线段树
+// Package segment 一维线段树
 package segment
 
 type Segment interface {
